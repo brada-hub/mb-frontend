@@ -145,6 +145,14 @@ p, .text-body {
   box-shadow: var(--mb-shadow-glow);
 }
 
+.uppercase-input input, .uppercase-input textarea {
+  text-transform: uppercase;
+}
+
+.uppercase-input .q-field__native, .uppercase-input .q-field__input {
+  text-transform: uppercase;
+}
+
 .mb-card {
   background: var(--mb-bg-card);
   border-radius: var(--mb-radius-md);

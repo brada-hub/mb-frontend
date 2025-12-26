@@ -24,7 +24,7 @@ describe('Gestión de Miembros', () => {
 
     cy.get('.q-dialog').within(() => {
       // 1. Limite de 30 caracteres en Nombres
-      const nombreLargo = 'EsteNombreEsDemasiadoLargoParaElSistemaYDebeTruncarse';
+      const nombreLargo = 'ESTENOMBREESDEMASIADOLARGOPARAELSISTEMAYDEBETRUNCARSE';
       cy.contains('.q-field', 'Nombres *').find('input').type(nombreLargo);
       cy.contains('.q-field', 'Nombres *').find('input').should('have.value', nombreLargo.substring(0, 30));
 
@@ -64,15 +64,15 @@ describe('Gestión de Miembros', () => {
 
     cy.get('.q-dialog').within(() => {
       // Sección 1: Datos y Ubicación (Ahora están juntos arriba)
-      cy.contains('.q-field', 'Nombres *').find('input').type('Cypress');
-      cy.contains('.q-field', 'Apellidos *').find('input').type('Test');
+      cy.contains('.q-field', 'Nombres *').find('input').type('CYPRESS');
+      cy.contains('.q-field', 'Apellidos *').find('input').type('TEST');
       cy.contains('.q-field', 'CI *').find('input').type(ci);
       cy.contains('.q-field', 'Celular *').find('input').type('60000000');
       cy.contains('.q-field', 'Fecha Nacimiento *').find('input').type('2000-01-01');
-      cy.contains('.q-field', 'Dirección Detallada').find('textarea').type('Calle Falsa 123');
+      cy.contains('.q-field', 'Dirección Detallada').find('textarea').type('CALLE FALSA 123');
 
       // Sección 2: Contacto de Emergencia
-      cy.contains('.q-field', 'Nombre de Contacto').find('input').type('Contacto Ref');
+      cy.contains('.q-field', 'Nombre de Contacto').find('input').type('CONTACTO REF');
       cy.contains('.q-field', 'Celular de Contacto').find('input').type('70001122');
     });
 

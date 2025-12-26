@@ -22,11 +22,12 @@
             <div class="col-12 col-sm-6">
               <q-input
                 :model-value="form.nombres"
-                @update:model-value="val => form.nombres = (val || '').toString().replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')"
+                @update:model-value="val => form.nombres = (val || '').toString().toUpperCase().replace(/[^A-ZÁÉÍÓÚÑÜ\s]/g, '')"
                 @keydown="bloquearNumerosYCaracteres"
                 label="Nombres *"
                 filled dark dense
                 maxlength="30"
+                class="uppercase-input"
                 :rules="[val => !!val || 'Requerido']"
               >
                 <template v-slot:prepend><q-icon name="person" /></template>
@@ -36,11 +37,12 @@
             <div class="col-12 col-sm-6">
               <q-input
                 :model-value="form.apellidos"
-                @update:model-value="val => form.apellidos = (val || '').toString().replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')"
+                @update:model-value="val => form.apellidos = (val || '').toString().toUpperCase().replace(/[^A-ZÁÉÍÓÚÑÜ\s]/g, '')"
                 @keydown="bloquearNumerosYCaracteres"
                 label="Apellidos *"
                 filled dark dense
                 maxlength="30"
+                class="uppercase-input"
                 :rules="[val => !!val || 'Requerido']"
               >
                 <template v-slot:prepend><q-icon name="person_outline" /></template>
@@ -53,8 +55,10 @@
                 label="CI *"
                 filled dark dense
                 maxlength="12"
+                class="uppercase-input"
                 hint="Ej: 1234567 o 1234567-A"
                 :rules="[val => !!val || 'Requerido', isValidCI]"
+                @update:model-value="val => form.ci = (val || '').toString().toUpperCase()"
               >
                 <template v-slot:prepend><q-icon name="fingerprint" /></template>
               </q-input>
@@ -109,7 +113,15 @@
             </div>
 
             <div class="col-12">
-              <q-input v-model="form.direccion" label="Dirección Detallada" filled dark dense type="textarea" rows="2">
+              <q-input
+                v-model="form.direccion"
+                label="Dirección Detallada"
+                filled dark dense
+                type="textarea"
+                rows="2"
+                class="uppercase-input"
+                @update:model-value="val => form.direccion = (val || '').toString().toUpperCase()"
+              >
                  <template v-slot:prepend><q-icon name="home" /></template>
               </q-input>
             </div>
@@ -127,7 +139,9 @@
                 label="Nombre de Contacto"
                 @keydown="bloquearNumerosYCaracteres"
                 maxlength="50"
-                :rules="[ val => !val || /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/.test(val) || 'Solo letras' ]"
+                class="uppercase-input"
+                @update:model-value="val => form.referencia_nombre = (val || '').toString().toUpperCase().replace(/[^A-ZÁÉÍÓÚÑÜ\s]/g, '')"
+                :rules="[ val => !val || /^[A-ZÁÉÍÓÚÑÜ\s]+$/.test(val) || 'Solo letras' ]"
               >
                 <template v-slot:prepend><q-icon name="person_pin" /></template>
               </q-input>
@@ -441,8 +455,14 @@ async function handleSubmit() {
         emit('saved');
       }
     }
-  } catch {
-    notifyError('Error al guardar');
+  } catch (e: any) {
+    if (e.response?.status === 422) {
+      const errors = e.response.data.errors;
+      const firstError = Object.values(errors)[0] as string[];
+      notifyError(firstError[0] || 'Error de validación');
+    } else {
+      notifyError('Error al guardar datos');
+    }
   } finally {
     isLoading.value = false;
   }
