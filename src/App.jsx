@@ -1,20 +1,37 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import LoginPage from './pages/auth/LoginPage';
+import DashboardLayout from './layouts/DashboardLayout';
+import DashboardHome from './pages/dashboard/DashboardHome';
+import MiembrosList from './pages/miembros/MiembrosList';
+import MiembrosForm from './pages/miembros/MiembrosForm';
+
 function App() {
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-      {/* Si Tailwind funciona, verás un anillo dorado y texto brillante */}
-      <div className="bg-slate-800 p-8 rounded-2xl shadow-[0_0_50px_-12px_rgba(234,179,8,0.3)] border border-slate-700 text-center max-w-sm ring-4 ring-yellow-500/20">
-        <h1 className="text-4xl font-black text-yellow-500 italic uppercase tracking-tighter mb-4">
-          Monster Band
-        </h1>
-        <p className="text-slate-400 font-medium">
-          Si ves este fondo oscuro, bordes redondeados y texto amarillo, <span className="text-green-400 font-bold underline">Tailwind está ACTIVO</span>.
-        </p>
-        <button className="mt-6 px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold rounded-full transition-all hover:scale-105 active:scale-95">
-          ¡LISTO PARA EL ENSAYO!
-        </button>
-      </div>
-    </div>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          
+          {/* Private Admin Routes */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="miembros" element={<MiembrosList />} />
+            <Route path="miembros/nuevo" element={<MiembrosForm />} />
+            
+            {/* Placeholders for future sections */}
+            <Route path="eventos" element={<div className="text-white">Sección de Eventos (Próximamente)</div>} />
+            <Route path="asistencia" element={<div className="text-white">Sección de Asistencia (Próximamente)</div>} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
