@@ -1,21 +1,99 @@
-import { forwardRef } from 'react';
-import { cn } from '../../utils';
+import { forwardRef, useState } from 'react';
+import { clsx } from 'clsx';
+import { Eye, EyeOff } from 'lucide-react';
 
-const Input = forwardRef(({ className, error, ...props }, ref) => {
+const Input = forwardRef(({ 
+    label, 
+    icon: Icon, 
+    helperText, 
+    error, 
+    className, 
+    type = 'text',
+    onInput, // Usamos onInput para filtrar en tiempo real antes de que llegue al estado
+    ...props 
+}, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    
+    const isTextArea = type === 'textarea';
+    const isPassword = type === 'password';
+    const InputComponent = isTextArea ? 'textarea' : 'input';
+    
+    const inputType = isPassword ? (showPassword ? 'text' : 'password') : (isTextArea ? 'text' : type);
+
+    const inputId = props.id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+
     return (
-        <div className="w-full">
-            <input
-                ref={ref}
-                className={cn(
-                    'flex h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-white placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 backdrop-blur-sm transition-all',
-                    error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
-                    className
+        <div className="w-full space-y-2.5 group">
+            {label && (
+                <div className="flex items-center gap-2.5 mb-2.5 px-1">
+                    {Icon && <Icon className={clsx(
+                        "w-5 h-5 transition-colors",
+                        error ? "text-red-400" : "text-gray-400 group-focus-within:text-brand-primary"
+                    )} />}
+                    <label 
+                        htmlFor={inputId}
+                        className={clsx(
+                            "text-sm font-bold tracking-tight transition-colors",
+                            error ? "text-red-400" : "text-gray-300 pointer-events-auto cursor-pointer"
+                        )}
+                    >
+                        {label} {props.required && <span className="text-brand-primary">*</span>}
+                    </label>
+                </div>
+            )}
+            
+            <div className="relative">
+                {!label && Icon && (
+                     <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <Icon className={clsx("w-5 h-5", error ? "text-red-400" : "text-gray-500")} />
+                     </div>
                 )}
-                {...props}
-            />
-            {error && <span className="mt-1 text-sm text-red-400 ml-1">{error}</span>}
+
+                <InputComponent
+                    ref={ref}
+                    id={inputId}
+                    type={inputType}
+                    onInput={onInput}
+                    aria-label={props['aria-label'] || label || props.placeholder}
+                    className={clsx(
+                        'flex w-full rounded-2xl bg-surface-input px-5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none',
+                        isTextArea ? 'min-h-[100px] py-4 resize-none' : 'h-14',
+                        // Left padding for start icon
+                        !label && Icon && 'pl-12',
+                        // Right padding for password toggle
+                        isPassword && 'pr-12',
+                        error 
+                            ? 'border-red-500/50 ring-2 ring-red-500/20 focus:ring-red-500/40' 
+                            : 'border-white/5 focus:ring-brand-primary/30 hover:border-white/10 focus:border-brand-primary/50',
+                        className
+                    )}
+                    {...props}
+                />
+
+                {isPassword && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors focus:outline-none"
+                    >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                )}
+            </div>
+
+            {helperText && !error && (
+                <p className="text-[11px] text-gray-500 ml-1 font-bold uppercase tracking-wider">{helperText}</p>
+            )}
+            
+            {error && (
+                <p className="text-xs text-red-500 ml-1 font-bold animate-in fade-in slide-in-from-top-1">
+                    {error}
+                </p>
+            )}
         </div>
     );
 });
+
+Input.displayName = 'Input';
 
 export { Input };

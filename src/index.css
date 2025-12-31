@@ -4,34 +4,29 @@
 
 @layer base {
   body {
-    @apply bg-[#0f111a] text-gray-100;
+    @apply bg-surface-base text-gray-100 antialiased selection:bg-brand-primary/30 selection:text-white;
+  }
+
+  /* Standardizing interactive elements for mobile (Play Store rules) */
+  button, a {
+    @apply touch-manipulation;
   }
 }
 
 @layer utilities {
-  .animate-fade-in-up {
-    animation: fadeInUp 0.5s ease-out forwards;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   .glass {
     @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
+  
+  .monster-gradient {
+    @apply bg-gradient-to-br from-brand-primary via-monster-purple to-monster-pink;
+  }
 }
 
-/* Custom Scrollbar for Premium Feel */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -39,5 +34,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-indigo-500/30 transition-colors;
+  @apply bg-white/10 rounded-full hover:bg-brand-primary/40 transition-colors;
+}
+
+/* Leaflet Overrides for Design System */
+.leaflet-container {
+    background: #161b2c !important; /* surface-card */
+}
+
+/* Fix for mobile keyboard covering inputs in Safari/Android */
+input, textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
 }

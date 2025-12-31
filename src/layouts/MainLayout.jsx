@@ -1,50 +1,109 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Navigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
     LayoutDashboard, 
     Users, 
     Calendar, 
-    music, 
     LogOut, 
     Menu, 
-    X,
     Bell,
     Settings,
-    FileText
+    FileText,
+    Shield,
+    Layers
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import ForcePasswordChangeModal from '../components/modals/ForcePasswordChangeModal';
 
-const SidebarItem = ({ icon: Icon, label, to, active }) => (
-    <Link 
-        to={to} 
-        className={clsx(
-            "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
-            active 
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-        )}
-    >
-        <Icon className={clsx("w-5 h-5 transition-colors", active ? "text-white" : "text-gray-400 group-hover:text-white")} />
-        <span className="font-medium">{label}</span>
-    </Link>
-);
+const SidebarItem = ({ icon: Icon, label, to, active, onClick }) => {
+    const LucideIcon = Icon;
+    return (
+        <Link 
+            to={to} 
+            onClick={onClick}
+            className={clsx(
+                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                active 
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+        >
+            <LucideIcon className={clsx("w-5 h-5 transition-colors", active ? "text-white" : "text-gray-400 group-hover:text-white")} />
+            <span className="font-medium">{label}</span>
+        </Link>
+    );
+};
 
-export default function DashboardLayout() {
+export default function MainLayout() {
     const { user, logout, loading, isAuthenticated } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [checking, setChecking] = useState(true);
     const location = useLocation();
 
-    if (loading) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white">Cargando...</div>;
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => setChecking(false), 200);
+            return () => clearTimeout(timer);
+        } else {
+            setChecking(true);
+        }
+    }, [loading]);
+
+    if (loading || checking) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white font-black tracking-widest animate-pulse uppercase">Cargando Accesos...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
 
+    const hasPermission = (perm) => {
+        if (!perm) return true; // Siempre visible (como el Dashboard base)
+        return user?.permissions?.includes(perm);
+    };
+
     const sidebarItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' },
-        { icon: Users, label: 'Miembros', to: '/dashboard/miembros' },
-        { icon: Calendar, label: 'Eventos', to: '/dashboard/eventos' },
-        { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia' },
-        // Add more menu items here
+        { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
+        { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
+        { icon: Calendar, label: 'Eventos', to: '/dashboard/eventos', permission: 'GESTION_EVENTOS' },
+        { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
+        { icon: Layers, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+        { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
     ];
+
+    const filteredItems = sidebarItems.filter(item => hasPermission(item.permission));
+
+    // Lógica de redirección inteligente solo cuando ya confirmamos permisos
+    const onDashboardRoot = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
+    
+    // Si estamos en la raíz y no tenemos permiso de dashboard, buscamos el primero disponible
+    if (onDashboardRoot && !hasPermission('VER_DASHBOARD')) {
+        if (filteredItems.length > 0) {
+            return <Navigate to={filteredItems[0].to} replace />;
+        }
+    }
+
+    // Redirigir si intenta entrar a una ruta manual sin permiso
+    const currentItem = sidebarItems.find(i => i.to !== '/dashboard' && location.pathname.startsWith(i.to));
+    if (currentItem && !hasPermission(currentItem.permission)) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    // Si NO hay carga pendiente Y no hay ítems filtrados, entonces mostrar error
+    if (!loading && !checking && filteredItems.length === 0) {
+        return (
+            <div className="h-screen w-full bg-[#0f111a] flex flex-col items-center justify-center p-6 text-center">
+                <Shield className="w-16 h-16 text-gray-600 mb-4" />
+                <h1 className="text-2xl font-bold text-white mb-2">Sin Accesos Disponibles</h1>
+                <p className="text-gray-400 max-w-sm mb-8">
+                    Tu cuenta no tiene permisos configurados para acceder al panel web. 
+                    Contacta con el administrador para que te asigne un rol.
+                </p>
+                <button 
+                    onClick={logout}
+                    className="px-8 py-3 bg-red-500/10 text-red-400 border border-red-500/20 rounded-2xl hover:bg-red-500/20 transition-all font-bold"
+                >
+                    Cerrar Sesión
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen w-full bg-[#0f111a] flex text-gray-100 font-sans">
@@ -72,11 +131,12 @@ export default function DashboardLayout() {
                 </div>
 
                 <div className="p-4 space-y-1 mt-4">
-                    {sidebarItems.map((item) => (
+                    {filteredItems.map((item) => (
                         <SidebarItem 
                             key={item.to} 
                             {...item} 
-                            active={location.pathname === item.to || location.pathname.startsWith(item.to + '/')}
+                            active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
+                            onClick={() => setIsMobileMenuOpen(false)}
                         />
                     ))}
                 </div>
@@ -88,7 +148,9 @@ export default function DashboardLayout() {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{user?.user}</p>
-                            <p className="text-xs text-gray-400 truncate">{user?.role || 'Admin'}</p>
+                            <p className="text-xs text-indigo-400 font-bold tracking-wider truncate">
+                                {user?.role || user?.miembro?.rol?.rol || 'Administrador'}
+                            </p>
                         </div>
                     </div>
                     <button 
@@ -113,7 +175,7 @@ export default function DashboardLayout() {
                     </button>
 
                     <h2 className="text-xl font-bold text-white hidden lg:block">
-                        {sidebarItems.find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
+                        {[...sidebarItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
                     </h2>
 
                     <div className="flex items-center gap-4">
@@ -131,6 +193,9 @@ export default function DashboardLayout() {
                     <Outlet />
                 </div>
             </main>
+            
+            {/* Modal Obligatorio de Cambio de Contraseña */}
+            <ForcePasswordChangeModal />
         </div>
     );
 }

@@ -1,19 +1,30 @@
 import { Users, Calendar, DollarSign, Activity } from 'lucide-react';
+import { clsx } from 'clsx';
 
-const StatCard = ({ title, value, label, icon: Icon, color }) => (
-    <div className="bg-[#161b2c] border border-white/5 p-6 rounded-2xl flex items-start justify-between hover:border-indigo-500/30 transition-colors group">
-        <div>
-            <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
-            <h3 className="text-3xl font-bold text-white mb-1">{value}</h3>
-            <span className={`text-xs font-medium px-2 py-1 rounded-full bg-${color}-500/10 text-${color}-400`}>
-                {label}
-            </span>
+const StatCard = ({ title, value, label, icon: Icon, color }) => {
+    const LucideIcon = Icon;
+    const colors = {
+        indigo: 'bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-500',
+        purple: 'bg-purple-500/10 text-purple-400 group-hover:bg-purple-500',
+        green: 'bg-green-500/10 text-green-400 group-hover:bg-green-500',
+        pink: 'bg-pink-500/10 text-pink-400 group-hover:bg-pink-500'
+    };
+
+    return (
+        <div className="bg-[#161b2c] border border-white/5 p-6 rounded-2xl flex items-start justify-between hover:border-indigo-500/30 transition-colors group">
+            <div>
+                <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
+                <h3 className="text-3xl font-bold text-white mb-1">{value}</h3>
+                <span className={clsx("text-xs font-medium px-2 py-1 rounded-full", colors[color].split(' ')[0], colors[color].split(' ')[1])}>
+                    {label}
+                </span>
+            </div>
+            <div className={clsx("p-3 rounded-xl transition-all group-hover:text-white", colors[color])}>
+                <LucideIcon className="w-6 h-6" />
+            </div>
         </div>
-        <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-400 group-hover:bg-${color}-500 group-hover:text-white transition-all`}>
-            <Icon className="w-6 h-6" />
-        </div>
-    </div>
-);
+    );
+};
 
 export default function DashboardHome() {
     return (

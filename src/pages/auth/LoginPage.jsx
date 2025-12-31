@@ -52,25 +52,21 @@ export default function LoginPage() {
                     )}
 
                     <div className="space-y-4">
-                        <div className="relative">
-                            <User className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                            <Input 
-                                placeholder="Usuario" 
-                                className="pl-12" 
-                                {...register('user', { required: 'El usuario es requerido' })}
-                                error={errors.user?.message}
-                            />
-                        </div>
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                            <Input 
-                                type="password" 
-                                placeholder="Contraseña" 
-                                className="pl-12"
-                                {...register('password', { required: 'La contraseña es requerida' })}
-                                error={errors.password?.message}
-                            />
-                        </div>
+                        <Input 
+                            icon={User}
+                            placeholder="Usuario" 
+                            autoComplete="username"
+                            {...register('user', { required: 'El usuario es requerido' })}
+                            error={errors.user?.message}
+                        />
+                        <Input 
+                            icon={Lock}
+                            type="password" 
+                            placeholder="Contraseña" 
+                            autoComplete="current-password"
+                            {...register('password', { required: 'La contraseña es requerida' })}
+                            error={errors.password?.message}
+                        />
                     </div>
 
                     <Button 
