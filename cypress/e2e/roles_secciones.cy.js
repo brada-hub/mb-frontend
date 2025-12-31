@@ -1,6 +1,11 @@
 describe('Módulo de Roles y Secciones - Monster Band', () => {
     
     beforeEach(() => {
+        // Limpiar datos de prueba anteriores
+        cy.request('POST', 'http://localhost:8000/api/cleanup-test-data').then((response) => {
+            cy.log('Limpieza de datos:', response.body.message);
+        });
+
         // Iniciar sesión como administrador
         cy.visit('/');
         cy.get('input[name="user"]').clear().type('admin.monster@mb');
