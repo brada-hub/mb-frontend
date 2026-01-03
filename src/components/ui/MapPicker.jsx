@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Circle, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Maximize2, Minimize2, MapPin, Crosshair, Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import 'leaflet/dist/leaflet.css';
+import { useToast } from '../../context/ToastContext';
 
 // Fix for default marker icon in Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -35,22 +36,23 @@ function ChangeView({ center }) {
     return null;
 }
 
-export default function MapPicker({ value, onChange, label = "Ubicación" }) {
+export default function MapPicker({ value, onChange, label = "Ubicación", radius = 0 }) {
     const [isFullScreen, setIsFullScreen] = useState(false);
     // Coordenadas por defecto (Cochabamba, Bolivia)
     const [position, setPosition] = useState(value || { lat: -17.400759, lng: -66.224411 });
     const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+    const { notify } = useToast();
 
-    // Obtener ubicación al montar
+    // Actualizar posición si cambia la prop value (sincronización externa cuando se edita o se obtiene ubicación)
     useEffect(() => {
-        if (!value) {
-            getCurrentLocation();
+        if(value) {
+            setPosition(value);
         }
-    }, []);
+    }, [value]);
 
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
-            console.warn("Geolocalización no soportada por este navegador.");
+            notify("Tu navegador no soporta geolocalización", "error");
             return;
         }
 
@@ -61,12 +63,18 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                 setPosition(coords);
                 if (onChange) onChange(coords);
                 setIsLoadingLocation(false);
+                notify("Ubicación actualizada correctamente", "success");
             },
             (err) => {
                 console.warn("Error obteniendo ubicación:", err);
                 setIsLoadingLocation(false);
+                let msg = "No se pudo obtener tu ubicación.";
+                if (err.code === 1) msg = "Permiso de ubicación denegado. Actívalo en tu navegador.";
+                if (err.code === 2) msg = "Ubicación no disponible/señal débil.";
+                if (err.code === 3) msg = "Tiempo de espera agotado al buscar ubicación.";
+                notify(msg, "error");
             },
-            { enableHighAccuracy: true }
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     };
 
@@ -92,10 +100,11 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                     <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#1c233a]">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-indigo-400" />
-                            <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Ubicar Vivienda del Miembro</span>
+                            <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">{label}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <button 
+                                type="button"
                                 onClick={(e) => { e.preventDefault(); getCurrentLocation(); }}
                                 className="p-1.5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg transition-all"
                                 title="Mi Ubicación Actual"
@@ -103,6 +112,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                                 {isLoadingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crosshair className="w-4 h-4" />}
                             </button>
                             <button 
+                                type="button"
                                 onClick={toggleFullScreen}
                                 className="p-1.5 hover:bg-indigo-500 text-white bg-indigo-600 rounded-lg transition-all active:scale-90 shadow-lg shadow-indigo-600/20"
                                 title="Expandir a pantalla completa"
@@ -125,6 +135,13 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             <LocationMarker position={position} setPosition={handlePositionChange} />
+                            {position && radius > 0 && (
+                                <Circle 
+                                    center={position} 
+                                    radius={radius} 
+                                    pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.2 }} 
+                                />
+                            )}
                             <ChangeView center={position} />
                         </MapContainer>
                     </div>
@@ -146,6 +163,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                         </div>
                         <div className="flex items-center gap-3">
                             <button 
+                                type="button"
                                 onClick={() => getCurrentLocation()}
                                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
                             >
@@ -153,6 +171,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                                 <span className="font-bold text-sm hidden sm:inline">Mi Ubicación</span>
                             </button>
                             <button 
+                                type="button"
                                 onClick={toggleFullScreen}
                                 className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all border border-white/10 active:scale-95"
                             >
@@ -175,6 +194,13 @@ export default function MapPicker({ value, onChange, label = "Ubicación" }) {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             <LocationMarker position={position} setPosition={handlePositionChange} />
+                            {position && radius > 0 && (
+                                <Circle 
+                                    center={position} 
+                                    radius={radius} 
+                                    pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.2 }} 
+                                />
+                            )}
                             <ChangeView center={position} />
                         </MapContainer>
                     </div>

@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useId } from 'react';
 import { clsx } from 'clsx';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -13,6 +13,7 @@ const Input = forwardRef(({
     ...props 
 }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
+    const generatedId = useId();
     
     const isTextArea = type === 'textarea';
     const isPassword = type === 'password';
@@ -20,7 +21,7 @@ const Input = forwardRef(({
     
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : (isTextArea ? 'text' : type);
 
-    const inputId = props.id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+    const inputId = props.id || props.name || (label ? `input-${label.replace(/\s+/g, '-').toLowerCase()}` : generatedId);
 
     return (
         <div className="w-full space-y-2.5 group">

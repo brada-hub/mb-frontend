@@ -138,7 +138,7 @@ export default function RolesList() {
                                 </div>
                             </div>
 
-                            <p className="text-sm text-gray-400 mb-6 flex-grow leading-relaxed">
+                            <p className="text-sm text-indigo-200/70 mb-6 flex-grow leading-relaxed font-medium">
                                 {rol.descripcion || 'Sin descripción detallada.'}
                             </p>
 

@@ -130,7 +130,7 @@ export default function MiembrosList() {
     });
 
     return (
-        <div className="space-y-6">
+        <div className="h-full overflow-y-auto custom-scrollbar space-y-6 pr-2">
             <MiembroModal 
                 isOpen={isModalOpen} 
                 onClose={() => {
@@ -230,12 +230,12 @@ export default function MiembrosList() {
             </div>
 
             {loading ? (
-                 <div className="text-white text-center py-20 flex flex-col items-center gap-4">
+                <div className="text-white text-center py-20 flex flex-col items-center gap-4">
                     <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p>Cargando lista...</p>
-                 </div>
+                    <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Cargando lista...</p>
+                </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
                     {filtered.length > 0 ? filtered.map(miembro => {
                         const isInactive = miembro.user && !miembro.user.estado;
                         return (
@@ -263,8 +263,8 @@ export default function MiembrosList() {
                                         )}>
                                             {miembro.nombres.charAt(0)}{miembro.apellidos.charAt(0)}
                                         </div>
-                                        <div className="flex-1 min-w-0 pr-12">
-                                            <h3 className="font-bold text-xl text-white truncate group-hover:text-brand-primary transition-colors">
+                                        <div className="flex-1 pr-12">
+                                            <h3 className="font-bold text-xl text-white group-hover:text-brand-primary transition-colors leading-tight">
                                                 {miembro.nombres} {miembro.apellidos}
                                             </h3>
                                             <p className="text-sm text-gray-400 font-medium uppercase tracking-tight">
@@ -279,7 +279,7 @@ export default function MiembrosList() {
                                                 <Briefcase className="w-4 h-4" />
                                             </div>
                                             <span className="font-medium truncate">
-                                                {miembro.seccion?.seccion || 'N/A'} • {miembro.categoria?.nombre_categoria || 'N/A'}
+                                                {miembro.instrumento?.instrumento || miembro.seccion?.seccion || 'N/A'} • {miembro.categoria?.nombre_categoria || 'N/A'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-400">

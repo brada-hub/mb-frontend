@@ -4,7 +4,9 @@ import {
     DashboardHome, 
     MiembrosList,
     RolesList,
-    SeccionesList
+    SeccionesList,
+    BibliotecaList,
+    EventosList
 } from '../pages';
 import MainLayout from '../layouts/MainLayout';
 
@@ -21,7 +23,8 @@ const routes = [
             { path: 'miembros', element: <MiembrosList /> },
             { path: 'roles', element: <RolesList /> },
             { path: 'secciones', element: <SeccionesList /> },
-            { path: 'eventos', element: <div className="text-white">Eventos (Próximamente)</div> },
+            { path: 'biblioteca', element: <BibliotecaList /> },
+            { path: 'eventos', element: <EventosList /> },
             { path: 'asistencia', element: <div className="text-white">Asistencia (Próximamente)</div> }
         ]
     },

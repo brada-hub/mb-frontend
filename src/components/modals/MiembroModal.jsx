@@ -29,6 +29,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
     const { notify } = useToast();
 
     const hasEmergencyContact = watch('has_emergency_contact');
+    const selectedSeccion = watch('id_seccion');
 
     useEffect(() => {
         if (isOpen) {
@@ -45,6 +46,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                         reset({
                             ...miembro,
                             id_seccion: miembro.id_seccion?.toString(),
+                            id_instrumento: miembro.id_instrumento?.toString(),
                             id_categoria: miembro.id_categoria?.toString(),
                             id_rol: miembro.id_rol?.toString(),
                             celular: miembro.celular ? miembro.celular.toString() : '',
@@ -59,6 +61,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             latitud: null,
                             longitud: null,
                             id_seccion: '',
+                            id_instrumento: '',
                             id_categoria: '',
                             id_rol: ''
                         });
@@ -366,7 +369,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="space-y-2.5 text-gray-100">
+                                <div className="space-y-2.5 text-gray-100 col-span-1">
                                     <label className="text-sm font-bold text-gray-400 ml-1">Sección</label>
                                     <select 
                                         id="select-seccion"
@@ -376,11 +379,31 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                             errors.id_seccion ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Seleccionar Sección</option>
+                                        <option value="">Sección...</option>
                                         {catalogs.secciones?.map(s => <option key={s.id_seccion} value={s.id_seccion.toString()}>{s.seccion}</option>)}
                                     </select>
                                     {errors.id_seccion && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_seccion.message}</p>}
                                 </div>
+                                
+                                <div className="space-y-2.5 text-gray-100 col-span-1">
+                                    <label className="text-sm font-bold text-gray-400 ml-1">Instrumento</label>
+                                    <select 
+                                        id="select-instrumento"
+                                        {...register('id_instrumento', { required: "Selecciona un instrumento" })} 
+                                        disabled={!selectedSeccion}
+                                        className={clsx(
+                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white active:scale-[0.99] outline-none transition-all disabled:opacity-50",
+                                            errors.id_instrumento ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                        )}
+                                    >
+                                        <option value="">Instrumento...</option>
+                                        {(catalogs.secciones?.find(s => s.id_seccion.toString() === selectedSeccion)?.instrumentos || []).map(i => (
+                                            <option key={i.id_instrumento} value={i.id_instrumento.toString()}>{i.instrumento}</option>
+                                        ))}
+                                    </select>
+                                    {errors.id_instrumento && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_instrumento.message}</p>}
+                                </div>
+
                                 <div className="space-y-2.5">
                                     <label className="text-sm font-bold text-gray-400 ml-1">Categoría</label>
                                     <select 
@@ -391,7 +414,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                             errors.id_categoria ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Seleccionar Categoría</option>
+                                        <option value="">Categoría...</option>
                                         {catalogs.categorias?.map(c => <option key={c.id_categoria} value={c.id_categoria.toString()}>{c.nombre_categoria}</option>)}
                                     </select>
                                     {errors.id_categoria && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_categoria.message}</p>}
@@ -406,7 +429,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                             errors.id_rol ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Seleccionar Rol</option>
+                                        <option value="">Rol...</option>
                                         {catalogs.roles?.map(r => <option key={r.id_rol} value={r.id_rol.toString()}>{r.rol}</option>)}
                                     </select>
                                     {errors.id_rol && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_rol.message}</p>}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
-import { Layers, Plus, Trash2, Edit2, Search, AlertCircle } from 'lucide-react';
+import { Layers, Plus, Trash2, Edit2, Search, AlertCircle, Music } from 'lucide-react';
 import SeccionModal from '../../components/modals/SeccionModal';
+import InstrumentoModal from '../../components/modals/InstrumentoModal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import { useToast } from '../../context/ToastContext';
 import { Input } from '../../components/ui/Input';
@@ -12,6 +13,7 @@ export default function SeccionesList() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInstrumentModalOpen, setIsInstrumentModalOpen] = useState(false);
     const [selectedSeccion, setSelectedSeccion] = useState(null);
     const [confirmState, setConfirmState] = useState({ isOpen: false, id: null, loading: false });
     const { notify } = useToast();
@@ -71,7 +73,7 @@ export default function SeccionesList() {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="h-full overflow-y-auto custom-scrollbar space-y-6 pr-2">
             <SeccionModal 
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -79,6 +81,16 @@ export default function SeccionesList() {
                     setSelectedSeccion(null);
                 }}
                 onSuccess={loadSecciones}
+                seccion={selectedSeccion}
+            />
+
+            <InstrumentoModal 
+                isOpen={isInstrumentModalOpen}
+                onClose={() => {
+                    setIsInstrumentModalOpen(false);
+                    setSelectedSeccion(null);
+                    loadSecciones(); // Recargar para ver si cambió algo si es necesario
+                }}
                 seccion={selectedSeccion}
             />
 
@@ -93,24 +105,24 @@ export default function SeccionesList() {
                 variant="danger"
             />
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Secciones de la Banda</h1>
-                    <p className="text-gray-400 text-sm">Distribución técnica de los integrantes</p>
+            <div className="bg-[#161b2c]/40 p-6 md:p-8 rounded-[32px] border border-white/5 space-y-6">
+                <div className="text-center md:text-left">
+                    <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Secciones de la Banda</h1>
+                    <p className="text-gray-500 text-xs md:text-sm font-medium uppercase tracking-widest mt-1">Distribución técnica de los integrantes</p>
                 </div>
                 
-                <div className="flex flex-col md:flex-row gap-3">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
+                <div className="flex flex-col gap-4">
+                    <div className="relative w-full">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
                         <Input 
                             placeholder="Buscar sección..." 
-                            className="pl-10 h-11 w-full md:w-64"
+                            className="pl-12 h-14 w-full text-base bg-black/40 border-white/10 rounded-2xl focus:ring-brand-primary/30"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <Button onClick={handleAdd} className="h-11 shadow-lg shadow-brand-primary/20">
-                        <Plus className="w-5 h-5 mr-2" />
+                    <Button onClick={handleAdd} className="h-14 w-full shadow-xl shadow-brand-primary/20 text-sm font-black uppercase tracking-[0.2em] rounded-2xl bg-brand-primary hover:bg-brand-primary/90">
+                        <Plus className="w-5 h-5 mr-1" />
                         Nueva Sección
                     </Button>
                 </div>
@@ -122,50 +134,74 @@ export default function SeccionesList() {
                     <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Sincronizando Secciones...</p>
                 </div>
             ) : filtered.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {filtered.map((s) => (
-                        <div 
-                            key={s.id_seccion} 
-                            className="group bg-surface-card border border-white/5 rounded-[32px] p-6 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/5 flex flex-col h-full"
-                        >
-                            <div className="flex items-start gap-4 mb-6">
-                                <div className="w-14 h-14 bg-brand-primary/10 rounded-2xl flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform">
-                                    <Layers className="w-8 h-8" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-black text-white uppercase tracking-tight truncate group-hover:text-brand-primary transition-colors">
-                                        {s.seccion}
-                                    </h3>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-[9px] font-black uppercase tracking-widest">Activa</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+                        {filtered.map((s) => (
+                            <div 
+                                key={s.id_seccion} 
+                                className="group bg-surface-card border border-white/5 rounded-[40px] p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
+                            >
+                                {/* Top Info */}
+                                <div className="flex items-center gap-5 mb-8">
+                                    <div className="w-16 h-16 bg-[#1e2330] rounded-3xl flex items-center justify-center text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                        <Layers className="w-8 h-8" />
                                     </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tight leading-none mb-2">
+                                            {s.seccion}
+                                        </h3>
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-2.5 py-1 bg-green-500/10 text-green-500 rounded-lg text-[9px] font-black uppercase tracking-widest border border-green-500/10">Activa</span>
+                                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                                                <span className="opacity-30">.</span> {s.instrumentos?.length || 0} Instrumentos
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            setSelectedSeccion(s);
+                                            setIsInstrumentModalOpen(true);
+                                        }}
+                                        className="w-12 h-12 rounded-2xl bg-[#1e2330] flex items-center justify-center text-indigo-400 hover:bg-brand-primary hover:text-white transition-all shadow-lg active:scale-95"
+                                    >
+                                        <Music className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                <div className="mb-10 flex-grow">
+                                    <p className="text-sm text-gray-400 font-medium uppercase tracking-tight leading-relaxed line-clamp-3">
+                                        {s.descripcion || 'Sin descripción detallada de la sección.'}
+                                    </p>
+                                </div>
+
+                                {/* Action Buttons - Layout Matching Image */}
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button 
+                                            onClick={() => handleEdit(s)}
+                                            className="h-12 rounded-2xl bg-white/5 text-white text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 active:scale-95"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteClick(s.id_seccion)}
+                                            className="h-12 rounded-2xl bg-red-500/5 text-red-500/60 text-[11px] font-black uppercase tracking-widest hover:bg-red-500/10 hover:text-red-500 transition-all border border-red-500/10 active:scale-95"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            setSelectedSeccion(s);
+                                            setIsInstrumentModalOpen(true);
+                                        }}
+                                        className="w-full h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white text-[11px] font-black uppercase tracking-[0.15em] transition-all border border-indigo-500/20 shadow-lg active:scale-[0.98]"
+                                    >
+                                        Gestionar Instrumentos
+                                    </button>
                                 </div>
                             </div>
-
-                            <p className="text-sm text-gray-400 mb-8 flex-grow leading-relaxed">
-                                {s.descripcion || 'Sin descripción detallada de la familia de instrumentos.'}
-                            </p>
-
-                            <div className="flex items-center gap-2 pt-6 border-t border-white/5">
-                                <Button 
-                                    className="flex-1 h-10 text-xs font-bold" 
-                                    variant="secondary"
-                                    onClick={() => handleEdit(s)}
-                                >
-                                    <Edit2 className="w-3.5 h-3.5 mr-2" /> EDITAR
-                                </Button>
-                                <Button 
-                                    className="flex-1 h-10 text-xs font-bold" 
-                                    variant="danger"
-                                    onClick={() => handleDeleteClick(s.id_seccion)}
-                                    title="Eliminar sección"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5 mr-2" /> ELIMINAR
-                                </Button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-white/10 rounded-[32px] text-center">
                     <AlertCircle className="w-16 h-16 text-white/5 mb-4" />
