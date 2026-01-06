@@ -1,6 +1,7 @@
 import { X, Download, Maximize, ZoomIn, ZoomOut, RotateCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
+import { createPortal } from 'react-dom';
 import { Button } from '../ui/Button';
 
 export default function MultimediaViewerModal({ isOpen, onClose, files = [], initialIndex = 0 }) {
@@ -69,8 +70,8 @@ export default function MultimediaViewerModal({ isOpen, onClose, files = [], ini
         setPosition({ x: 0, y: 0 });
     };
 
-    return (
-        <div className="fixed inset-0 z-[150] flex flex-col bg-black/98 backdrop-blur-2xl animate-in fade-in duration-300 overflow-hidden">
+    return createPortal(
+        <div className="fixed inset-0 z-[10002] flex flex-col bg-black/98 backdrop-blur-2xl animate-in fade-in duration-300 overflow-hidden">
             {/* Header Control Panel */}
             <div className="flex items-center justify-between p-4 bg-black/40 border-b border-white/5 shrink-0 z-20">
                 <div className="flex items-center gap-4">
@@ -191,6 +192,7 @@ export default function MultimediaViewerModal({ isOpen, onClose, files = [], ini
                     </div>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

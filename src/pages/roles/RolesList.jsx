@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
-import { Shield, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Input } from '../../components/ui/Input';
+import { Shield, Plus, Trash2, Edit2, Search } from 'lucide-react';
 import RolModal from '../../components/modals/RolModal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import { useToast } from '../../context/ToastContext';
@@ -12,6 +13,7 @@ export default function RolesList() {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRol, setSelectedRol] = useState(null);
+    const [search, setSearch] = useState('');
     const [confirmState, setConfirmState] = useState({ isOpen: false, id: null, loading: false });
     const { notify } = useToast();
 
@@ -66,6 +68,11 @@ export default function RolesList() {
         }
     };
 
+    const filteredRoles = roles.filter(r => 
+        r.rol.toLowerCase().includes(search.toLowerCase()) ||
+        (r.descripcion && r.descripcion.toLowerCase().includes(search.toLowerCase()))
+    );
+
     return (
         <div className="space-y-6">
             <RolModal 
@@ -89,15 +96,28 @@ export default function RolesList() {
                 variant="danger"
             />
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Roles y Permisos</h1>
-                    <p className="text-gray-400 text-sm">Gestión de accesos y facultades del sistema</p>
+                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Roles y Permisos</h1>
+                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de accesos y facultades del sistema</p>
                 </div>
-                <Button onClick={handleAdd} className="h-12">
-                    <Plus className="w-5 h-5 mr-2" />
-                    Nuevo Rol
-                </Button>
+                
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="w-full md:w-80">
+                        <Input 
+                            icon={Search}
+                            placeholder="Buscar rol..." 
+                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    
+                    <Button onClick={handleAdd} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuevo
+                    </Button>
+                </div>
             </div>
 
             {loading ? (
@@ -119,9 +139,9 @@ export default function RolesList() {
                         <Button onClick={() => { localStorage.removeItem('token'); window.location.reload(); }} variant="monster">Cerrar Sesión y Volver</Button>
                     </div>
                 </div>
-            ) : roles.length > 0 ? (
+            ) : filteredRoles.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {roles.map((rol) => (
+                    {filteredRoles.map((rol) => (
                         <div 
                             key={rol.id_rol} 
                             className="group bg-surface-card border border-white/5 rounded-[32px] p-6 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/5 flex flex-col h-full"
@@ -183,9 +203,13 @@ export default function RolesList() {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-white/10 rounded-[32px]">
-                    <Shield className="w-16 h-16 text-white/5 mb-4" />
-                    <p className="text-white font-bold uppercase tracking-widest">No hay roles registrados</p>
-                    <p className="text-gray-500 text-sm mt-1">Usa el botón superior para crear el primer rol o ejecuta los seeders.</p>
+                    <Search className="w-16 h-16 text-white/5 mb-4" />
+                    <p className="text-white font-bold uppercase tracking-widest">
+                        {roles.length === 0 ? "No hay roles registrados" : "Sin resultados"}
+                    </p>
+                    <p className="text-gray-500 text-sm mt-1">
+                        {roles.length === 0 ? "Usa el botón superior para crear el primer rol." : "Intenta con otro término de búsqueda."}
+                    </p>
                 </div>
             )}
         </div>

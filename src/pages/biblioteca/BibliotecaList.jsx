@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
 import { 
     Music, 
     Search, 
@@ -22,12 +24,12 @@ import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import RecursoModal from '../../components/modals/RecursoModal';
 import MusicCatalogModal from '../../components/modals/MusicCatalogModal';
-import ThemeDetailModal from '../../components/modals/ThemeDetailModal';
 import TemaModal from '../../components/modals/TemaModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
 
 export default function BibliotecaList() {
+    const navigate = useNavigate();
     const [generos, setGeneros] = useState([]);
     const [temas, setTemas] = useState([]);
     const [selectedGenero, setSelectedGenero] = useState(null);
@@ -39,10 +41,8 @@ export default function BibliotecaList() {
     const [isRecursoModalOpen, setIsRecursoModalOpen] = useState(false);
     const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
     const [isTemaModalOpen, setIsTemaModalOpen] = useState(false);
-    const [selectedTemaDetail, setSelectedTemaDetail] = useState(null);
     const [recursoInitialData, setRecursoInitialData] = useState(null);
     const [editTemaInitialData, setEditTemaInitialData] = useState(null);
-    const [refreshDetailsTrigger, setRefreshDetailsTrigger] = useState(0);
     const [mobileView, setMobileView] = useState('genres'); // 'genres' or 'themes'
     const [viewerData, setViewerData] = useState(null);
     const { notify } = useToast();
@@ -100,25 +100,28 @@ export default function BibliotecaList() {
     return (
         <div className="h-full overflow-y-auto lg:overflow-hidden custom-scrollbar animate-in fade-in duration-700 pr-2 lg:pr-0">
             {/* Content Layout */}
-            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8 lg:h-full">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:h-full">
                 
                 {/* Categorías (Géneros) */}
                 <aside className={clsx(
-                    "flex flex-col space-y-4 lg:h-full lg:overflow-y-auto lg:pr-4 lg:pb-10 lg:custom-scrollbar px-2",
+                    "flex flex-col space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2 lg:pb-10 lg:custom-scrollbar px-2",
                     mobileView === 'themes' && 'hidden lg:flex'
                 )}>
-                    <div className="flex flex-col gap-3 mb-6 flex-shrink-0">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] px-2 outline-none">Géneros de la Banda</h3>
+                    {/* Header Géneros Unificado */}
+                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-6 flex-shrink-0 px-1">
+                        <div>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tight">Géneros</h2>
+                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Instrumentación</p>
+                        </div>
                         
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-2">
-                            <div className="relative group flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-indigo-400 transition-colors" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar Género..."
+                        <div className="flex gap-2 w-full xl:w-auto">
+                            <div className="flex-1 xl:w-48 transition-all focus-within:xl:w-64">
+                                <Input 
+                                    icon={Search}
+                                    placeholder="Buscar..."
                                     value={genreSearch}
                                     onChange={(e) => setGenreSearch(e.target.value)}
-                                    className="h-10 bg-[#161b2c] border border-white/5 rounded-xl pl-10 pr-4 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50 w-full transition-all"
+                                    className="h-12 bg-[#161b2c] border-white/5 rounded-xl text-sm focus:ring-brand-primary/50"
                                 />
                             </div>
                             {isAdmin && (
@@ -127,7 +130,7 @@ export default function BibliotecaList() {
                                         setGenreToEdit(null);
                                         setIsCatalogModalOpen(true);
                                     }}
-                                    className="h-10 px-4 min-w-[110px] text-[10px] uppercase font-bold tracking-widest shadow-lg shadow-indigo-600/20"
+                                    className="h-12 px-4 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0"
                                 >
                                     <Plus className="w-4 h-4 mr-2" /> Nuevo
                                 </Button>
@@ -237,20 +240,25 @@ export default function BibliotecaList() {
                         </button>
                     )}
 
-                    <div className="flex flex-col gap-3 mb-6 flex-shrink-0">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] px-2">
-                            {selectedGenero ? `Temas: ${selectedGenero.nombre_genero}` : 'Temas'}
-                        </h3>
+                    {/* Header Temas Unificado */}
+                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-6 flex-shrink-0 px-1">
+                        <div className="min-w-0 flex-1 mr-4">
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tight truncate">
+                                {selectedGenero ? selectedGenero.nombre_genero : 'Repertorio'}
+                            </h2>
+                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1 truncate">
+                                {selectedGenero ? 'Listado de Canciones' : 'Selecciona un género'}
+                            </p>
+                        </div>
                         
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 px-2">
-                            <div className="relative group flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
-                                <input 
-                                    type="text" 
+                        <div className="flex gap-2 w-full xl:w-auto flex-shrink-0">
+                            <div className="flex-1 xl:w-48 transition-all focus-within:xl:w-64">
+                                <Input 
+                                    icon={Search}
                                     placeholder="Buscar tema..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="h-10 bg-[#161b2c] border border-white/5 rounded-xl pl-10 pr-4 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50 w-full transition-all"
+                                    className="h-12 bg-[#161b2c] border-white/5 rounded-xl text-sm focus:ring-brand-primary/50"
                                 />
                             </div>
                             {isAdmin && (
@@ -259,7 +267,7 @@ export default function BibliotecaList() {
                                         setEditTemaInitialData(null);
                                         setIsTemaModalOpen(true);
                                     }} 
-                                    className="h-10 px-4 min-w-[110px] text-[10px] uppercase font-bold tracking-widest shadow-lg shadow-indigo-600/20"
+                                    className="h-12 px-4 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0"
                                 >
                                     <Plus className="w-4 h-4 mr-2" /> Tema
                                 </Button>
@@ -275,11 +283,11 @@ export default function BibliotecaList() {
                                 <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Sincronizando Biblioteca...</p>
                             </div>
                         ) : filteredTemas.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2 py-4">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-2 py-4">
                                 {filteredTemas.map((tema) => (
                                     <div 
                                         key={tema.id_tema}
-                                        onClick={() => setSelectedTemaDetail({ ...tema, genero: selectedGenero })}
+                                        onClick={() => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`)}
                                         className="group bg-surface-card border border-white/5 rounded-3xl p-6 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer"
                                     >
                                         <div className="flex items-start justify-between mb-4">
@@ -297,7 +305,7 @@ export default function BibliotecaList() {
                                             <div 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setSelectedTemaDetail({ ...tema, genero: selectedGenero });
+                                                    navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`);
                                                 }}
                                                 className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shrink-0"
                                             >
@@ -430,7 +438,6 @@ export default function BibliotecaList() {
                 }} 
                 onSuccess={() => {
                     loadData();
-                    setRefreshDetailsTrigger(prev => prev + 1);
                 }}
                 initialData={recursoInitialData}
             />
@@ -457,27 +464,6 @@ export default function BibliotecaList() {
                 initialData={editTemaInitialData}
             />
 
-            <ThemeDetailModal 
-                isOpen={!!selectedTemaDetail}
-                tema={selectedTemaDetail}
-                onClose={() => setSelectedTemaDetail(null)}
-                onDeleted={loadData}
-                onAddResource={() => {
-                    setRecursoInitialData({
-                        id_genero: selectedTemaDetail.id_genero,
-                        id_tema: selectedTemaDetail.id_tema
-                    });
-                    setIsRecursoModalOpen(true);
-                }}
-                onEditResource={(recurso) => {
-                    setRecursoInitialData({
-                        ...recurso,
-                        id_genero: selectedTemaDetail?.id_genero
-                    });
-                    setIsRecursoModalOpen(true);
-                }}
-                refreshTrigger={refreshDetailsTrigger}
-            />
 
             <ConfirmationModal 
                 isOpen={deleteConfirmation.isOpen}

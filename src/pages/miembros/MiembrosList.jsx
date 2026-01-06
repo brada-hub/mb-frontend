@@ -16,7 +16,7 @@ export default function MiembrosList() {
     const [search, setSearch] = useState('');
     
     // Filtros avanzados
-    const [filterSection, setFilterSection] = useState('');
+    const [filterInstrument, setFilterInstrument] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
     const [catalogs, setCatalogs] = useState({ secciones: [], categorias: [] });
 
@@ -123,10 +123,10 @@ export default function MiembrosList() {
                               celular.includes(searchLower);
 
         // Filtros de Selección
-        const matchesSection = !filterSection || m.id_seccion == filterSection;
+        const matchesInstrument = !filterInstrument || m.id_instrumento == filterInstrument;
         const matchesCategory = !filterCategory || m.id_categoria == filterCategory;
 
-        return matchesSearch && matchesSection && matchesCategory;
+        return matchesSearch && matchesInstrument && matchesCategory;
     });
 
     return (
@@ -176,56 +176,56 @@ export default function MiembrosList() {
                 variant={confirmState.member?.user?.estado ? "danger" : "info"}
             />
 
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Miembros</h1>
-                    <p className="text-gray-400">Gestión de personal y músicos</p>
+                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Miembros</h1>
+                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de personal y músicos</p>
                 </div>
                 
-                <div className="flex flex-col md:flex-row gap-3">
-                    {/* Filtros de Selección */}
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    {/* Filtro Instrumento */}
                     <select 
-                        id="filter-section"
-                        aria-label="Filtrar por Sección"
-                        className="bg-surface-input border border-white/10 rounded-2xl h-12 px-4 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                        value={filterSection}
-                        onChange={(e) => setFilterSection(e.target.value)}
+                        id="filter-instrument"
+                        className="bg-[#161b2c] border-white/5 rounded-xl h-12 px-4 text-xs font-bold uppercase tracking-wider text-gray-400 focus:ring-brand-primary/50 outline-none cursor-pointer hover:bg-white/5 transition-colors"
+                        value={filterInstrument}
+                        onChange={(e) => setFilterInstrument(e.target.value)}
                     >
-                        <option value="">Todas las Secciones</option>
-                        {catalogs.secciones?.map(s => (
-                            <option key={s.id_seccion} value={s.id_seccion}>{s.seccion}</option>
+                        <option value="" className="bg-[#161b2c] text-gray-400">FILTRAR POR INSTRUMENTO</option>
+                        {catalogs.secciones?.flatMap(s => s.instrumentos || []).map(inst => (
+                            <option key={inst.id_instrumento} value={inst.id_instrumento} className="bg-[#161b2c] text-white">
+                                {inst.instrumento}
+                            </option>
                         ))}
                     </select>
 
                     <select 
                         id="filter-category"
-                        aria-label="Filtrar por Categoría"
-                        className="bg-surface-input border border-white/10 rounded-2xl h-12 px-4 text-sm text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="bg-[#161b2c] border-white/5 rounded-xl h-12 px-4 text-xs font-bold uppercase tracking-wider text-gray-400 focus:ring-brand-primary/50 outline-none cursor-pointer hover:bg-white/5 transition-colors"
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
                     >
-                        <option value="">Todas las Categorías</option>
+                        <option value="" className="bg-[#161b2c] text-gray-400">FILTRAR POR CATEGORÍA</option>
                         {catalogs.categorias?.map(c => (
-                            <option key={c.id_categoria} value={c.id_categoria}>{c.nombre_categoria}</option>
+                            <option key={c.id_categoria} value={c.id_categoria} className="bg-[#161b2c] text-white">{c.nombre_categoria}</option>
                         ))}
                     </select>
 
-                    {/* Buscador de Texto */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-500" />
+                    {/* Buscador */}
+                    <div className="w-full md:w-64">
                         <Input 
                             id="search-input"
-                            placeholder="Buscar por nombre, CI..." 
-                            className="pl-10 w-full md:w-64 h-12" 
+                            icon={Search}
+                            placeholder="BUSCAR MIEMBRO..." 
+                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50 placeholder:text-gray-600"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
                     </div>
                     
-                        <Button id="btn-nuevo" onClick={handleAdd} className="h-12">
-                            <Plus className="w-5 h-5 mr-2" />
-                            Nuevo
-                        </Button>
+                    <Button id="btn-nuevo" onClick={handleAdd} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuevo
+                    </Button>
                 </div>
             </div>
 

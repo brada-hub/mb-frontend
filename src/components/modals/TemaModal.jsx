@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../api';
 import { Button } from '../ui/Button';
 import { 
@@ -68,8 +69,8 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-transparent animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-md bg-[#161b2c] border border-white/10 rounded-[40px] shadow-2xl overflow-hidden p-8 animate-in zoom-in-95 duration-300">
                 
                 {/* Close Button */}
@@ -135,6 +136,7 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

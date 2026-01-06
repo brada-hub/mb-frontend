@@ -1,11 +1,12 @@
 import { X, AlertCircle } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { Button } from '../ui/Button';
 
 export default function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmText = "Eliminar", cancelText = "Cancelar", variant = "danger" }) {
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-md bg-[#161b2c] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden transform animate-in zoom-in-95 duration-300">
                 
                 {/* Header/Icon Area */}
@@ -52,6 +53,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                     <X className="w-5 h-5" />
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

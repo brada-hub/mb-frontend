@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Circle, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Maximize2, Minimize2, MapPin, Crosshair, Loader2 } from 'lucide-react';
@@ -148,9 +149,9 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
                 </div>
             </div>
 
-            {/* FULL SCREEN MODAL */}
-            {isFullScreen && (
-                <div className="fixed inset-0 z-[2000] bg-[#0f111a] flex flex-col animate-in fade-in duration-200">
+            {/* FULL SCREEN MODAL (PORTAL) */}
+            {isFullScreen && createPortal(
+                <div className="fixed inset-0 z-[10000] bg-[#0f111a] flex flex-col animate-in fade-in duration-200">
                     <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#161b2c]">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/20 rounded-xl text-indigo-400">
@@ -204,7 +205,8 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
                             <ChangeView center={position} />
                         </MapContainer>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

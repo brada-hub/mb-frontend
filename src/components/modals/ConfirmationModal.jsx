@@ -1,11 +1,12 @@
 import { X, AlertTriangle } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { Button } from '../ui/Button';
 
 export default function ConfirmationModal({ isOpen, onClose, onConfirm, title, message, confirmText = "Eliminar", cancelText = "Cancelar", type = "danger" }) {
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-transparent animate-in fade-in duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
             <div className="w-full max-w-md bg-[#161b2c] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-8 text-center space-y-6">
                     <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -36,6 +37,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, title, m
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

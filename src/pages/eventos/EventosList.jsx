@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Plus, MapPin, Clock, Search, MoreVertical, Edit, Trash2, Navigation } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, Plus, MapPin, Clock, Search, MoreVertical, Edit, Trash2, Navigation, Users } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import EventoModal from '../../components/modals/EventoModal';
@@ -8,6 +9,7 @@ import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 
 export default function EventosList() {
+    const navigate = useNavigate();
     const { notify } = useToast();
     const [eventos, setEventos] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,9 +44,16 @@ export default function EventosList() {
         setIsModalOpen(true);
     };
 
-    const handleEdit = (evento) => {
-        setEditingEvento(evento);
-        setIsModalOpen(true);
+    const handleEdit = async (evento) => {
+        try {
+            // Fetch full details to get requirements
+            const res = await api.get(`/eventos/${evento.id_evento}`);
+            setEditingEvento(res.data);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error(error);
+            notify('Error al cargar detalles del evento', 'error');
+        }
     };
 
     const handleDeleteClick = (id) => {
@@ -86,27 +95,29 @@ export default function EventosList() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
+            {/* Header Unified */}
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-4xl font-black text-white italic tracking-tighter">AGENDA DE EVENTOS</h1>
-                    <p className="text-gray-400 mt-2 font-medium">Gestiona ensayos, presentaciones y actividades.</p>
+                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Agenda de Eventos</h1>
+                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestiona ensayos, presentaciones y actividades</p>
                 </div>
-                <Button onClick={handleCreate} variant="monster" className="shadow-lg shadow-brand-primary/20">
-                    <Plus className="w-5 h-5 mr-2" />
-                    Nuevo Evento
-                </Button>
-            </div>
-
-            {/* Search */}
-            <div className="bg-surface-card p-4 rounded-3xl border border-white/5 shadow-xl">
-                <Input 
-                    icon={Search} 
-                    placeholder="Buscar eventos..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-surface-input border-transparent focus:border-brand-primary"
-                />
+                
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="w-full md:w-80">
+                        <Input 
+                            icon={Search}
+                            placeholder="Buscar eventos..." 
+                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    
+                    <Button onClick={handleCreate} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuevo
+                    </Button>
+                </div>
             </div>
 
             {/* List */}
@@ -115,15 +126,8 @@ export default function EventosList() {
             ) : filteredEventos.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredEventos.map(evento => {
-                        const eventDate = new Date(`${evento.fecha}T${evento.hora}`);
-                        const isPast = eventDate < new Date();
-
                         return (
-                            <div key={evento.id_evento} className={`relative group bg-surface-card border rounded-3xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl ${isPast ? 'border-white/5 opacity-75 grayscale-[50%]' : 'border-white/10 hover:border-brand-primary/50'}`}>
-                                {/* Status Banner for Past Events */}
-                                {isPast && (
-                                    <div className="absolute top-0 inset-x-0 h-1 bg-gray-600"></div>
-                                )}
+                            <div key={evento.id_evento} className={`relative group bg-surface-card border rounded-3xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl border-white/10 hover:border-brand-primary/50`}>
                                 
                                 <div className="p-6 space-y-4">
                                     <div className="flex justify-between items-start">
@@ -144,7 +148,7 @@ export default function EventosList() {
                                         <h3 className="text-xl font-bold text-white mb-1 line-clamp-2">{evento.evento}</h3>
                                         <p className="text-sm text-gray-400 font-medium flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-brand-primary" />
-                                            {new Date(evento.fecha).toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                            {new Date(evento.fecha + 'T12:00:00').toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long' })}
                                         </p>
                                     </div>
 
@@ -182,6 +186,15 @@ export default function EventosList() {
                                             Ver Mapa
                                         </a>
                                     )}
+                                    
+                                    {/* Botón de Convocatoria */}
+                                    <button 
+                                        onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
+                                        className="w-full mt-2 py-2 text-center text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <Users className="w-3 h-3" />
+                                        Gestionar Convocatoria
+                                    </button>
                                 </div>
                             </div>
                         );

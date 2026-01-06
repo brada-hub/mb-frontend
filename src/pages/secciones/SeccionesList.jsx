@@ -7,6 +7,7 @@ import InstrumentoModal from '../../components/modals/InstrumentoModal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import { useToast } from '../../context/ToastContext';
 import { Input } from '../../components/ui/Input';
+import { clsx } from 'clsx';
 
 export default function SeccionesList() {
     const [secciones, setSecciones] = useState([]);
@@ -105,25 +106,26 @@ export default function SeccionesList() {
                 variant="danger"
             />
 
-            <div className="bg-[#161b2c]/40 p-6 md:p-8 rounded-[32px] border border-white/5 space-y-6">
-                <div className="text-center md:text-left">
-                    <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Secciones de la Banda</h1>
-                    <p className="text-gray-500 text-xs md:text-sm font-medium uppercase tracking-widest mt-1">Distribución técnica de los integrantes</p>
+            {/* Header Section Clean */}
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+                <div>
+                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Secciones</h1>
+                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de instrumentos</p>
                 </div>
                 
-                <div className="flex flex-col gap-4">
-                    <div className="relative w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="w-full md:w-80">
                         <Input 
+                            icon={Search}
                             placeholder="Buscar sección..." 
-                            className="pl-12 h-14 w-full text-base bg-black/40 border-white/10 rounded-2xl focus:ring-brand-primary/30"
+                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <Button onClick={handleAdd} className="h-14 w-full shadow-xl shadow-brand-primary/20 text-sm font-black uppercase tracking-[0.2em] rounded-2xl bg-brand-primary hover:bg-brand-primary/90">
-                        <Plus className="w-5 h-5 mr-1" />
-                        Nueva Sección
+                    <Button onClick={handleAdd} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nuevo
                     </Button>
                 </div>
             </div>
@@ -184,7 +186,14 @@ export default function SeccionesList() {
                                         </button>
                                         <button 
                                             onClick={() => handleDeleteClick(s.id_seccion)}
-                                            className="h-12 rounded-2xl bg-red-500/5 text-red-500/60 text-[11px] font-black uppercase tracking-widest hover:bg-red-500/10 hover:text-red-500 transition-all border border-red-500/10 active:scale-95"
+                                            disabled={s.instrumentos?.length > 0}
+                                            className={clsx(
+                                                "h-12 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border active:scale-95",
+                                                s.instrumentos?.length > 0
+                                                    ? "bg-white/2 border-white/5 text-gray-700 cursor-not-allowed opacity-20"
+                                                    : "bg-red-500/5 text-red-500/60 hover:bg-red-500/10 hover:text-red-500 border-red-500/10"
+                                            )}
+                                            title={s.instrumentos?.length > 0 ? "No puedes eliminar una sección con instrumentos activos" : "Eliminar Sección"}
                                         >
                                             Eliminar
                                         </button>

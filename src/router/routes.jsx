@@ -1,14 +1,15 @@
-import { Navigate } from 'react-router-dom';
-import { 
-    LoginPage, 
-    DashboardHome, 
-    MiembrosList,
-    RolesList,
-    SeccionesList,
-    BibliotecaList,
-    EventosList
-} from '../pages';
+import LoginPage from '../pages/auth/LoginPage';
+import DashboardHome from '../pages/dashboard/DashboardHome';
+import MiembrosList from '../pages/miembros/MiembrosList';
+import RolesList from '../pages/roles/RolesList';
+import SeccionesList from '../pages/secciones/SeccionesList';
+import BibliotecaList from '../pages/biblioteca/BibliotecaList';
+import ThemeDetailView from '../pages/biblioteca/ThemeDetailView';
+import EventosList from '../pages/eventos/EventosList';
+import AsistenciasList from '../pages/asistencias/AsistenciasList';
+import ConvocatoriaEvento from '../pages/eventos/ConvocatoriaEvento';
 import MainLayout from '../layouts/MainLayout';
+import { Navigate } from 'react-router-dom';
 
 const routes = [
     {
@@ -24,8 +25,10 @@ const routes = [
             { path: 'roles', element: <RolesList /> },
             { path: 'secciones', element: <SeccionesList /> },
             { path: 'biblioteca', element: <BibliotecaList /> },
+            { path: 'biblioteca/:id/detalle', element: <ThemeDetailView /> },
             { path: 'eventos', element: <EventosList /> },
-            { path: 'asistencia', element: <div className="text-white">Asistencia (Próximamente)</div> }
+            { path: 'eventos/:id/convocatoria', element: <ConvocatoriaEvento /> },
+            { path: 'asistencia', element: <AsistenciasList /> }
         ]
     },
     {

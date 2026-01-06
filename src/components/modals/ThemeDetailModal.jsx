@@ -1,4 +1,5 @@
  import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../api';
 import { Button } from '../ui/Button';
 import { 
@@ -218,8 +219,8 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
         );
     };
 
-    return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-6 bg-transparent animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-6xl bg-[#161b2c] border border-white/5 md:rounded-[50px] shadow-2xl overflow-hidden flex flex-col h-full md:max-h-[90vh]">
                 
                 {/* Close Button - Always visible on top right */}
@@ -473,6 +474,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                     confirmText="Sí, Eliminar"
                 />
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

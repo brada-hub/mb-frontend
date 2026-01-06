@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import api from '../../api';
 import { Button } from '../ui/Button';
 import { 
@@ -241,8 +242,8 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-0 md:p-4 bg-transparent animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-5xl bg-[#161b2c] border border-white/10 md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-300">
                 
                 {/* Header */}
@@ -438,7 +439,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                                         </SortableItem>
                                     ))}
                                 </SortableContext>
-                             </DndContext>
+                                </DndContext>
                             {filteredGeneros.length === 0 && (
                                 <p className="text-center text-xs font-bold text-gray-600 uppercase py-4">No se encontraron géneros</p>
                             )}
@@ -446,6 +447,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

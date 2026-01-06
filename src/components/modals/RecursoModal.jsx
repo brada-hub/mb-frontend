@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { clsx } from 'clsx';
 import api from '../../api';
@@ -308,8 +309,8 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-0 md:p-4 bg-transparent animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 md:p-4 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-300">
             <div className="relative w-full max-w-2xl bg-[#161b2c] border border-white/10 md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
                 
                 {/* Header */}
@@ -579,6 +580,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                 type={viewerData?.type}
                 title={viewerData?.title}
             />
-        </div>
+        </div>,
+        document.body
     );
 }
