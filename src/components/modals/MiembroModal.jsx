@@ -24,7 +24,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
 
     const [loading, setLoading] = useState(false);
     const [catalogsLoading, setCatalogsLoading] = useState(true);
-    const [catalogs, setCatalogs] = useState({ roles: [], secciones: [], categorias: [], permisos: [] });
+    const [catalogs, setCatalogs] = useState({ roles: [], secciones: [], categorias: [], permisos: [], voces: [] });
     const [createdCredentials, setCreatedCredentials] = useState(null);
     const { notify } = useToast();
 
@@ -49,6 +49,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             id_instrumento: miembro.id_instrumento?.toString(),
                             id_categoria: miembro.id_categoria?.toString(),
                             id_rol: miembro.id_rol?.toString(),
+                            id_voz: miembro.id_voz?.toString(),
                             celular: miembro.celular ? miembro.celular.toString() : '',
                             has_emergency_contact: emergency,
                             contacto_nombre: emergency ? miembro.contactos[0].nombres_apellidos : '',
@@ -63,7 +64,8 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             id_seccion: '',
                             id_instrumento: '',
                             id_categoria: '',
-                            id_rol: ''
+                            id_rol: '',
+                            id_voz: ''
                         });
                     }
                 })
@@ -403,6 +405,34 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                     </select>
                                     {errors.id_instrumento && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_instrumento.message}</p>}
                                 </div>
+
+                                {(() => {
+                                    const currentSeccion = catalogs.secciones?.find(s => s.id_seccion.toString() === selectedSeccion);
+                                    const isPercusion = currentSeccion?.seccion?.toUpperCase() === 'PERCUSIÓN';
+                                    const showVoz = selectedSeccion && !isPercusion;
+                                    
+                                    if (!showVoz) return null;
+
+                                    return (
+                                        <div className="space-y-2.5 text-gray-100 col-span-1 animate-in fade-in slide-in-from-left-4">
+                                            <label className="text-sm font-bold text-gray-400 ml-1">Voz / Registro</label>
+                                            <select 
+                                                id="select-voz"
+                                                {...register('id_voz', { required: "Selecciona una voz" })} 
+                                                className={clsx(
+                                                    "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white active:scale-[0.99] outline-none transition-all",
+                                                    errors.id_voz ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                                )}
+                                            >
+                                                <option value="">Seleccionar Voz...</option>
+                                                {catalogs.voces?.map(v => (
+                                                    <option key={v.id_voz} value={v.id_voz.toString()}>{v.nombre_voz}</option>
+                                                ))}
+                                            </select>
+                                            {errors.id_voz && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_voz.message}</p>}
+                                        </div>
+                                    );
+                                })()}
 
                                 <div className="space-y-2.5">
                                     <label className="text-sm font-bold text-gray-400 ml-1">Categoría</label>

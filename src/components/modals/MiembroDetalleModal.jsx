@@ -209,9 +209,10 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                             <div className="space-y-4">
                                 <DetailItem 
                                     icon={Music} 
-                                    label="Sección / Instrumento" 
-                                    value={`${miembro.seccion?.seccion || 'Sin Sección'} - ${miembro.instrumento?.instrumento || 'Sin Instrumento'}`} 
+                                    label="Instrumento" 
+                                    value={`${miembro.instrumento?.instrumento || 'Sin Instrumento'} ${miembro.voz?.nombre_voz ? `(${miembro.voz.nombre_voz})` : ''}`} 
                                 />
+                                <DetailItem icon={Music} label="Sección" value={miembro.seccion?.seccion || 'Sin Sección'} />
                                 <DetailItem icon={Star} label="Categoría" value={miembro.categoria?.nombre_categoria || 'Sin Categoría'} />
                                 <DetailItem icon={Shield} label="Rol en Sistema" value={miembro.rol?.rol || 'Sin Rol'} />
                             </div>

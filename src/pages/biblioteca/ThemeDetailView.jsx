@@ -16,7 +16,15 @@ import {
     Plus,
     Edit2,
     Trash2,
-    ArrowLeft
+    ArrowLeft,
+    Lock,
+    Unlock,
+    Maximize2,
+    ZoomIn,
+    ZoomOut,
+    RotateCw,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
@@ -46,8 +54,56 @@ export default function ThemeDetailView() {
     const [recursoInitialData, setRecursoInitialData] = useState(null);
     const [isTemaModalOpen, setIsTemaModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    // Inicializar modo gestión desde localStorage o defecto false
+    const [editMode, setEditMode] = useState(() => {
+        const saved = localStorage.getItem('monster_admin_mode');
+        return saved === 'true';
+    });
 
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR';
+    // Persistir el cambio de modo
+    const handleEditModeChange = (newMode) => {
+        setEditMode(newMode);
+        localStorage.setItem('monster_admin_mode', newMode);
+    };
+
+    // Estados para el Visor Inmersivo (Reader Mode)
+    const [viewIndex, setViewIndex] = useState(0);
+    const [zoom, setZoom] = useState(100);
+    const [rotation, setRotation] = useState(0);
+    const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
+    const [isViewDragging, setIsViewDragging] = useState(false);
+    const [viewDragStart, setViewDragStart] = useState({ x: 0, y: 0 });
+
+    const resetView = () => {
+        setZoom(100);
+        setRotation(0);
+        setViewPosition({ x: 0, y: 0 });
+    };
+
+    // Reset view when changing file or mode
+    useEffect(() => {
+        resetView();
+    }, [viewIndex, editMode]);
+
+    // View Event Handlers
+    const handleMouseDown = (e) => {
+        if (zoom <= 100) return;
+        setIsViewDragging(true);
+        setViewDragStart({ x: e.clientX - viewPosition.x, y: e.clientY - viewPosition.y });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isViewDragging) return;
+        setViewPosition({
+            x: e.clientX - viewDragStart.x,
+            y: e.clientY - viewDragStart.y
+        });
+    };
+
+    const handleMouseUp = () => setIsViewDragging(false);
+
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role?.includes('JEFE');
+    const canManage = isAdmin && editMode; // Solo pueden gestionar si son admin Y tienen editMode activo
     const userInstrumentId = user?.miembro?.id_instrumento;
 
     const loadData = useCallback(async () => {
@@ -121,10 +177,17 @@ export default function ThemeDetailView() {
 
     if (!tema) return null;
 
-    // Filtrado inteligente según rol
-    const filteredRecursos = isAdmin 
+    // Filtrado inteligente: 
+    // Si está en modo gestión (canManage) o no tiene instrumento: Ve todo.
+    // Si está en modo lectura (y tiene instrumento): Ve solo lo suyo.
+    const userVozId = user?.miembro?.id_voz;
+
+    const filteredRecursos = canManage
         ? recursos 
-        : recursos.filter(r => r.id_instrumento === userInstrumentId);
+        : recursos.filter(r => 
+            r.id_instrumento == userInstrumentId && 
+            (r.id_voz == userVozId || r.id_voz == null)
+        );
 
     const activeInstruments = Array.from(new Map(filteredRecursos.map(r => [r.id_instrumento, r.instrumento])).values())
         .filter(Boolean)
@@ -135,122 +198,194 @@ export default function ThemeDetailView() {
     ).sort((a, b) => a.nombre_voz.localeCompare(b.nombre_voz));
 
     const renderMemberView = () => {
-        if (activeInstruments.length === 0) {
+        // Preparar lista plana de archivos
+        const memberFiles = filteredRecursos.flatMap(r => {
+            const instName = activeInstruments.find(i => i.id_instrumento === r.id_instrumento)?.instrumento || '';
+            const vozName = activeVoices.find(v => v.id_voz === r.id_voz)?.nombre_voz || '';
+            return (r.archivos || []).filter(f => f.tipo !== 'audio').map(f => ({
+                ...f,
+                title: `${instName} - ${vozName}`,
+                type: (f.tipo === 'pdf' || f.url_archivo.toLowerCase().includes('.pdf')) ? 'pdf' : 'image',
+                original_title: f.nombre_original
+            }));
+        });
+
+        // Collect all audio resources
+        const allAudioResources = filteredRecursos.filter(r => r.archivos?.some(f => f.tipo === 'audio'));
+
+        if (memberFiles.length === 0) {
             return (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-gray-700 mb-6">
                         <FileText className="w-10 h-10" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 uppercase">Sin recursos para tu instrumento</h3>
-                    <p className="text-gray-500 max-w-xs text-sm">Aún no se han subido partituras para tu sección en este tema.</p>
+                    <h3 className="text-xl font-bold text-white mb-2 uppercase">Sin recursos disponibles</h3>
+                    <p className="text-gray-500 max-w-xs text-sm">No se han encontrado partituras para visualizar en este modo.</p>
                 </div>
             );
         }
-        
-        const inst = activeInstruments[0];
+
+        // Seleccionar archivo actual
+        const currentFile = memberFiles[viewIndex] || memberFiles[0];
+        if (!memberFiles[viewIndex] && memberFiles.length > 0 && viewIndex !== 0) {
+            setViewIndex(0);
+        }
+
+        const isImage = currentFile.type === 'image';
+
+        // Botón "X" logic: Si es admin sale a gestión, si no, vuelve atrás
+        const handleCloseReader = () => {
+             navigate('/dashboard/biblioteca');
+        };
 
         return (
-            <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
-                {/* Voices Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {activeVoices.map(voz => {
-                        const matchingResources = filteredRecursos.filter(r => r.id_instrumento === inst.id_instrumento && r.id_voz === voz.id_voz);
-                        const validFiles = matchingResources.flatMap(r => r.archivos || []).filter(f => f.tipo !== 'audio');
+            <div className="fixed inset-0 z-50 bg-[#09090b] flex flex-col animate-in fade-in duration-300">
+                <div className="flex items-center justify-between p-4 bg-black/40 border-b border-white/5 shrink-0 z-50 backdrop-blur-md">
+                    <div className="flex items-center gap-4 min-w-0">
+                        <button 
+                            onClick={handleCloseReader}
+                            className="p-3 hover:bg-white/10 rounded-2xl text-white/70 hover:text-white transition-all bg-white/5 border border-white/10"
+                            title="Volver"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+                        <div className="flex flex-col min-w-0">
+                            <h3 className="text-xs lg:text-sm font-black text-white uppercase tracking-tight truncate max-w-[200px] lg:max-w-2xl">
+                                {tema.nombre_tema} • <span className="text-brand-primary">{currentFile.title}</span>
+                            </h3>
+                            {memberFiles.length > 1 && (
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">
+                                    Archivo {viewIndex + 1} de {memberFiles.length}
+                                </p>
+                            )}
+                        </div>
+                    </div>
 
-                        if (validFiles.length === 0) return null;
+                    <div className="flex items-center gap-2">
+                        {isImage && (
+                            <div className="hidden lg:flex items-center bg-white/5 rounded-2xl p-1 gap-1 border border-white/10 mr-2">
+                                <button onClick={() => setZoom(prev => Math.max(25, prev - 25))} className="p-2 hover:bg-white/10 rounded-xl text-white/50 hover:text-white"><ZoomOut className="w-4 h-4" /></button>
+                                <span className="text-[10px] font-black text-white w-10 text-center">{zoom}%</span>
+                                <button onClick={() => setZoom(prev => Math.min(500, prev + 25))} className="p-2 hover:bg-white/10 rounded-xl text-white/50 hover:text-white"><ZoomIn className="w-4 h-4" /></button>
+                                <div className="w-px h-4 bg-white/10 mx-1"></div>
+                                <button onClick={() => setRotation(prev => (prev + 90) % 360)} className="p-2 hover:bg-white/10 rounded-xl text-white/50 hover:text-white"><RotateCw className="w-4 h-4" /></button>
+                                <button onClick={resetView} className="p-2 hover:bg-white/10 rounded-xl text-white/50 hover:text-white" title="Resetear"><Maximize2 className="w-4 h-4" /></button>
+                            </div>
+                        )}
+                        {tema.videos?.[0]?.url_video && (
+                            <button 
+                                onClick={() => window.open(tema.videos[0].url_video, '_blank')}
+                                className="h-10 rounded-2xl px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white transition-all shadow-lg border border-red-500/10"
+                            >
+                                <Video className="w-4 h-4" /> <span className="hidden sm:inline">Video</span>
+                            </button>
+                        )}
+                        <a 
+                            href={currentFile.url_archivo}
+                            download
+                            className="h-10 rounded-2xl px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-brand-primary hover:bg-brand-primary/80 text-white transition-all shadow-lg"
+                        >
+                            <Download className="w-4 h-4" /> <span className="hidden sm:inline">Descargar</span>
+                        </a>
+                    </div>
+                </div>
 
-                        return (
-                            <div key={voz.id_voz} className="bg-surface-card border border-white/5 rounded-[35px] p-8 hover:border-indigo-500/30 transition-all hover:translate-y-[-4px] duration-300 shadow-xl group/card">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400 group-hover/card:bg-indigo-600 group-hover/card:text-white transition-all">
-                                            <Music className="w-5 h-5" />
-                                        </div>
-                                        <h4 className="text-lg font-black text-white uppercase tracking-tight">{voz.nombre_voz}</h4>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full">{validFiles.length} {validFiles.length === 1 ? 'ARCHIVO' : 'ARCHIVOS'}</span>
-                                </div>
+                <div className="flex-1 relative flex items-center justify-center overflow-hidden bg-dots-pattern">
+                    {memberFiles.length > 1 && (
+                        <>
+                            <button 
+                                onClick={() => setViewIndex(prev => Math.max(0, prev - 1))}
+                                disabled={viewIndex === 0}
+                                className={`absolute left-4 lg:left-6 z-30 p-4 text-black/40 hover:text-black/80 hover:bg-black/5 rounded-full transition-all duration-300 ${viewIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                            >
+                                <ChevronLeft className="w-10 h-10 lg:w-12 lg:h-12" />
+                            </button>
+                            <button 
+                                onClick={() => setViewIndex(prev => Math.min(memberFiles.length - 1, prev + 1))}
+                                disabled={viewIndex === memberFiles.length - 1}
+                                className={`absolute right-4 lg:right-6 z-30 p-4 text-black/40 hover:text-black/80 hover:bg-black/5 rounded-full transition-all duration-300 ${viewIndex === memberFiles.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                            >
+                                <ChevronRight className="w-10 h-10 lg:w-12 lg:h-12" />
+                            </button>
+                        </>
+                    )}
 
-                                <div className="space-y-3">
-                                    {validFiles.map((file, idx) => (
-                                        <button
-                                            key={file.id_archivo}
-                                            onClick={() => setViewerData({
-                                                files: validFiles.map(f => ({
-                                                    url: f.url_archivo,
-                                                    type: f.tipo === 'pdf' ? 'pdf' : 'image',
-                                                    title: `${tema.nombre_tema} - ${inst.instrumento} (${voz.nombre_voz})`
-                                                })),
-                                                initialIndex: idx
-                                            })}
-                                            className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-indigo-600 rounded-2xl transition-all group/btn border border-white/5"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-black/20 rounded-xl flex items-center justify-center text-gray-400 group-hover/btn:text-white">
-                                                    {file.tipo === 'pdf' ? <FileText className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
-                                                </div>
-                                                <div className="text-left">
-                                                    <p className="text-xs font-black text-white uppercase truncate max-w-[150px]">{file.nombre_original || `Parte ${idx + 1}`}</p>
-                                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest group-hover/btn:text-indigo-200 uppercase">{file.tipo}</p>
-                                                </div>
-                                            </div>
-                                            <div className="w-8 h-8 rounded-lg bg-indigo-500/0 group-hover/btn:bg-white/20 flex items-center justify-center text-white/0 group-hover/btn:text-white transition-all">
-                                                <ExternalLink className="w-4 h-4" />
-                                            </div>
-                                        </button>
-                                    ))}
+                    <div 
+                        className={`w-full h-full flex items-center justify-center relative touch-none select-none ${isImage ? (isViewDragging ? 'cursor-grabbing' : zoom > 100 ? 'cursor-grab' : 'cursor-default') : ''}`}
+                        onMouseDown={isImage ? handleMouseDown : undefined}
+                        onMouseMove={isImage ? handleMouseMove : undefined}
+                        onMouseUp={isImage ? handleMouseUp : undefined}
+                        onMouseLeave={isImage ? handleMouseUp : undefined}
+                    >
+                        {isImage ? (
+                            <div 
+                                className="transition-transform duration-100 ease-out flex items-center justify-center p-4 lg:p-10"
+                                style={{ 
+                                    transform: `translate(${viewPosition.x}px, ${viewPosition.y}px) scale(${zoom / 100}) rotate(${rotation}deg)`
+                                }}
+                            >
+                                <img 
+                                    src={currentFile.url_archivo} 
+                                    alt={currentFile.title}
+                                    className="max-w-full max-h-[85vh] object-contain drop-shadow-2xl pointer-events-none"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-full h-full p-4 lg:p-10 flex items-center justify-center">
+                                <div className="w-full h-full max-w-6xl bg-white rounded-lg shadow-2xl overflow-hidden">
+                                     <iframe 
+                                        src={`${currentFile.url_archivo}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                        className="w-full h-full border-none"
+                                        title={currentFile.title}
+                                    />
                                 </div>
                             </div>
-                        );
-                    })}
+                        )}
+                    </div>
+                </div>
 
-                    {/* Audio Guías Section */}
-                    {recursos.some(r => r.id_instrumento === inst.id_instrumento && r.archivos?.some(f => f.tipo === 'audio')) && (
-                        <div className="md:col-span-2 bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/20 rounded-[35px] p-8 shadow-xl mt-4">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex items-center gap-4 text-center md:text-left">
-                                    <div className="w-16 h-16 bg-purple-600 rounded-[20px] flex items-center justify-center text-white shadow-xl shadow-purple-600/30">
-                                        <Play className="w-8 h-8 fill-current translate-x-1" />
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-50 text-[9px] font-black uppercase tracking-[0.3em] text-white hidden lg:block">
+                    {isImage && "Pellizca o usa la rueda para Zoom • Arrastra para mover"}
+                </div>
+
+                {(allAudioResources.length > 0 || tema.audio) && (
+                    <div className="absolute bottom-6 right-6 z-50">
+                         <div className="bg-[#161b2c]/95 backdrop-blur-xl border border-white/10 rounded-[24px] p-4 shadow-2xl shadow-black/50 flex flex-col gap-3 max-w-[280px]">
+                            <div className="flex items-center gap-3 border-b border-white/5 pb-2">
+                                <Music className="w-3.5 h-3.5 text-indigo-400" />
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest pl-1">Guías de Audio</span>
+                            </div>
+                            <div className="space-y-3 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                                {tema.audio && (
+                                    <div className="flex flex-col gap-1.5 p-2 bg-indigo-600/5 rounded-xl border border-indigo-500/10">
+                                        <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tight truncate">Audio Principal (Tema)</span>
+                                        <audio controls className="w-full h-8 block custom-audio-player-xs" src={tema.audio.url_audio.replace('monster-back:8000', 'localhost:8000')}></audio>
                                     </div>
-                                    <div>
-                                        <h4 className="text-xl font-black text-white uppercase tracking-tight">Guías de Audio</h4>
-                                        <p className="text-purple-300/80 text-[10px] font-bold uppercase tracking-widest mt-1">Escucha y practica con la referencia</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-wrap justify-center gap-3">
-                                    {recursos
-                                        .filter(r => r.id_instrumento === inst.id_instrumento)
-                                        .flatMap(r => r.archivos || [])
-                                        .filter(f => f.tipo === 'audio')
-                                        .map((file, idx) => (
-                                            <a 
-                                                key={`audio-member-${file.id_archivo}`} 
-                                                href={file.url_archivo} 
-                                                target="_blank" 
-                                                rel="noreferrer" 
-                                                className="px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center gap-3 shadow-lg shadow-purple-600/20 active:scale-95"
-                                            >
-                                                <Play className="w-4 h-4 fill-current" /> AUDIO {idx + 1}
-                                            </a>
-                                        ))
-                                    }
-                                </div>
+                                )}
+                                {allAudioResources
+                                    .flatMap(r => (r.archivos || []).filter(f => f.tipo === 'audio').map(f => ({ ...f, inst: r.instrumento })))
+                                    .map((file) => (
+                                        <div key={file.id_archivo} className="flex flex-col gap-1.5 p-2 bg-white/5 rounded-xl border border-white/5">
+                                            <span className="text-[9px] font-bold text-gray-400 truncate w-full">{file.nombre_original} ({file.inst})</span>
+                                            <audio controls className="w-full h-8 block custom-audio-player-xs" src={file.url_archivo.replace('monster-back:8000', 'localhost:8000')}></audio>
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         );
     };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header Unified Style */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={() => navigate('/dashboard/biblioteca')}
-                        className="p-3 bg-[#161b2c] hover:bg-indigo-600 rounded-xl text-white/50 hover:text-white transition-all group shrink-0 border border-white/5 shadow-lg"
+                        className="p-3 bg-[#161b2c] hover:bg-brand-primary rounded-xl text-white/50 hover:text-white transition-all group shrink-0 border border-white/5 shadow-lg"
                         title="Volver a Biblioteca"
                     >
                         <ArrowLeft className="w-5 h-5" />
@@ -264,7 +399,7 @@ export default function ThemeDetailView() {
                                         type="text"
                                         value={editName}
                                         onChange={(e) => setEditName(e.target.value)}
-                                        className="bg-[#161b2c] border border-indigo-500/50 rounded-xl px-4 py-1 text-2xl font-black text-white uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full max-w-sm"
+                                        className="bg-[#161b2c] border border-brand-primary/50 rounded-xl px-4 py-1 text-2xl font-black text-white uppercase focus:outline-none focus:ring-2 focus:ring-brand-primary w-full max-w-sm"
                                         autoFocus
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') handleUpdateName();
@@ -283,43 +418,45 @@ export default function ThemeDetailView() {
                     </div>
                 </div>
                 
-                {isAdmin && (
-                    <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto mt-4 md:mt-0 px-2 lg:px-0">
-                        <Button 
-                            onClick={() => {
-                                setRecursoInitialData({
-                                    id_genero: tema.id_genero,
-                                    id_tema: tema.id_tema
-                                });
-                                setIsRecursoModalOpen(true);
-                            }}
-                            className="h-12 px-6 shadow-lg shadow-indigo-600/10 text-[11px] font-black uppercase tracking-widest rounded-xl bg-indigo-600 hover:bg-indigo-500 flex-1 sm:flex-none"
-                        >
-                            <Plus className="w-4 h-4 mr-2" /> RECURSO
-                        </Button>
-                        <div className="grid grid-cols-2 gap-3 flex-1 sm:flex-none">
+                <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto mt-4 md:mt-0 px-2 lg:px-0">
+                    {canManage && (
+                        <div className="flex gap-3 flex-1 sm:flex-none animate-in slide-in-from-right-4 duration-300">
                             <Button 
-                                variant="secondary" 
-                                className="h-12 px-4 text-[11px] font-black uppercase tracking-widest rounded-xl bg-[#161b2c] border-white/5 hover:bg-white/5 w-full"
-                                onClick={() => setIsEditingName(true)}
+                                onClick={() => {
+                                    setRecursoInitialData({
+                                        id_genero: tema.id_genero,
+                                        id_tema: tema.id_tema
+                                    });
+                                    setIsRecursoModalOpen(true);
+                                }}
+                                className="h-12 px-6 shadow-lg shadow-indigo-600/10 text-[11px] font-black uppercase tracking-widest rounded-xl bg-indigo-600 hover:bg-indigo-500"
                             >
-                                <Edit2 className="w-4 h-4 mr-2" /> Nombre
+                                <Plus className="w-4 h-4 mr-2" /> RECURSO
                             </Button>
-                            <Button 
-                                variant="secondary"
-                                className="h-12 px-4 text-[11px] font-black uppercase tracking-widest rounded-xl bg-[#161b2c] border-white/5 hover:bg-white/5 w-full"
-                                onClick={() => setIsTemaModalOpen(true)}
-                            >
-                                <Music className="w-4 h-4 mr-2" /> Ajustes
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button 
+                                    variant="secondary" 
+                                    className="h-12 px-4 bg-[#161b2c] border-white/5 hover:bg-white/5"
+                                    onClick={() => setIsEditingName(true)}
+                                    title="Editar nombre"
+                                >
+                                    <Edit2 className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                    variant="secondary"
+                                    className="h-12 px-4 bg-[#161b2c] border-white/5 hover:bg-white/5"
+                                    onClick={() => setIsTemaModalOpen(true)}
+                                    title="Ajustes del tema"
+                                >
+                                    <Music className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-
-            {/* List / Grid Content Area */}
             <div className="flex-1 overflow-auto custom-scrollbar">
-                {isAdmin ? (
+                {canManage ? (
                     <div className="px-2 lg:px-0">
                         {/* Desktop Table View */}
                         <div className="hidden lg:block bg-surface-card border border-white/5 rounded-[40px] overflow-x-auto shadow-2xl">
@@ -333,7 +470,6 @@ export default function ThemeDetailView() {
                                                     {voz.nombre_voz}
                                                 </th>
                                             ))}
-                                            <th className="text-center px-4 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Audio / Guía</th>
                                             <th className="px-4 py-4 text-center text-[10px] font-black text-white bg-indigo-600/20 uppercase tracking-widest rounded-tr-2xl">Gestión</th>
                                         </tr>
                                     </thead>
@@ -377,7 +513,7 @@ export default function ThemeDetailView() {
                                                                                 {file.tipo === 'pdf' ? <FileText className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
                                                                             </button>
                                                                             {validFiles.length > 1 && (
-                                                                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-surface-dark text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white/10 shadow-md">
+                                                                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-surface-dark text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white/10 shadow-md pointer-events-none select-none">
                                                                                     {index + 1}
                                                                                 </span>
                                                                             )}
@@ -390,24 +526,6 @@ export default function ThemeDetailView() {
                                                         </td>
                                                     );
                                                 })}
-
-                                                <td className="px-4 py-4 bg-white/2 border-t border-b border-white/5 text-center">
-                                                    <div className="flex flex-wrap items-center justify-center gap-2">
-                                                        {recursos
-                                                            .filter(r => r.id_instrumento === inst.id_instrumento)
-                                                            .flatMap(r => r.archivos || [])
-                                                            .filter(f => f.tipo === 'audio')
-                                                            .map(file => (
-                                                                <a key={`audio-${file.id_archivo}`} href={file.url_archivo} target="_blank" rel="noreferrer" className="w-10 h-10 inline-flex items-center justify-center bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white rounded-xl transition-all border border-purple-500/20 shadow-lg">
-                                                                    <Play className="w-5 h-5 fill-current" />
-                                                                </a>
-                                                            ))
-                                                        }
-                                                    </div>
-                                                    {recursos.filter(r => r.id_instrumento === inst.id_instrumento && r.archivos?.some(f => f.tipo === 'audio')).length === 0 && (
-                                                        <div className="h-[1px] w-4 bg-white/10 mx-auto"></div>
-                                                    )}
-                                                </td>
 
                                                 <td className="px-4 py-4 bg-white/5 border-r border-t border-b border-white/10 rounded-r-[24px]">
                                                     <div className="flex flex-col gap-3 p-2 min-w-[200px]">
@@ -465,7 +583,7 @@ export default function ThemeDetailView() {
                                         ))}
                                         {activeInstruments.length === 0 && (
                                             <tr>
-                                                <td colSpan={activeVoices.length + 3} className="py-20 text-center text-gray-500 uppercase text-xs font-black tracking-widest">
+                                                <td colSpan={activeVoices.length + 2} className="py-20 text-center text-gray-500 uppercase text-xs font-black tracking-widest">
                                                     No hay recursos detallados para este tema
                                                 </td>
                                             </tr>
@@ -510,7 +628,6 @@ export default function ThemeDetailView() {
                                         <div className="space-y-3">
                                             {instResources.length > 0 ? instResources.map(res => {
                                                 const validFiles = (res.archivos || []).filter(f => f.tipo !== 'audio');
-                                                const audioFiles = (res.archivos || []).filter(f => f.tipo === 'audio');
                                                 const vozName = voces.find(v => v.id_voz === res.id_voz)?.nombre_voz;
 
                                                 return (
@@ -539,11 +656,6 @@ export default function ThemeDetailView() {
                                                                     {f.tipo === 'pdf' ? <FileText className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
                                                                     VER
                                                                 </button>
-                                                            ))}
-                                                            {audioFiles.map(f => (
-                                                                <a key={f.id_archivo} href={f.url_archivo} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600/10 rounded-lg text-[9px] font-bold text-purple-400 uppercase tracking-widest">
-                                                                    <Play className="w-3 h-3 fill-current" /> AUDIO
-                                                                </a>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -582,12 +694,7 @@ export default function ThemeDetailView() {
                 initialData={tema}
             />
 
-            <MultimediaViewerModal 
-                isOpen={!!viewerData}
-                onClose={() => setViewerData(null)}
-                files={viewerData?.files}
-                initialIndex={viewerData?.initialIndex}
-            />
+
 
             <ConfirmationModal 
                 isOpen={deleteConfirm.isOpen}
@@ -596,6 +703,13 @@ export default function ThemeDetailView() {
                 title="¿Eliminar Recurso?"
                 message="Esta acción borrará la partitura y el audio de forma permanente. ¿Estás seguro?"
                 confirmText="Sí, Eliminar"
+            />
+
+            <MultimediaViewerModal 
+                isOpen={!!viewerData}
+                onClose={() => setViewerData(null)}
+                files={viewerData?.files}
+                initialIndex={viewerData?.initialIndex}
             />
             
             <footer className="mt-8 py-6 text-center">

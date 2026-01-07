@@ -74,7 +74,7 @@ export default function SeccionesList() {
     );
 
     return (
-        <div className="h-full overflow-y-auto custom-scrollbar space-y-6 pr-2">
+        <div className="h-full overflow-y-auto custom-scrollbar pr-2">
             <SeccionModal 
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -90,7 +90,7 @@ export default function SeccionesList() {
                 onClose={() => {
                     setIsInstrumentModalOpen(false);
                     setSelectedSeccion(null);
-                    loadSecciones(); // Recargar para ver si cambió algo si es necesario
+                    loadSecciones();
                 }}
                 seccion={selectedSeccion}
             />
@@ -106,11 +106,11 @@ export default function SeccionesList() {
                 variant="danger"
             />
 
-            {/* Header Section Clean */}
+            {/* Header con Título y Descripción */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Secciones</h1>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de instrumentos</p>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Secciones</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Gestión de instrumentos</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">

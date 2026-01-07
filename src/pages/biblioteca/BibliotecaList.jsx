@@ -1,27 +1,26 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { 
     Music, 
     Search, 
-    Filter, 
     FileText, 
-    Download, 
     ChevronRight, 
     Play,
     Plus,
     Tag,
-    Library,
     Edit,
     Trash2,
     ArrowLeft,
-    Image as ImageIcon
+    Lock,
+    Unlock,
+    Video,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import RecursoModal from '../../components/modals/RecursoModal';
 import MusicCatalogModal from '../../components/modals/MusicCatalogModal';
 import TemaModal from '../../components/modals/TemaModal';
@@ -30,6 +29,9 @@ import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal
 
 export default function BibliotecaList() {
     const navigate = useNavigate();
+    const { notify } = useToast();
+    const { user } = useAuth();
+    
     const [generos, setGeneros] = useState([]);
     const [temas, setTemas] = useState([]);
     const [selectedGenero, setSelectedGenero] = useState(null);
@@ -45,10 +47,20 @@ export default function BibliotecaList() {
     const [editTemaInitialData, setEditTemaInitialData] = useState(null);
     const [mobileView, setMobileView] = useState('genres'); // 'genres' or 'themes'
     const [viewerData, setViewerData] = useState(null);
-    const { notify } = useToast();
-    const { user } = useAuth();
+    
+    const [editMode, setEditMode] = useState(() => {
+        const saved = localStorage.getItem('monster_admin_mode');
+        return saved === 'true';
+    });
 
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR';
+    const toggleEditMode = () => {
+        const newMode = !editMode;
+        setEditMode(newMode);
+        localStorage.setItem('monster_admin_mode', newMode);
+    };
+
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role?.includes('JEFE');
+    const canManage = isAdmin && editMode;
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -60,7 +72,6 @@ export default function BibliotecaList() {
             setGeneros(genRes.data);
             setTemas(temaRes.data);
             
-            // Preservar selección inteligente
             if (genRes.data.length > 0) {
                 setSelectedGenero(current => {
                     if (current) {
@@ -68,12 +79,9 @@ export default function BibliotecaList() {
                     }
                     return genRes.data[0];
                 });
-            } else {
-                setSelectedGenero(null);
             }
         } catch (error) {
-            console.error("Error loading library:", error);
-            notify("Error al cargar la biblioteca musical", "error");
+            notify("Error al cargar la biblioteca", "error");
         } finally {
             setLoading(false);
         }
@@ -95,50 +103,57 @@ export default function BibliotecaList() {
         return generos.filter(g => g.nombre_genero.toLowerCase().includes(genreSearch.toLowerCase()));
     }, [generos, genreSearch]);
 
-
-
     return (
         <div className="h-full overflow-y-auto lg:overflow-hidden custom-scrollbar animate-in fade-in duration-700 pr-2 lg:pr-0">
-            {/* Content Layout */}
-            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:h-full">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:h-full">
                 
-                {/* Categorías (Géneros) */}
+                {/* Columna Izquierda: Géneros */}
                 <aside className={clsx(
-                    "flex flex-col space-y-4 lg:h-full lg:overflow-y-auto lg:pr-2 lg:pb-10 lg:custom-scrollbar px-2",
+                    "flex flex-col lg:h-full lg:overflow-y-auto lg:pr-2 lg:pb-10 lg:custom-scrollbar px-2",
                     mobileView === 'themes' && 'hidden lg:flex'
                 )}>
-                    {/* Header Géneros Unificado */}
-                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-6 flex-shrink-0 px-1">
+                    {/* Header Géneros - Compacto */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
                         <div>
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tight">Géneros</h2>
-                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Instrumentación</p>
+                            <h2 className="text-lg font-black text-white uppercase tracking-tight">Géneros</h2>
+                            <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Explora por categoría</p>
                         </div>
-                        
-                        <div className="flex gap-2 w-full xl:w-auto">
-                            <div className="flex-1 xl:w-48 transition-all focus-within:xl:w-64">
-                                <Input 
-                                    icon={Search}
-                                    placeholder="Buscar..."
-                                    value={genreSearch}
-                                    onChange={(e) => setGenreSearch(e.target.value)}
-                                    className="h-12 bg-[#161b2c] border-white/5 rounded-xl text-sm focus:ring-brand-primary/50"
-                                />
-                            </div>
+                        <div className="flex items-center gap-2">
                             {isAdmin && (
+                                <button
+                                    onClick={toggleEditMode}
+                                    className={clsx(
+                                        "h-9 px-3 rounded-lg flex items-center gap-1.5 transition-all duration-300 font-black text-[9px] uppercase tracking-widest border",
+                                        editMode 
+                                            ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                            : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                    )}
+                                >
+                                    {editMode ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                                </button>
+                            )}
+                            <Input 
+                                icon={Search}
+                                placeholder="Buscar..."
+                                value={genreSearch}
+                                onChange={(e) => setGenreSearch(e.target.value)}
+                                className="h-9 w-32 bg-[#161b2c] border-white/5 rounded-lg text-xs"
+                            />
+                            {canManage && (
                                 <Button 
                                     onClick={() => {
                                         setGenreToEdit(null);
                                         setIsCatalogModalOpen(true);
                                     }}
-                                    className="h-12 px-4 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0"
+                                    className="h-9 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-primary/90"
                                 >
-                                    <Plus className="w-4 h-4 mr-2" /> Nuevo
+                                    <Plus className="w-3.5 h-3.5" />
                                 </Button>
                             )}
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4 py-4">
+                    <div className="flex flex-col gap-3">
                         {filteredGeneros.map((gen) => (
                             <div
                                 key={gen.id_genero}
@@ -153,7 +168,6 @@ export default function BibliotecaList() {
                                         : "border-white/5 hover:border-white/20"
                                 )}
                             >
-                                {/* Main Card Content */}
                                 <div 
                                     className="relative h-32 flex items-center px-6 overflow-hidden"
                                     style={{ 
@@ -161,10 +175,7 @@ export default function BibliotecaList() {
                                     }}
                                 >
                                     <div className="relative z-10 text-left max-w-[60%]">
-                                        <h4 
-                                            className="text-xl text-white uppercase tracking-tight leading-tight drop-shadow-lg mb-1 truncate"
-                                            style={{ fontFamily: "'Archivo Black', sans-serif" }}
-                                        >
+                                        <h4 className="text-xl text-white uppercase tracking-tight leading-tight drop-shadow-lg mb-1 truncate font-black">
                                             {gen.nombre_genero}
                                         </h4>
                                         <div className="inline-flex items-center text-[9px] font-black text-white/80 uppercase tracking-widest bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
@@ -174,11 +185,7 @@ export default function BibliotecaList() {
                                     
                                     <div className="absolute -right-2 top-0 bottom-0 w-36 flex items-center justify-center transition-transform group-hover:scale-110 duration-500 pointer-events-none drop-shadow-2xl">
                                         {gen.banner_url ? (
-                                            <img 
-                                                src={gen.banner_url} 
-                                                alt="" 
-                                                className="h-[120%] object-contain origin-center translate-y-2 opacity-90 group-hover:opacity-100 transition-opacity" 
-                                            />
+                                            <img src={gen.banner_url} alt="" className="h-[120%] object-contain origin-center translate-y-2 opacity-90 group-hover:opacity-100 transition-opacity" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-white/10 -rotate-12 translate-x-4">
                                                 <Tag className="w-20 h-20" />
@@ -187,15 +194,15 @@ export default function BibliotecaList() {
                                     </div>
                                 </div>
 
-                                {isAdmin && (
-                                    <div className="bg-[#161b2c] p-3 flex items-center gap-3 border-t border-white/5">
+                                {canManage && (
+                                    <div className="bg-[#161b2c] p-3 flex items-center gap-3 border-t border-white/5 animate-in slide-in-from-bottom duration-300">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setGenreToEdit(gen);
                                                 setIsCatalogModalOpen(true);
                                             }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-[0.15em] transition-all active:scale-95 shadow-lg"
+                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-widest transition-all"
                                         >
                                             <Edit className="w-3 h-3" /> Editar
                                         </button>
@@ -203,18 +210,12 @@ export default function BibliotecaList() {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (gen.temas_count > 0) {
-                                                    notify("No puedes eliminar un género que contiene canciones. Vacíalo primero.", "warning");
+                                                    notify(`No puedes eliminar el género "${gen.nombre_genero}" porque contiene ${gen.temas_count} canciones.`, "warning");
                                                     return;
                                                 }
                                                 setDeleteConfirmation({ isOpen: true, id: gen.id_genero, type: 'genero' });
                                             }}
-                                            className={clsx(
-                                                "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-[0.15em] transition-all active:scale-95 shadow-lg",
-                                                gen.temas_count > 0 
-                                                    ? "bg-white/5 border-white/5 text-gray-700 cursor-not-allowed"
-                                                    : "bg-[#1e1414] border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10"
-                                            )}
-                                            title={gen.temas_count > 0 ? "Elimina las canciones primero" : "Eliminar Género"}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" /> Eliminar
                                         </button>
@@ -230,60 +231,53 @@ export default function BibliotecaList() {
                     "flex flex-col lg:h-full lg:overflow-y-auto lg:pr-4 lg:pb-10 lg:custom-scrollbar px-2",
                     mobileView === 'genres' && 'hidden lg:flex'
                 )}>
-                    {/* Botón Volver (Solo Móvil) */}
                     {mobileView === 'themes' && (
                         <button 
                             onClick={() => setMobileView('genres')}
-                            className="lg:hidden flex items-center gap-2 mb-4 text-indigo-400 font-black text-[10px] uppercase tracking-widest bg-indigo-400/10 w-fit px-4 py-2 rounded-xl flex-shrink-0"
+                            className="lg:hidden flex items-center gap-2 mb-2 text-indigo-400 font-black text-[10px] uppercase tracking-widest bg-indigo-400/10 w-fit px-3 py-1.5 rounded-xl"
                         >
-                            <ArrowLeft className="w-4 h-4" /> Volver a Géneros
+                            <ArrowLeft className="w-4 h-4" /> Volver
                         </button>
                     )}
 
-                    {/* Header Temas Unificado */}
-                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-6 flex-shrink-0 px-1">
-                        <div className="min-w-0 flex-1 mr-4">
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tight truncate">
-                                {selectedGenero ? selectedGenero.nombre_genero : 'Repertorio'}
+                    {/* Header Temas - Compacto */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
+                        <div className="min-w-0">
+                            <h2 className="text-lg font-black text-white uppercase tracking-tight truncate">
+                                {selectedGenero?.nombre_genero || 'Temas'}
                             </h2>
-                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1 truncate">
-                                {selectedGenero ? 'Listado de Canciones' : 'Selecciona un género'}
-                            </p>
+                            <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Canciones disponibles</p>
                         </div>
-                        
-                        <div className="flex gap-2 w-full xl:w-auto flex-shrink-0">
-                            <div className="flex-1 xl:w-48 transition-all focus-within:xl:w-64">
-                                <Input 
-                                    icon={Search}
-                                    placeholder="Buscar tema..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="h-12 bg-[#161b2c] border-white/5 rounded-xl text-sm focus:ring-brand-primary/50"
-                                />
-                            </div>
-                            {isAdmin && (
+                        <div className="flex items-center gap-2">
+                            <Input 
+                                icon={Search}
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="h-9 w-32 bg-[#161b2c] border-white/5 rounded-lg text-xs"
+                            />
+                            {canManage && (
                                 <Button 
                                     onClick={() => {
                                         setEditTemaInitialData(null);
                                         setIsTemaModalOpen(true);
                                     }} 
-                                    className="h-12 px-4 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0"
+                                    className="h-9 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-primary/90"
                                 >
-                                    <Plus className="w-4 h-4 mr-2" /> Tema
+                                    <Plus className="w-3.5 h-3.5 mr-1" /> Tema
                                 </Button>
                             )}
                         </div>
                     </div>
 
-                    {/* Contenido Unificado - SIN keys en las ramas condicionales */}
-                    <div className="py-2">
+                    <div>
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-                                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 shadow-xl"></div>
-                                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Sincronizando Biblioteca...</p>
+                                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 shadow-xl text-indigo-500"></div>
+                                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Sincronizando...</p>
                             </div>
                         ) : filteredTemas.length > 0 ? (
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-2 py-4">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 px-1">
                                 {filteredTemas.map((tema) => (
                                     <div 
                                         key={tema.id_tema}
@@ -295,206 +289,209 @@ export default function BibliotecaList() {
                                                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-colors shrink-0">
                                                     <Music className="w-6 h-6" />
                                                 </div>
-                                                <div className="min-w-0 flex-1 text-left">
+                                                <div className="min-w-0 flex-1">
                                                     <h4 className="text-white font-black text-lg group-hover:text-indigo-300 transition-colors uppercase tracking-tight leading-tight line-clamp-2">
                                                         {tema.nombre_tema}
                                                     </h4>
-                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{selectedGenero?.nombre_genero}</p>
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">{selectedGenero?.nombre_genero}</p>
                                                 </div>
                                             </div>
-                                            <div 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`);
-                                                }}
-                                                className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shrink-0"
-                                            >
+                                            <div className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
                                                 <ChevronRight className="w-5 h-5" />
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-4 text-[10px] font-black text-gray-500 uppercase tracking-widest border-t border-white/5 pt-4 pb-4">
-                                            <div className="flex items-center gap-1.5 flex-1 justify-center">
-                                                <FileText className="w-3.5 h-3.5" />
-                                                {tema.partituras_count || 0} PARTITURAS
-                                            </div>
-                                            <div className="w-px h-3 bg-white/10"></div>
-                                            <div className="flex items-center gap-1.5 text-indigo-400/60 flex-1 justify-center">
-                                                <Play className="w-3.5 h-3.5" />
-                                                {tema.guias_count || 0} AUDIO GUÍAS
-                                            </div>
-                                        </div>
+                                        {(() => {
+                                            const userInstrumentId = user?.miembro?.id_instrumento;
+                                            const userVozId = user?.miembro?.id_voz;
+                                            const recursos = tema.recursos || [];
 
-                                        {/* Quick Access for Members */}
-                                        {!isAdmin && tema.recursos?.length > 0 && (
-                                            <div className="flex flex-col gap-2 pt-3 border-t border-white/5 mt-auto">
-                                                <div className="flex gap-2">
-                                                    {(() => {
-                                                        const visualFiles = tema.recursos.flatMap(res => 
-                                                            (res.archivos || []).filter(f => f.tipo !== 'audio').map(f => ({
-                                                                ...f,
-                                                                url: f.url_archivo,
-                                                                type: f.tipo === 'pdf' ? 'pdf' : 'image',
-                                                                title: `${tema.nombre_tema} - ${res.voz?.nombre_voz}`
-                                                            }))
-                                                        );
-                                                        const audioFiles = tema.recursos.flatMap(res => 
-                                                            (res.archivos || []).filter(f => f.tipo === 'audio')
-                                                        );
+                                            // Calculate counts for display
+                                            let displayPartituras = tema.partituras_count || 0;
+                                            let displayGuias = (tema.guias_count || 0) + (tema.audio ? 1 : 0);
 
-                                                        return (
-                                                            <>
-                                                                {visualFiles.length > 0 && (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setViewerData({
-                                                                                files: visualFiles,
-                                                                                initialIndex: 0
-                                                                            });
-                                                                        }}
-                                                                        className="flex-[2] flex items-center justify-center gap-2 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400/20 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
-                                                                    >
-                                                                        <FileText className="w-4 h-4" /> ESTUDIAR PARTITURAS
-                                                                    </button>
-                                                                )}
-                                                                {audioFiles.length > 0 && (
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            window.open(audioFiles[0].url_archivo, '_blank');
-                                                                        }}
-                                                                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white border border-purple-500/20 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
-                                                                        title="Escuchar guía de audio"
-                                                                    >
-                                                                        <Play className="w-4 h-4 fill-current" /> GUÍA
-                                                                    </button>
-                                                                )}
-                                                            </>
-                                                        );
-                                                    })()}
-                                                </div>
-                                            </div>
-                                        )}
+                                            // If in study mode and we have instrument info, calculate based on user selection
+                                            // This is mostly for admins who want to see their own material or members if the backend didn't filter
+                                            if (!canManage && userInstrumentId) {
+                                                const myRecs = recursos.filter(r => 
+                                                    r.id_instrumento == userInstrumentId && 
+                                                    (r.id_voz == userVozId || r.id_voz == null)
+                                                );
+                                                displayPartituras = myRecs.reduce((acc, r) => 
+                                                    acc + (r.archivos || []).filter(f => f.tipo !== 'audio').length, 0
+                                                );
+                                                displayGuias = myRecs.reduce((acc, r) => 
+                                                    acc + (r.archivos || []).filter(f => f.tipo === 'audio').length, 0
+                                                ) + (tema.audio ? 1 : 0);
+                                            }
 
-                                        {isAdmin && (
-                                            <div className="flex gap-2 pt-3 border-t border-white/5 mt-auto">
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setEditTemaInitialData(tema);
-                                                        setIsTemaModalOpen(true);
-                                                    }}
-                                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 shadow-lg"
-                                                >
-                                                    <Edit className="w-3.5 h-3.5" /> Editar
-                                                </button>
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        const hasResources = (tema.partituras_count > 0 || tema.guias_count > 0);
-                                                        if (hasResources) {
-                                                            notify("No puedes eliminar una canción que tiene partituras o audios. Bórralos primero.", "warning");
-                                                            return;
-                                                        }
-                                                        setDeleteConfirmation({ isOpen: true, id: tema.id_tema, type: 'tema' });
-                                                    }}
-                                                    className={clsx(
-                                                        "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg",
-                                                        (tema.partituras_count > 0 || tema.guias_count > 0)
-                                                            ? "bg-white/5 border-white/5 text-gray-700 cursor-not-allowed font-bold"
-                                                            : "bg-[#1e1414] border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10"
+                                            return (
+                                                <div className="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-tight border-t border-white/5 pt-4 pb-4 px-1">
+                                                    <div className="flex items-center gap-1 flex-1 justify-center min-w-0">
+                                                        <FileText className="w-3 h-3 shrink-0" />
+                                                        <span className="truncate">{displayPartituras} <span className="hidden sm:inline">PARTITURAS</span><span className="sm:hidden">PART.</span></span>
+                                                    </div>
+                                                    <div className="w-px h-3 bg-white/10 shrink-0"></div>
+                                                    <div className="flex items-center gap-1 text-indigo-400/60 flex-1 justify-center min-w-0">
+                                                        <Play className="w-3 h-3 shrink-0" />
+                                                        <span className="truncate">{displayGuias} <span className="hidden sm:inline">GUÍAS</span><span className="sm:hidden">GUÍA</span></span>
+                                                    </div>
+                                                    {tema.videos?.[0]?.url_video && (
+                                                        <>
+                                                            <div className="w-px h-3 bg-white/10 shrink-0"></div>
+                                                            <div className="flex items-center gap-1 text-red-500/80 flex-1 justify-center min-w-0">
+                                                                <Video className="w-3 h-3 shrink-0" />
+                                                                <span className="truncate">VIDEO</span>
+                                                            </div>
+                                                        </>
                                                     )}
-                                                    title={(tema.partituras_count > 0 || tema.guias_count > 0) ? "Elimina las partituras primero" : "Eliminar Canción"}
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" /> Eliminar
-                                                </button>
-                                            </div>
-                                        )}
+                                                </div>
+                                            );
+                                        })()}
+
+                                        {(() => {
+                                            const recursos = tema.recursos || [];
+                                            const userInstrumentId = user?.miembro?.id_instrumento;
+                                            const userVozId = user?.miembro?.id_voz;
+                                            
+                                            // Filter resources for Reader Mode
+                                            const myResources = (userInstrumentId && !canManage)
+                                                ? recursos.filter(r => 
+                                                    r.id_instrumento == userInstrumentId && 
+                                                    (r.id_voz == userVozId || r.id_voz == null)
+                                                )
+                                                : recursos; 
+
+                                            const visualFiles = myResources.flatMap(res => 
+                                                (res.archivos || []).filter(f => f.tipo !== 'audio').map(f => ({
+                                                    ...f,
+                                                    url: f.url_archivo,
+                                                    type: f.tipo === 'pdf' ? 'pdf' : 'image',
+                                                    title: `${tema.nombre_tema} - ${res.voz?.nombre_voz || 'General'}`
+                                                }))
+                                            );
+                                            
+                                            // Audios
+                                            const resourceAudios = myResources.flatMap(res => 
+                                                (res.archivos || []).filter(f => f.tipo === 'audio')
+                                            );
+
+                                            // Main theme audio
+                                            const themeAudio = tema.audio ? [{
+                                                id_archivo: `theme-${tema.id_tema}`,
+                                                url_archivo: tema.audio.url_audio,
+                                                nombre_original: 'Audio Principal'
+                                            }] : [];
+
+                                            const allAudios = [...resourceAudios, ...themeAudio];
+                                            const videoLink = tema.videos?.[0]?.url_video;
+
+                                            if (canManage) {
+                                                const totalResources = (tema.partituras_count || 0) + (tema.guias_count || 0);
+                                                return (
+                                                    <div className="flex gap-2 pt-3 border-t border-white/5 mt-auto">
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); setEditTemaInitialData(tema); setIsTemaModalOpen(true); }}
+                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Edit className="w-3.5 h-3.5" /> Editar
+                                                        </button>
+                                                        <button 
+                                                            onClick={(e) => { 
+                                                                e.stopPropagation(); 
+                                                                if (totalResources > 0) {
+                                                                    notify(`No puedes eliminar un tema con ${totalResources} recursos asociados. Elimina primero las partituras.`, 'warning');
+                                                                    return;
+                                                                }
+                                                                setDeleteConfirmation({ isOpen: true, id: tema.id_tema, type: 'tema' }); 
+                                                            }}
+                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl border border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                                                        </button>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if (visualFiles.length === 0 && allAudios.length === 0 && !videoLink) return null;
+
+                                            return (
+                                                <div className="flex gap-2 pt-3 border-t border-white/5 mt-auto">
+                                                    {visualFiles.length > 0 && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setViewerData({ files: visualFiles, initialIndex: 0 }); }}
+                                                            className="flex-[2] flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
+                                                        >
+                                                            <FileText className="w-4 h-4" /> ESTUDIAR
+                                                        </button>
+                                                    )}
+                                                    <div className="flex gap-2 flex-1">
+                                                        {allAudios.length > 0 && (
+                                                            <button
+                                                                onClick={(e) => { 
+                                                                    e.stopPropagation(); 
+                                                                    setViewerData({ 
+                                                                        files: allAudios.map(a => ({
+                                                                            url: a.url_archivo,
+                                                                            title: `${tema.nombre_tema} - ${a.nombre_original || 'Guía'}`,
+                                                                            type: 'audio'
+                                                                        })), 
+                                                                        initialIndex: 0 
+                                                                    }); 
+                                                                }}
+                                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                                                            >
+                                                                <Play className="w-4 h-4 fill-current" />
+                                                            </button>
+                                                        )}
+                                                        {videoLink && (
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); window.open(videoLink, '_blank'); }}
+                                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                                                                title="Ver video de referencia"
+                                                            >
+                                                                <Video className="w-4 h-4" />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 ))}
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-32 bg-white/2 border border-dashed border-white/5 rounded-[40px] text-center px-6">
-                                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-gray-700 mb-6">
-                                    <Search className="w-10 h-10" />
-                                </div>
+                                <Search className="w-12 h-12 text-gray-700 mb-6" />
                                 <h3 className="text-xl font-bold text-white mb-2">Sin resultados</h3>
-                                <p className="text-gray-500 max-w-xs text-sm">No encontramos temas que coincidan con tu búsqueda en este género.</p>
-                                <Button variant="secondary" className="mt-8" onClick={() => setSearchQuery('')}>Limpiar Búsqueda</Button>
+                                <p className="text-gray-500 text-sm">No hay temas en este género aún.</p>
                             </div>
                         )}
                     </div>
                 </div>
-
             </div>
 
             {/* Modales */}
-            <RecursoModal 
-                isOpen={isRecursoModalOpen} 
-                onClose={() => {
-                    setIsRecursoModalOpen(false);
-                    setRecursoInitialData(null);
-                }} 
-                onSuccess={() => {
-                    loadData();
-                }}
-                initialData={recursoInitialData}
-            />
-            
-            <MusicCatalogModal 
-                isOpen={isCatalogModalOpen} 
-                onClose={() => {
-                    setIsCatalogModalOpen(false);
-                    setGenreToEdit(null);
-                    loadData();
-                }}
-                editGenre={genreToEdit}
-            />
-
-            <TemaModal 
-                isOpen={isTemaModalOpen}
-                onClose={() => {
-                    setIsTemaModalOpen(false);
-                    setEditTemaInitialData(null);
-                }}
-                idGenero={selectedGenero?.id_genero}
-                nombreGenero={selectedGenero?.nombre_genero}
-                onSuccess={loadData}
-                initialData={editTemaInitialData}
-            />
-
-
+            <RecursoModal isOpen={isRecursoModalOpen} onClose={() => { setIsRecursoModalOpen(false); setRecursoInitialData(null); }} onSuccess={loadData} initialData={recursoInitialData} />
+            <MusicCatalogModal isOpen={isCatalogModalOpen} onClose={() => { setIsCatalogModalOpen(false); setGenreToEdit(null); loadData(); }} editGenre={genreToEdit} />
+            <TemaModal isOpen={isTemaModalOpen} onClose={() => { setIsTemaModalOpen(false); setEditTemaInitialData(null); }} idGenero={selectedGenero?.id_genero} nombreGenero={selectedGenero?.nombre_genero} onSuccess={loadData} initialData={editTemaInitialData} />
             <ConfirmationModal 
-                isOpen={deleteConfirmation.isOpen}
-                onClose={() => setDeleteConfirmation({ isOpen: false, id: null, type: 'genero' })}
+                isOpen={deleteConfirmation.isOpen} 
+                onClose={() => setDeleteConfirmation({ ...deleteConfirmation, isOpen: false })} 
                 onConfirm={async () => {
                     try {
-                        const endpoint = deleteConfirmation.type === 'genero' 
-                            ? `generos/${deleteConfirmation.id}` 
-                            : `temas/${deleteConfirmation.id}`;
-                        
+                        const endpoint = deleteConfirmation.type === 'genero' ? `generos/${deleteConfirmation.id}` : `temas/${deleteConfirmation.id}`;
                         await api.delete(endpoint);
-                        notify(`${deleteConfirmation.type === 'genero' ? 'Género' : 'Canción'} eliminada exitosamente`, 'success');
+                        notify(`${deleteConfirmation.type === 'genero' ? 'Género' : 'Canción'} eliminado exitosamente`, 'success');
                         loadData();
                         setDeleteConfirmation({ isOpen: false, id: null, type: 'genero' });
-                    } catch (err) {
-                        notify(err.response?.data?.message || 'Error al eliminar el elemento', 'error');
-                    }
+                    } catch (err) { notify('Error al eliminar', 'error'); }
                 }}
                 title={deleteConfirmation.type === 'genero' ? "¿Eliminar Género?" : "¿Eliminar Canción?"}
-                message={deleteConfirmation.type === 'genero' 
-                    ? "Esta acción es irreversible. Se eliminarán todas las canciones y partituras asociadas a este género."
-                    : "Esta acción es irreversible. Se eliminarán todas las partituras y guías asociadas a esta canción."}
+                message="Esta acción es irreversible. Se eliminará todo el material asociado."
                 confirmText="Sí, Eliminar"
             />
-
-            <MultimediaViewerModal 
-                isOpen={!!viewerData}
-                onClose={() => setViewerData(null)}
-                files={viewerData?.files}
-                initialIndex={viewerData?.initialIndex}
-            />
+            <MultimediaViewerModal isOpen={!!viewerData} onClose={() => setViewerData(null)} files={viewerData?.files} initialIndex={viewerData?.initialIndex} />
         </div>
     );
 }

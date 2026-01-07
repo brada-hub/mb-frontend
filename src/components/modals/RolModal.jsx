@@ -15,7 +15,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
     useEffect(() => {
         if (isOpen) {
             // Cargar todos los permisos disponibles
-            api.get('/permisos')
+            api.get('/permisos-lista')
                 .then(res => setAllPermisos(res.data))
                 .catch(console.error);
 

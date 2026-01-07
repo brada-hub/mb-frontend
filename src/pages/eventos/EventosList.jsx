@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Plus, MapPin, Clock, Search, MoreVertical, Edit, Trash2, Navigation, Users } from 'lucide-react';
+import { Calendar, Plus, MapPin, Clock, Search, MoreVertical, Edit, Trash2, Navigation, Users, CheckCircle, Info, Briefcase, Activity } from 'lucide-react';
+import { clsx } from 'clsx';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import EventoModal from '../../components/modals/EventoModal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EventosList() {
     const navigate = useNavigate();
     const { notify } = useToast();
+    const { user } = useAuth();
     const [eventos, setEventos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('ENSAYOS'); // 'ENSAYOS' o 'CONTRATOS'
     
+    // Check Permissions
+    const canManage = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role === 'ADMINISTRADOR';
+
     // Modal States
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEvento, setEditingEvento] = useState(null);
@@ -27,13 +34,11 @@ export default function EventosList() {
     const loadEventos = async () => {
         setLoading(true);
         try {
-            // Fetch 'proximos' or 'all'? Let's fetch all for management, but maybe filter in backend later.
-            // Using the 'index' endpoint which returns all sorted by date desc
             const res = await api.get('/eventos'); 
             setEventos(res.data);
         } catch (error) {
             console.error(error);
-            notify('Error al cargar eventos', 'error');
+            notify('Error al cargar agenda', 'error');
         } finally {
             setLoading(false);
         }
@@ -46,13 +51,12 @@ export default function EventosList() {
 
     const handleEdit = async (evento) => {
         try {
-            // Fetch full details to get requirements
             const res = await api.get(`/eventos/${evento.id_evento}`);
             setEditingEvento(res.data);
             setIsModalOpen(true);
         } catch (error) {
             console.error(error);
-            notify('Error al cargar detalles del evento', 'error');
+            notify('Error al cargar detalles', 'error');
         }
     };
 
@@ -63,10 +67,10 @@ export default function EventosList() {
     const handleConfirmDelete = async () => {
         try {
             await api.delete(`/eventos/${confirmState.id}`);
-            notify('Evento eliminado', 'success');
+            notify('Eliminado correctamente', 'success');
             loadEventos();
         } catch (error) {
-            notify('Error al eliminar evento', 'error');
+            notify('Error al eliminar', 'error');
         } finally {
             setConfirmState({ isOpen: false, id: null });
         }
@@ -83,8 +87,14 @@ export default function EventosList() {
         }
     };
 
+    // Filter by Tab AND Search
     const filteredEventos = eventos
         .filter(e => {
+            const eventType = e.tipo?.evento?.toUpperCase();
+            const matchesTab = activeTab === 'ENSAYOS' ? eventType === 'ENSAYO' : eventType !== 'ENSAYO';
+            
+            if (!matchesTab) return false;
+
             const term = searchTerm.toLowerCase();
             const nombre = e.evento?.toLowerCase() || '';
             const tipo = e.tipo?.evento?.toLowerCase() || '';
@@ -98,50 +108,82 @@ export default function EventosList() {
             {/* Header Unified */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Agenda de Eventos</h1>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestiona ensayos, presentaciones y actividades</p>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Agenda de la Banda</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Control de ensayos y presentaciones</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
                     <div className="w-full md:w-80">
                         <Input 
                             icon={Search}
-                            placeholder="Buscar eventos..." 
+                            placeholder="Buscar evento..." 
                             className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     
-                    <Button onClick={handleCreate} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Nuevo
-                    </Button>
+                    {canManage && (
+                        <Button onClick={handleCreate} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Nuevo Evento
+                        </Button>
+                    )}
                 </div>
+            </div>
+
+            {/* TABS SELECTOR */}
+            <div className="flex p-1 bg-white/5 rounded-2xl w-full max-w-md border border-white/5">
+                <button 
+                    onClick={() => setActiveTab('ENSAYOS')}
+                    className={clsx(
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-xs tracking-widest uppercase",
+                        activeTab === 'ENSAYOS' ? "bg-blue-600 text-white shadow-lg" : "text-gray-500 hover:text-white"
+                    )}
+                >
+                    <Activity className="w-4 h-4" />
+                    Ensayos & Actividades
+                </button>
+                <button 
+                    onClick={() => setActiveTab('CONTRATOS')}
+                    className={clsx(
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-xs tracking-widest uppercase",
+                        activeTab === 'CONTRATOS' ? "bg-purple-600 text-white shadow-lg" : "text-gray-500 hover:text-white"
+                    )}
+                >
+                    <Briefcase className="w-4 h-4" />
+                    Contratos & Shows
+                </button>
             </div>
 
             {/* List */}
             {loading ? (
-                <div className="text-center py-20 text-gray-500">Cargando agenda...</div>
+                <div className="text-center py-20 text-gray-500 flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-bold uppercase tracking-widest">Sincronizando Agenda...</span>
+                </div>
             ) : filteredEventos.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredEventos.map(evento => {
                         return (
-                            <div key={evento.id_evento} className={`relative group bg-surface-card border rounded-3xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl border-white/10 hover:border-brand-primary/50`}>
+                            <div key={evento.id_evento} className={`relative group bg-surface-card border rounded-3xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl border-white/10 ${canManage ? 'hover:border-brand-primary/50' : ''}`}>
                                 
                                 <div className="p-6 space-y-4">
                                     <div className="flex justify-between items-start">
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getTypeColor(evento.tipo?.evento)}`}>
                                             {evento.tipo?.evento}
                                         </span>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleEdit(evento)} className="p-2 hover:bg-white/10 rounded-lg text-blue-400">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button onClick={() => handleDeleteClick(evento.id_evento)} className="p-2 hover:bg-white/10 rounded-lg text-red-400">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
+                                        
+                                        {canManage && (
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleEdit(evento)} className="p-2 hover:bg-white/10 rounded-lg text-blue-400">
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => handleDeleteClick(evento.id_evento)} className="p-2 hover:bg-white/10 rounded-lg text-red-400">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div>
@@ -187,14 +229,37 @@ export default function EventosList() {
                                         </a>
                                     )}
                                     
-                                    {/* Botón de Convocatoria */}
-                                    <button 
-                                        onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
-                                        className="w-full mt-2 py-2 text-center text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 rounded-xl transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        <Users className="w-3 h-3" />
-                                        Gestionar Convocatoria
-                                    </button>
+                                    {/* Actions Footer - Role Based */}
+                                    {canManage ? (
+                                        <button 
+                                            onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
+                                            className="w-full mt-2 py-2 text-center text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Users className="w-3 h-3" />
+                                            Gestionar Convocatoria
+                                        </button>
+                                    ) : (
+                                        <div className="mt-2 space-y-2">
+                                            <div className="text-center">
+                                                {evento.estoy_convocado ? (
+                                                    <span className="text-[10px] font-bold text-green-500 flex items-center justify-center gap-1 animate-pulse">
+                                                        <CheckCircle className="w-3 h-3" /> TE TOCA IR
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold text-gray-600 flex items-center justify-center gap-1">
+                                                        <Info className="w-3 h-3" /> Solo Informativo
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <button 
+                                                onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
+                                                className="w-full py-2 text-center text-xs font-bold text-gray-400 bg-white/5 hover:bg-white/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Users className="w-3 h-3" />
+                                                Ver Formación
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -203,10 +268,12 @@ export default function EventosList() {
             ) : (
                 <div className="text-center py-20 bg-surface-card border border-white/5 rounded-3xl">
                     <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400 text-lg font-medium">No hay eventos programados</p>
-                    <Button onClick={handleCreate} variant="link" className="mt-2 text-brand-primary">
-                        Crear el primero ahora
-                    </Button>
+                    <p className="text-gray-400 text-lg font-medium">No hay eventos en esta categoría</p>
+                    {canManage && (
+                        <Button onClick={handleCreate} variant="link" className="mt-2 text-brand-primary">
+                            Crear el primero ahora
+                        </Button>
+                    )}
                 </div>
             )}
 
@@ -215,14 +282,15 @@ export default function EventosList() {
                 onClose={() => setIsModalOpen(false)}
                 onSuccess={loadEventos}
                 eventoToEdit={editingEvento}
+                defaultType={activeTab === 'ENSAYOS' ? 'ENSAYO' : 'PRESENTACION'}
             />
 
             <ConfirmModal 
                 isOpen={confirmState.isOpen}
                 onClose={() => setConfirmState({ isOpen: false, id: null })}
                 onConfirm={handleConfirmDelete}
-                title="¿Eliminar Evento?"
-                message="Esta acción no se puede deshacer. Se perderán los registros de asistencia asociados."
+                title="¿Eliminar?"
+                message="Esta acción no se puede deshacer."
                 confirmText="Sí, Eliminar"
                 variant="danger"
             />

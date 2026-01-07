@@ -12,7 +12,9 @@ import {
     FileText,
     Shield,
     Layers,
-    Music
+    Music,
+    ListMusic,
+    Grid
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import ForcePasswordChangeModal from '../components/modals/ForcePasswordChangeModal';
@@ -55,18 +57,32 @@ export default function MainLayout() {
     if (loading || checking) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white font-black tracking-widest animate-pulse uppercase">Cargando Accesos...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
 
+    const userRole = user?.role || user?.miembro?.rol?.rol || '';
+    const isJefe = userRole.includes('JEFE');
+    const isPowerUser = ['ADMIN', 'DIRECTOR'].includes(userRole) || isJefe;
+
     const hasPermission = (perm) => {
-        if (!perm) return true; // Siempre visible (como el Dashboard base)
-        return user?.permissions?.includes(perm);
+        if (!perm) return true;
+        if (user?.permissions?.includes(perm)) return true;
+        
+        // Si es un power user, tiene ciertos accesos implícitos si faltan en permisos
+        if (isPowerUser) {
+            if (perm === 'GESTION_BIBLIOTECA') return true;
+            if (perm === 'VER_DASHBOARD') return true;
+            if (perm === 'GESTION_ASISTENCIA') return true;
+        }
+
+        return false;
     };
 
     const sidebarItems = [
         { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
         { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
-        { icon: Calendar, label: 'Eventos', to: '/dashboard/eventos', permission: 'GESTION_EVENTOS' },
+        { icon: Calendar, label: 'Agenda', to: '/dashboard/eventos', permission: null },
         { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
-        { icon: Layers, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+        { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
         { icon: Music, label: 'Biblioteca', to: '/dashboard/biblioteca', permission: 'GESTION_BIBLIOTECA' },
+        { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: 'GESTION_BIBLIOTECA' },
         { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
     ];
 
@@ -181,11 +197,11 @@ export default function MainLayout() {
                 "flex-1 h-screen flex flex-col relative transition-all duration-300",
                 isSidebarOpen ? "lg:ml-72" : "lg:ml-0"
             )}>
-                {/* Topbar */}
-                <header className="h-20 px-8 flex items-center justify-between border-b border-white/5 bg-[#0f111a]/50 backdrop-blur-md shrink-0 sticky top-0 z-30">
-                    <div className="flex items-center gap-4">
+                {/* Topbar - Ultra Compacto en móvil para ganar espacio vertical */}
+                <header className="h-10 sm:h-16 lg:h-20 px-2 sm:px-8 flex items-center justify-between border-b border-white/5 bg-[#0f111a]/50 backdrop-blur-md shrink-0 sticky top-0 z-30">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <button 
-                            className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            className="p-1 sm:p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                             onClick={() => {
                                 if (window.innerWidth >= 1024) {
                                     setIsSidebarOpen(!isSidebarOpen);
@@ -194,26 +210,23 @@ export default function MainLayout() {
                                 }
                             }}
                         >
-                            <Menu className="w-6 h-6" />
+                            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                         </button>
 
-                        <h2 className="text-xl font-bold text-white hidden lg:block">
+                        <h2 className="text-sm sm:text-xl font-bold text-white hidden sm:block">
                             {[...sidebarItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors relative">
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-[#0f111a]"></span>
-                        </button>
-                        <button className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors">
-                            <Settings className="w-5 h-5" />
+                    <div className="flex items-center gap-1 sm:gap-4">
+                        <button className="p-1 sm:p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors relative">
+                            <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="absolute top-1 right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full border-2 border-[#0f111a]"></span>
                         </button>
                     </div>
                 </header>
 
-                <div className="flex-1 p-8 overflow-y-auto w-full max-w-full mx-auto flex flex-col">
+                <div className="flex-1 pt-0 px-2 sm:px-6 lg:px-8 pb-4 sm:pb-6 overflow-y-auto w-full max-w-full mx-auto flex flex-col">
                     <Outlet />
                 </div>
             </main>

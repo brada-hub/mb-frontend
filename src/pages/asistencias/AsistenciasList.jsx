@@ -181,8 +181,8 @@ export default function AsistenciasList() {
             {/* Header Unified */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Control de Asistencia</h1>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Control de Asistencia</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">
                         {new Date().toLocaleDateString('es-BO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                 </div>

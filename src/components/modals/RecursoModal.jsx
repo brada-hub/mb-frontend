@@ -324,7 +324,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                 {initialData?.id_recurso ? 'Modificar Recurso' : 'Subir Recurso'}
                             </h2>
                             <p className="text-[10px] text-white/60 font-black uppercase tracking-widest">
-                                {initialData?.id_recurso ? 'Actualizar archivos o datos' : 'Partituras y Guías de Audio'}
+                                {initialData?.id_recurso ? 'Actualizar archivos o datos' : 'Partituras (PDF / Imágenes)'}
                             </p>
                         </div>
                     </div>
@@ -420,9 +420,9 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                     </div>
 
                     <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Archivos y Enlaces Multimedia</label>
+                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Partituras</label>
                          
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div className="grid grid-cols-1">
                              <div className="relative group text-center">
                                 <label className={clsx(
                                     "flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
@@ -435,7 +435,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                         <ImageIcon className="w-8 h-8" />
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-tighter mt-2 text-white/50">
-                                        Subir Partituras (PDF/FOTO)
+                                        SUBIR PARTITURAS (PDF/IMÁGENES)
                                     </span>
                                     <input 
                                         type="file" 
@@ -456,53 +456,6 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                         }}
                                     />
                                 </label>
-                            </div>
-
-                            <div className="relative group">
-                                <label className={clsx(
-                                    "flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
-                                    audioFile
-                                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20" 
-                                        : "bg-white/5 border-white/10 hover:border-purple-500/50 hover:bg-purple-500/5"
-                                )}>
-                                    {audioFile ? (
-                                        <Check className="w-8 h-8 text-purple-400 mb-2" />
-                                    ) : (
-                                        <PlayCircle className="w-8 h-8 text-gray-500 mb-2 group-hover:text-purple-400" />
-                                    )}
-                                    <span className={clsx(
-                                        "text-[10px] font-black uppercase tracking-tighter truncate max-w-[80%] px-4",
-                                        audioFile ? "text-purple-400" : "text-gray-500 group-hover:text-white"
-                                    )}>
-                                        {audioFile 
-                                            ? audioFile.name 
-                                            : "Audio Guía (Opcional)"}
-                                    </span>
-                                    <input 
-                                        type="file" 
-                                        className="hidden" 
-                                        accept="audio/*" 
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                setAudioFile({
-                                                    file: file,
-                                                    name: file.name,
-                                                    isExisting: false
-                                                });
-                                            }
-                                        }}
-                                    />
-                                </label>
-                                {audioFile && (
-                                    <button 
-                                        type="button"
-                                        onClick={() => setAudioFile(null)}
-                                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all z-10"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                )}
                             </div>
                          </div>
 

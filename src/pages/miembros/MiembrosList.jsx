@@ -130,7 +130,7 @@ export default function MiembrosList() {
     });
 
     return (
-        <div className="h-full overflow-y-auto custom-scrollbar space-y-6 pr-2">
+        <div className="h-full overflow-y-auto custom-scrollbar pr-2">
             <MiembroModal 
                 isOpen={isModalOpen} 
                 onClose={() => {
@@ -176,10 +176,11 @@ export default function MiembrosList() {
                 variant={confirmState.member?.user?.estado ? "danger" : "info"}
             />
 
+            {/* Header con Título y Descripción */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Miembros</h1>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de personal y músicos</p>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Miembros</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Gestión de personal y músicos</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
@@ -198,6 +199,7 @@ export default function MiembrosList() {
                         ))}
                     </select>
 
+                    {/* Filtro Categoría */}
                     <select 
                         id="filter-category"
                         className="bg-[#161b2c] border-white/5 rounded-xl h-12 px-4 text-xs font-bold uppercase tracking-wider text-gray-400 focus:ring-brand-primary/50 outline-none cursor-pointer hover:bg-white/5 transition-colors"
@@ -279,7 +281,9 @@ export default function MiembrosList() {
                                                 <Briefcase className="w-4 h-4" />
                                             </div>
                                             <span className="font-medium truncate">
-                                                {miembro.instrumento?.instrumento || miembro.seccion?.seccion || 'N/A'} • {miembro.categoria?.nombre_categoria || 'N/A'}
+                                                {miembro.instrumento?.instrumento || miembro.seccion?.seccion || 'N/A'} 
+                                                {miembro.voz?.nombre_voz ? ` • ${miembro.voz.nombre_voz}` : ''} 
+                                                • {miembro.categoria?.nombre_categoria || 'N/A'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 text-gray-400">

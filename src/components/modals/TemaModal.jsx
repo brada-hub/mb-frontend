@@ -12,12 +12,14 @@ import {
     Link as LinkIcon
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import { clsx } from 'clsx';
 
 export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onSuccess, initialData }) {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         nombre_tema: '',
-        url_video: ''
+        url_video: '',
+        audio_file: null
     });
     const { notify } = useToast();
 
@@ -26,12 +28,14 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
             if (initialData) {
                 setFormData({
                     nombre_tema: initialData.nombre_tema,
-                    url_video: initialData.videos?.[0]?.url_video || ''
+                    url_video: initialData.videos?.[0]?.url_video || '',
+                    audio_file: null // Files can't be preset in input, user must re-upload if changing
                 });
             } else {
                 setFormData({
                     nombre_tema: '',
-                    url_video: ''
+                    url_video: '',
+                    audio_file: null
                 });
             }
         }
@@ -45,17 +49,26 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
         }
         setLoading(true);
         try {
-            const payload = {
-                nombre_tema: formData.nombre_tema.toUpperCase(),
-                id_genero: idGenero,
-                url_video: formData.url_video
-            };
+            const data = new FormData();
+            data.append('nombre_tema', formData.nombre_tema.toUpperCase());
+            data.append('id_genero', idGenero);
+            if (formData.url_video) data.append('url_video', formData.url_video);
+            if (formData.audio_file) data.append('audio_file', formData.audio_file);
 
+            // If updating and not using FormData before, be careful. 
+            // Put using FormData typically requires non-standard handling in Laravel or using _method: PUT
+            
             if (initialData) {
-                await api.put(`temas/${initialData.id_tema}`, payload);
+                // Laravel sometimes struggles with PUT and FormData files. Usually best to use POST with _method=PUT
+                data.append('_method', 'PUT');
+                await api.post(`temas/${initialData.id_tema}`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 notify("Tema actualizado correctamente", "success");
             } else {
-                await api.post('temas', payload);
+                await api.post('temas', data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 notify("Tema añadido correctamente", "success");
             }
             onSuccess();
@@ -101,6 +114,53 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase font-bold placeholder:text-gray-700"
                             autoFocus
                         />
+                    </div>
+
+                    <div>
+                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2 mb-2 block">Audio del Tema (Opcional)</label>
+                        <div className="relative group">
+                            <input 
+                                id="audio-upload"
+                                type="file"
+                                accept=".mp3,.wav,.ogg,.m4a"
+                                onChange={(e) => setFormData({...formData, audio_file: e.target.files[0]})}
+                                className="hidden"
+                            />
+                            <div className={clsx(
+                                "flex items-center gap-4 w-full bg-white/5 border rounded-2xl p-2 transition-all",
+                                formData.audio_file || initialData?.audio ? "border-indigo-500/50 bg-indigo-500/5" : "border-white/10"
+                            )}>
+                                <label 
+                                    htmlFor="audio-upload"
+                                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all shadow-lg shrink-0"
+                                >
+                                    Seleccionar Archivo
+                                </label>
+                                <div className="flex-1 min-w-0 pr-2">
+                                    <p className="text-[10px] font-bold text-white uppercase truncate">
+                                        {formData.audio_file 
+                                            ? formData.audio_file.name 
+                                            : initialData?.audio 
+                                                ? initialData.audio.url_audio.split('/').pop() 
+                                                : 'Sin archivo seleccionado'}
+                                    </p>
+                                    {(formData.audio_file || initialData?.audio) && (
+                                        <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">
+                                            {formData.audio_file ? 'Archivo listo para subir' : 'Audio actual guardado'}
+                                        </p>
+                                    )}
+                                </div>
+                                {formData.audio_file && (
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData({...formData, audio_file: null})}
+                                        className="p-1.5 hover:bg-red-500/20 text-red-500 rounded-lg transition-all"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     <div>

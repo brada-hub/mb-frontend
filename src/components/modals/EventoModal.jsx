@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 
-export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null }) {
+export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null, defaultType = null }) {
     const { notify } = useToast();
     const [loading, setLoading] = useState(false);
     const [tipos, setTipos] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [miembrosPorInstrumento, setMiembrosPorInstrumento] = useState({});
+    
+    // Quick Add Type State
+    const [showNewTypeForm, setShowNewTypeForm] = useState(false);
+    const [newTypeName, setNewTypeName] = useState('');
+    const [creatingType, setCreatingType] = useState(false);
     
     // CONSTANTES DE LUGARES
     const LUGARES_FRECUENTES = [
@@ -106,7 +111,29 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         try {
             const res = await api.get('/eventos/tipos');
             setTipos(res.data);
-            // YA NO autoseleccionamos el primero por defecto
+            
+            // Si es un evento nuevo y tenemos un defaultType, lo pre-seleccionamos
+            if (!eventoToEdit && defaultType && res.data.length > 0) {
+                const target = res.data.find(t => t.evento.toUpperCase() === defaultType.toUpperCase());
+                if (target) {
+                    setFormData(prev => {
+                        let next = { ...prev, id_tipo_evento: target.id_tipo_evento };
+                        
+                        // Si es ensayo, disparar lógica de auto-relleno inmediatamente
+                        if (target.evento === 'ENSAYO') {
+                            next.evento = generateEnsayoTitle(prev.fecha);
+                            const sala = LUGARES_FRECUENTES[0];
+                            if (sala) {
+                                next.latitud = sala.lat;
+                                next.longitud = sala.lng;
+                                next.direccion = sala.direccion;
+                                next.radio = sala.radio;
+                            }
+                        }
+                        return next;
+                    });
+                }
+            }
         } catch (error) {
             console.error(error);
             notify('Error al cargar tipos de evento', 'error');
@@ -251,6 +278,24 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         });
     };
 
+    const handleCreateNewType = async () => {
+        if (!newTypeName.trim()) return;
+        setCreatingType(true);
+        try {
+            const res = await api.post('/eventos/tipos', { evento: newTypeName });
+            setTipos(prev => [...prev, res.data]);
+            setFormData(prev => ({ ...prev, id_tipo_evento: res.data.id_tipo_evento }));
+            setNewTypeName('');
+            setShowNewTypeForm(false);
+            notify('¡Nuevo tipo de evento creado!', 'success');
+        } catch (error) {
+            console.error(error);
+            notify(error.response?.data?.message || 'Error al crear tipo', 'error');
+        } finally {
+            setCreatingType(false);
+        }
+    };
+
     const handleSelectAll = (checked) => {
         if (checked) {
             // Seleccionar SOLO los instrumentos que tengan miembros disponibles
@@ -357,24 +402,62 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                         <div className="space-y-6">
                             {/* Tipo de Evento */}
                             <div className={`space-y-2 ${errors.id_tipo_evento ? 'has-error' : ''}`}>
-                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
-                                    Tipo de Evento <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <Hash className={`absolute left-4 top-3.5 w-5 h-5 ${errors.id_tipo_evento ? 'text-red-500' : 'text-gray-500'}`} />
-                                    <select 
-                                        value={formData.id_tipo_evento}
-                                        onChange={handleTipoChange}
-                                        className={`w-full pl-12 pr-4 py-3 bg-surface-input border rounded-xl text-white font-bold outline-none appearance-none cursor-pointer ${
-                                            errors.id_tipo_evento ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 focus:border-brand-primary'
-                                        }`}
+                                <div className="flex items-center justify-between ml-1">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        Tipo de Evento <span className="text-red-500">*</span>
+                                    </label>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowNewTypeForm(!showNewTypeForm)}
+                                        className="text-[10px] font-black text-brand-primary hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1"
                                     >
-                                        <option value="" disabled>SELECCIONE UN TIPO...</option>
-                                        {tipos.map(t => (
-                                            <option key={t.id_tipo_evento} value={t.id_tipo_evento}>{t.evento}</option>
-                                        ))}
-                                    </select>
+                                        {showNewTypeForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                                        {showNewTypeForm ? 'CANCELAR' : 'AÑADIR OTRO TIPO'}
+                                    </button>
                                 </div>
+
+                                {showNewTypeForm ? (
+                                    <div className="flex gap-2 animate-in slide-in-from-top-2 duration-300">
+                                        <div className="relative flex-1">
+                                            <Hash className="absolute left-4 top-3.5 w-5 h-5 text-brand-primary" />
+                                            <input 
+                                                autoFocus
+                                                value={newTypeName}
+                                                onChange={(e) => setNewTypeName(e.target.value.toUpperCase())}
+                                                placeholder="EJ: BAUTIZO, DESFILE..."
+                                                className="w-full pl-12 pr-4 py-3 bg-brand-primary/10 border border-brand-primary/30 rounded-xl text-white font-bold outline-none placeholder:text-brand-primary/40"
+                                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreateNewType())}
+                                            />
+                                        </div>
+                                        <Button 
+                                            type="button"
+                                            onClick={handleCreateNewType}
+                                            loading={creatingType}
+                                            className="px-6 rounded-xl bg-brand-primary"
+                                        >
+                                            GUARDAR
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="relative group">
+                                        <Hash className={`absolute left-4 top-3.5 w-5 h-5 z-10 ${errors.id_tipo_evento ? 'text-red-500' : 'text-gray-500'}`} />
+                                        <select 
+                                            value={formData.id_tipo_evento}
+                                            onChange={handleTipoChange}
+                                            className={`w-full pl-12 pr-10 py-3 bg-surface-input border rounded-xl text-white font-bold outline-none appearance-none cursor-pointer transition-all ${
+                                                errors.id_tipo_evento ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 focus:border-brand-primary hover:border-white/20'
+                                            }`}
+                                        >
+                                            <option value="" disabled>SELECCIONE UN TIPO...</option>
+                                            {tipos.map(t => (
+                                                <option key={t.id_tipo_evento} value={t.id_tipo_evento}>{t.evento}</option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-4 pointer-events-none text-gray-500 group-hover:text-white transition-colors">
+                                            <ChevronDown className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                )}
                                 {errors.id_tipo_evento && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_tipo_evento}</p>}
                             </div>
 

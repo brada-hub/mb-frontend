@@ -8,6 +8,7 @@ import ThemeDetailView from '../pages/biblioteca/ThemeDetailView';
 import EventosList from '../pages/eventos/EventosList';
 import AsistenciasList from '../pages/asistencias/AsistenciasList';
 import ConvocatoriaEvento from '../pages/eventos/ConvocatoriaEvento';
+import MixesList from '../pages/repertorio/MixesList';
 import MainLayout from '../layouts/MainLayout';
 import { Navigate } from 'react-router-dom';
 
@@ -26,6 +27,7 @@ const routes = [
             { path: 'secciones', element: <SeccionesList /> },
             { path: 'biblioteca', element: <BibliotecaList /> },
             { path: 'biblioteca/:id/detalle', element: <ThemeDetailView /> },
+            { path: 'repertorio', element: <MixesList /> },
             { path: 'eventos', element: <EventosList /> },
             { path: 'eventos/:id/convocatoria', element: <ConvocatoriaEvento /> },
             { path: 'asistencia', element: <AsistenciasList /> }

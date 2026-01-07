@@ -32,10 +32,16 @@ export default function ConvocatoriaEvento() {
     const [postularSearch, setPostularSearch] = useState('');
     const [postularInstrumento, setPostularInstrumento] = useState('');
 
-    // Permisos de gestión (Director, Admin, Jefe de Sección)
+    // Permisos de gestión
     const roleName = user?.role?.toUpperCase() || '';
-    const canManage = ['DIRECTOR', 'ADMIN', 'JEFE DE SECCION'].includes(roleName) || 
-                      [1, 2, 3].includes(parseInt(user?.miembro?.id_rol));
+    
+    // Solo Admin y Director pueden CONFIRMAR (Validar) definitivamente
+    const canConfirm = ['DIRECTOR', 'ADMIN', 'ADMINISTRADOR'].includes(roleName) || 
+                       [1, 2].includes(parseInt(user?.miembro?.id_rol));
+
+    // Admin, Director y Jefes de Sección pueden GESTIONAR (Añadir/Quitar)
+    const canManage = canConfirm || roleName.includes('JEFE') || 
+                      parseInt(user?.miembro?.id_rol) === 3;
     
     useEffect(() => {
         console.log('USER DEBUG:', user);
@@ -43,7 +49,21 @@ export default function ConvocatoriaEvento() {
     }, [user]);
 
     const isJefeSeccion = roleName.includes('JEFE');
-    const miSeccion = user?.miembro?.id_seccion;
+    const miInstrumentoId = user?.miembro?.id_instrumento;
+    const miInstrumentoNombre = user?.miembro?.instrumento?.instrumento;
+    const isVirtual = !evento?.requerimientos || evento?.requerimientos.length === 0;
+
+    // Helper para verificar si un músico o instrumento es de MI responsabilidad (mismo instrumento)
+    const isMyResponsibility = (target) => {
+        if (canConfirm) return true; // Admin/Director tienen acceso total
+        if (!target || !miInstrumentoId) return false;
+        
+        // target puede ser un Miembro o un Requerimiento/Instrumento
+        const targetInstrumentId = target.id_instrumento || target.instrumento?.id_instrumento;
+        if (!targetInstrumentId) return false;
+
+        return String(targetInstrumentId) === String(miInstrumentoId);
+    };
 
     useEffect(() => {
         loadData(true); // Pasar true para mostrar cargando la primera vez
@@ -220,21 +240,20 @@ export default function ConvocatoriaEvento() {
             const miembro = miembrosDisponibles.find(m => m.id_miembro === id_miembro);
             if (!miembro) return;
 
-            // Encontrar el requerimiento para ese instrumento
-            const req = evento?.requerimientos?.find(r => r.id_instrumento === miembro.id_instrumento);
-            if (req) {
-                // Contar cuántos ya están convocados en el evento
-                const yaConvocados = convocatorias.filter(c => c.miembro?.id_instrumento === miembro.id_instrumento).length;
-                
-                // Contar cuántos del mismo instrumento están seleccionados actualmente en el modal
-                const seleccionadosEnModal = selectedMiembros.filter(id => {
-                    const m = miembrosDisponibles.find(md => md.id_miembro === id);
-                    return m && m.id_instrumento === miembro.id_instrumento;
-                }).length;
+            // Encontrar el requerimiento para ese instrumento (solo si no es virtual)
+            if (!isVirtual) {
+                const req = evento?.requerimientos?.find(r => r.id_instrumento === miembro.id_instrumento);
+                if (req) {
+                    const yaConvocados = convocatorias.filter(c => c.miembro?.id_instrumento === miembro.id_instrumento).length;
+                    const seleccionadosEnModal = selectedMiembros.filter(id => {
+                        const m = miembrosDisponibles.find(md => md.id_miembro === id);
+                        return m && m.id_instrumento === miembro.id_instrumento;
+                    }).length;
 
-                if (yaConvocados + seleccionadosEnModal >= req.cantidad_necesaria) {
-                    notify(`La cuota de ${miembro.instrumento?.instrumento} (${req.cantidad_necesaria}) ya está completa`, 'warning');
-                    return;
+                    if (yaConvocados + seleccionadosEnModal >= req.cantidad_necesaria) {
+                        notify(`La cuota de ${miembro.instrumento?.instrumento} (${req.cantidad_necesaria}) ya está completa`, 'warning');
+                        return;
+                    }
                 }
             }
         }
@@ -247,6 +266,11 @@ export default function ConvocatoriaEvento() {
     };
 
     const filteredConvocatorias = convocatorias.filter(c => {
+        // Filtro de Responsabilidad: Si es Jefe, SOLO ve su instrumento exacto
+        if (isJefeSeccion && !canConfirm) {
+            if (!isMyResponsibility(c.miembro)) return false;
+        }
+
         const matchSearch = c.miembro?.nombres?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            c.miembro?.apellidos?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchInstrumento = !selectedInstrumento || c.miembro?.id_instrumento === parseInt(selectedInstrumento);
@@ -254,17 +278,23 @@ export default function ConvocatoriaEvento() {
         return matchSearch && matchInstrumento;
     });
 
-    // Filtrar miembros disponibles (SOLO REQUERIDOS Y CON CUOTA DISPONIBLE)
+    // Filtrar miembros disponibles
     const filteredDisponibles = miembrosDisponibles.filter(m => {
-        // 1. Verificar si el instrumento está en los requerimientos
-        const requerimiento = evento?.requerimientos?.find(r => r.id_instrumento === m.id_instrumento);
-        if (!requerimiento) return false;
+        // 🛡️ FILTRO JEFE: En la lista de disponibles, solo ve su instrumento
+        if (isJefeSeccion && !canConfirm) {
+            if (!isMyResponsibility(m)) return false;
+        }
 
-        // 2. Verificar si la cuota ya se llenó
-        const convokedCount = convocatorias.filter(c => c.miembro?.id_instrumento === m.id_instrumento).length;
-        if (convokedCount >= requerimiento.cantidad_necesaria) return false;
+        // 1. Si el evento tiene requerimientos definidos (Contrato), verificar cuotas
+        if (!isVirtual) {
+            const requerimiento = evento?.requerimientos?.find(r => r.id_instrumento === m.id_instrumento);
+            if (!requerimiento) return false;
 
-        // 3. Filtros de búsqueda y manuales
+            const convokedCount = convocatorias.filter(c => c.miembro?.id_instrumento === m.id_instrumento).length;
+            if (convokedCount >= requerimiento.cantidad_necesaria) return false;
+        }
+
+        // 2. Filtros de búsqueda y manuales
         const nombre = (m.nombres || '').toLowerCase();
         const apellido = (m.apellidos || '').toLowerCase();
         const busqueda = postularSearch.toLowerCase();
@@ -275,8 +305,12 @@ export default function ConvocatoriaEvento() {
     });
 
     // Estadísticas
-    const confirmados = convocatorias.filter(c => c.confirmado_por_director).length;
-    const pendientes = convocatorias.filter(c => !c.confirmado_por_director).length;
+    const statsConvocatorias = (isJefeSeccion && !canConfirm) 
+        ? convocatorias.filter(c => isMyResponsibility(c.miembro))
+        : convocatorias;
+
+    const confirmados = statsConvocatorias.filter(c => c.confirmado_por_director).length;
+    const pendientes = statsConvocatorias.filter(c => !c.confirmado_por_director).length;
 
     const isEventComplete = evento?.requerimientos?.every(req => {
         const count = convocatorias.filter(c => c.miembro?.id_instrumento === req.id_instrumento).length;
@@ -306,8 +340,13 @@ export default function ConvocatoriaEvento() {
                         <ArrowLeft className="w-6 h-6" />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-white">
+                        <h1 className="text-3xl font-bold text-white uppercase flex items-center gap-3">
                             CONVOCATORIA
+                            {isJefeSeccion && !canConfirm && (
+                                <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-3 py-1 rounded-full border border-yellow-500/20 animate-pulse">
+                                    MODO JEFE DE {miInstrumentoNombre}
+                                </span>
+                            )}
                         </h1>
                         <p className="text-gray-400 font-medium">
                             {evento?.evento} - {evento?.fecha && new Date(evento.fecha + 'T12:00:00').toLocaleDateString('es-BO', { 
@@ -318,14 +357,23 @@ export default function ConvocatoriaEvento() {
                 </div>
 
                 <div className="flex gap-3">
-                    {canManage && pendientes > 0 && (
+                    {canManage && (
+                        <Button 
+                            variant="primary" 
+                            onClick={handleOpenPostular}
+                        >
+                            <UserPlus className="w-5 h-5 mr-2" />
+                            Añadir Músico
+                        </Button>
+                    )}
+                    {canConfirm && pendientes > 0 && (
                         <Button 
                             variant="secondary" 
                             onClick={() => isEventComplete ? handleConfirmarMasivo() : notify('Debes completar todas las vacantes antes de confirmar todo el escenario', 'warning')}
                             className={!isEventComplete ? 'opacity-50' : ''}
                         >
                             <CheckCircle2 className="w-5 h-5 mr-2" />
-                            Confirmar Todos ({pendientes})
+                            Validar Formación ({pendientes})
                         </Button>
                     )}
                 </div>
@@ -339,8 +387,8 @@ export default function ConvocatoriaEvento() {
                             <Users className="w-5 h-5 text-blue-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-white">{convocatorias.length}</p>
-                            <p className="text-xs text-gray-500 font-medium">Total Convocados</p>
+                            <p className="text-2xl font-bold text-white">{statsConvocatorias.length}</p>
+                            <p className="text-xs text-gray-500 font-medium">{isJefeSeccion && !canConfirm ? `Mis ${miInstrumentoNombre}s` : 'Total Convocados'}</p>
                         </div>
                     </div>
                 </div>
@@ -437,7 +485,7 @@ export default function ConvocatoriaEvento() {
                                     </div>
 
                                     {/* Botón de Acción Masiva */}
-                                    {canManage && convocatorias.some(c => !c.confirmado_por_director) && (
+                                    {canConfirm && convocatorias.some(c => !c.confirmado_por_director) && (
                                         <button 
                                             onClick={() => {
                                                 const isReady = selectedInstrumento 
@@ -460,7 +508,7 @@ export default function ConvocatoriaEvento() {
                                             }`}
                                         >
                                             <CheckCircle2 className="w-3.5 h-3.5" />
-                                            {selectedInstrumento ? 'Confirmar Sección' : 'Confirmar Todo'}
+                                            {selectedInstrumento ? 'Validar Sección' : 'Validar Escenario'}
                                         </button>
                                     )}
                                 </div>
@@ -480,11 +528,20 @@ export default function ConvocatoriaEvento() {
                                     {(() => {
                                         // 💡 LOGICA INTELIGENTE: Si no hay requerimientos (ej. Ensayo), construye una lista basada en los convocados reales
                                         let displayReqs = evento?.requerimientos || [];
+
+                                        // 🛡️ FILTRO JEFE: Si es jefe, SOLO ve requerimientos de SU INSTRUMENTO
+                                        if (isJefeSeccion && !canConfirm) {
+                                            displayReqs = displayReqs.filter(r => isMyResponsibility(r));
+                                        }
                                         
                                         if (displayReqs.length === 0 && convocatorias.length > 0) {
                                             // Generar requerimientos virtuales basados en lo que hay
                                             const instrumentosMap = new Map();
-                                            convocatorias.forEach(c => {
+                                            const sourceDocs = (isJefeSeccion && !canConfirm)
+                                                ? convocatorias.filter(c => String(c.miembro?.id_seccion) === String(miSeccion))
+                                                : convocatorias;
+
+                                            sourceDocs.forEach(c => {
                                                 if (c.miembro?.instrumento) {
                                                     const id = c.miembro.instrumento.id_instrumento;
                                                     if (!instrumentosMap.has(id)) {
@@ -565,7 +622,7 @@ export default function ConvocatoriaEvento() {
                                                                                 </div>
                                                                             )}
 
-                                                                            {canManage && needsConfirmation && (
+                                                                             {canConfirm && needsConfirmation && (
                                                                                 <button 
                                                                                     onClick={() => {
                                                                                         if (completo) {
@@ -617,7 +674,7 @@ export default function ConvocatoriaEvento() {
                                                                 </td>
                                                                 <td className="px-8 py-5 text-right w-32">
                                                                     <div className="flex justify-end gap-2">
-                                                                        {!c.confirmado_por_director && canManage && (
+                                                                        {!c.confirmado_por_director && canConfirm && (
                                                                             <button
                                                                                 onClick={() => handleConfirmar(c.id_convocatoria)}
                                                                                 className="w-9 h-9 flex items-center justify-center bg-green-500/10 hover:bg-green-500 rounded-xl text-green-500 hover:text-white transition-all active:scale-90 border border-green-500/20 shadow-lg shadow-green-500/5"
@@ -626,7 +683,8 @@ export default function ConvocatoriaEvento() {
                                                                                 <Check className="w-4 h-4 stroke-[3]" />
                                                                             </button>
                                                                         )}
-                                                                        {canManage && (
+                                                                        {/* Un Jefe solo puede eliminar de su instrumento exacto. Admin/Dir borran todo. */}
+                                                                        {(canConfirm || (isJefeSeccion && isMyResponsibility(c.miembro))) && (
                                                                             <button
                                                                                 onClick={() => handleEliminar(c.id_convocatoria)}
                                                                                 className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-white transition-all active:scale-95 border border-red-500/20 shadow-lg shadow-red-500/5 group/del"
@@ -641,8 +699,8 @@ export default function ConvocatoriaEvento() {
                                                             </tr>
                                                         ))}
 
-                                                        {/* Empty Placeholder Slots - Solo si no es virtual */}
-                                                        {!isVirtual && Array.from({ length: emptySlots }).map((_, idx) => (
+                                                        {/* Empty Placeholder Slots - Solo si es MI INSTRUMENTO */}
+                                                        {!isVirtual && isMyResponsibility(req) && Array.from({ length: emptySlots }).map((_, idx) => (
                                                             <tr key={`empty-${req.id_instrumento}-${idx}`} className="group opacity-40 hover:opacity-100 transition-opacity">
                                                                 <td className="px-8 py-5">
                                                                     <div className="flex items-center gap-5">
@@ -650,7 +708,7 @@ export default function ConvocatoriaEvento() {
                                                                             ?
                                                                         </div>
                                                                         <div>
-                                                                            <p className="font-bold text-gray-600 text-sm italic">Slot Vacante</p>
+                                                                            <p className="font-bold text-gray-600 text-sm italic">Espacio vacante</p>
                                                                             <p className="text-[9px] text-gray-700 font-bold uppercase tracking-wider mt-0.5">{req.instrumento?.instrumento}</p>
                                                                         </div>
                                                                     </div>
@@ -659,15 +717,13 @@ export default function ConvocatoriaEvento() {
                                                                     <span className="text-[8px] font-bold text-gray-700 uppercase tracking-widest border border-white/5 px-2 py-1 rounded-full">Pendiente</span>
                                                                 </td>
                                                                 <td className="px-8 py-5 text-right w-32">
-                                                                    {canManage && (
-                                                                        <button 
-                                                                            onClick={() => handleOpenPostularConInstrumento(req.id_instrumento)}
-                                                                            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary/5 hover:bg-brand-primary text-brand-primary hover:text-white rounded-xl text-[10px] font-bold uppercase transition-all border border-brand-primary/10"
-                                                                        >
-                                                                            <Plus className="w-3 h-3" />
-                                                                            Convocar
-                                                                        </button>
-                                                                    )}
+                                                                    <button 
+                                                                        onClick={() => handleOpenPostularConInstrumento(req.id_instrumento)}
+                                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary/5 hover:bg-brand-primary text-brand-primary hover:text-white rounded-xl text-[10px] font-bold uppercase transition-all border border-brand-primary/10"
+                                                                    >
+                                                                        <Plus className="w-3 h-3" />
+                                                                        Convocar
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         ))}

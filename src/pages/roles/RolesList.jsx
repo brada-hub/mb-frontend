@@ -98,8 +98,8 @@ export default function RolesList() {
 
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">Roles y Permisos</h1>
-                    <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mt-1">Gestión de accesos y facultades del sistema</p>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Roles y Permisos</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Gestión de accesos y facultades del sistema</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
