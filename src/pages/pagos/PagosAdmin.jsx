@@ -144,7 +144,10 @@ export default function PagosAdmin() {
                         </div>
                         <div>
                             <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Total Pendiente</p>
-                            <p className="text-xl font-black text-white leading-none">{totalDeudaGlobal} <span className="text-xs text-gray-500 font-medium">EVENTOS</span></p>
+                            <p className="text-xl font-black text-white leading-none">
+                                {deudas.reduce((acc, curr) => acc + curr.total_eventos, 0)} 
+                                <span className="text-xs text-gray-500 font-black ml-1 uppercase">Eventos</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -213,7 +216,9 @@ export default function PagosAdmin() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
-                                        <span className="text-lg font-black text-white">{item.total_eventos}</span>
+                                        <span className="text-lg font-black text-white">
+                                            {item.total_eventos}
+                                        </span>
                                         <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Pendientes</span>
                                     </div>
                                 </button>
@@ -256,7 +261,7 @@ export default function PagosAdmin() {
                                         className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase tracking-widest text-xs py-3"
                                     >
                                         <DollarSign className="w-4 h-4 mr-2" />
-                                        Pagar Seleccionados ({selection.length})
+                                        Registrar Pago de {selection.length} Actividades
                                     </Button>
                                 </div>
                             </div>
@@ -291,14 +296,19 @@ export default function PagosAdmin() {
                                             <div className="flex-1">
                                                 <div className="flex justify-between items-start mb-1">
                                                     <h3 className="text-white font-bold text-sm leading-tight">{detalle.evento}</h3>
-                                                    <span className={clsx(
-                                                        "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border",
-                                                        detalle.tipo === 'CONTRATO' 
-                                                            ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
-                                                            : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                                    )}>
-                                                        {detalle.tipo}
-                                                    </span>
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <span className={clsx(
+                                                            "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border",
+                                                            detalle.tipo === 'CONTRATO' 
+                                                                ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
+                                                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                                        )}>
+                                                            {detalle.tipo}
+                                                        </span>
+                                                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-tighter">
+                                                            Listo para Cobrar
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-3 text-[10px] text-gray-500 font-medium uppercase tracking-wider">
                                                     <span className="flex items-center gap-1">

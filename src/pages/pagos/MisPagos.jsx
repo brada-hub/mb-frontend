@@ -64,8 +64,8 @@ export default function MisPagos() {
                             <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
                             <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Estado Financiero</span>
                         </div>
-                        <h1 className="text-3xl sm:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-2">Mi Billetera</h1>
-                        <p className="text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg">Control total de tus ingresos y actividad remunerada en tiempo real.</p>
+                        <h1 className="text-3xl sm:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-2">Mi Actividad</h1>
+                        <p className="text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg">Seguimiento de tus participaciones y eventos por cobrar.</p>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0 lg:min-w-[500px]">
@@ -189,8 +189,10 @@ export default function MisPagos() {
                                     </div>
 
                                     <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-                                        <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Monto estimado</span>
-                                        <div className="text-white font-black text-lg">---</div>
+                                        <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest text-emerald-400">Actividad Remunerada</span>
+                                        <div className="text-white font-black text-lg">
+                                            PENDIENTE
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))}
@@ -228,7 +230,11 @@ export default function MisPagos() {
                                                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Cobrado con éxito</p>
                                                     </div>
                                                 </div>
-                                                <div className="mt-2 pt-4 border-t border-white/5 flex flex-col gap-1">
+                                                <div className="mt-2 pt-4 border-t border-white/5 flex flex-col gap-2">
+                                                    <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-wider">
+                                                        <span>Estado de Actividad</span>
+                                                        <span className="text-emerald-400 font-black uppercase">Cobrado / Liquidado</span>
+                                                    </div>
                                                     <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-wider">
                                                         <span>Fecha de Pago</span>
                                                         <span className="text-gray-300">{new Date(item.fecha_pago).toLocaleDateString()}</span>

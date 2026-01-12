@@ -310,6 +310,21 @@ export default function AsistenciasList() {
         loadListaAsistencia(evento.id_evento);
     };
 
+    const handleEnviarRecordatorios = async () => {
+        if (!selectedEvento) return;
+        setLoadingLista(true);
+        try {
+            const res = await api.post('/asistencia/recordatorio', { id_evento: selectedEvento.id_evento });
+            // Mostrar toast o mensaje de éxito
+            alert(res.data.message);
+        } catch (error) {
+            console.error('Error enviando recordatorios:', error);
+            alert('Error al enviar recordatorios');
+        } finally {
+            setLoadingLista(false);
+        }
+    };
+
     const syncAsistencia = async (id_convocatoria, estado, observacion = null) => {
         try {
             await api.post('/asistencia/marcar-manual', {
@@ -890,6 +905,17 @@ export default function AsistenciasList() {
                                                             >
                                                                 <UserX className="w-3.5 h-3.5" /> TODOS FALTA
                                                             </button>
+                                                            
+                                                            {(isAdmin || isDirector) && (
+                                                                <div className="mt-2 pt-2 border-t border-white/10">
+                                                                    <button 
+                                                                        onClick={() => { handleEnviarRecordatorios(); setIsActionsOpen(false); }}
+                                                                        className="w-full text-left p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-amber-300 hover:bg-white/10 flex items-center gap-2"
+                                                                    >
+                                                                        <Bell className="w-3.5 h-3.5" /> Mandar Recordatorios
+                                                                    </button>
+                                                                </div>
+                                                            )}
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>

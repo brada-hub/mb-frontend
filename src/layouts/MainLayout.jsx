@@ -39,6 +39,10 @@ const SidebarItem = ({ icon: Icon, label, to, active, onClick }) => {
     );
 };
 
+import { requestForToken } from '../firebase-config';
+import api from '../api';
+import NotificationBell from '../components/NotificationBell';
+
 export default function MainLayout() {
     const { user, logout, loading, isAuthenticated } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -54,6 +58,24 @@ export default function MainLayout() {
             setChecking(true);
         }
     }, [loading]);
+
+    // Registro de Token para Notificaciones Push
+    useEffect(() => {
+        if (isAuthenticated && !loading) {
+            const setupPush = async () => {
+                const token = await requestForToken();
+                if (token) {
+                    try {
+                        await api.post('/update-fcm-token', { fcm_token: token });
+                        console.log('Push token sincronizado con el servidor.');
+                    } catch (error) {
+                        console.error('Error sincronizando push token:', error);
+                    }
+                }
+            };
+            setupPush();
+        }
+    }, [isAuthenticated, loading]);
 
     if (loading || checking) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white font-black tracking-widest animate-pulse uppercase">Cargando Accesos...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
@@ -256,10 +278,7 @@ export default function MainLayout() {
                     </div>
 
                     <div className="flex items-center gap-1 sm:gap-4">
-                        <button className="p-1 sm:p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors relative">
-                            <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                            <span className="absolute top-1 right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full border-2 border-[#0f111a]"></span>
-                        </button>
+                        <NotificationBell />
                     </div>
                 </header>
 

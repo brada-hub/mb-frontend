@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown, Activity, Shield } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown, Activity, Shield, DollarSign } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
@@ -65,6 +65,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         radio: 100,
         minutos_tolerancia: 15,
         minutos_cierre: 60,
+        remunerado: false,
+        monto_sugerido: 0,
         requerimientos: []
     });
 
@@ -94,6 +96,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 radio: eventoToEdit.radio || 100,
                 minutos_tolerancia: eventoToEdit.minutos_tolerancia ?? (eventoToEdit.tipo?.minutos_tolerancia || 15),
                 minutos_cierre: eventoToEdit.minutos_cierre ?? (eventoToEdit.tipo?.minutos_cierre || 60),
+                remunerado: !!eventoToEdit.remunerado,
+                monto_sugerido: eventoToEdit.monto_sugerido || 0,
                 // Mapear solo los campos necesarios para evitar basura en el state
                 requerimientos: eventoToEdit.requerimientos?.map(r => ({
                     id_instrumento: r.id_instrumento,
@@ -113,6 +117,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 radio: 100,
                 minutos_tolerancia: 15,
                 minutos_cierre: 60,
+                remunerado: false,
+                monto_sugerido: 0,
                 requerimientos: []
             });
         }
@@ -241,6 +247,14 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                     newFormData.radio = sala.radio;
                 }
                 notify('Configuración de ensayo autocompletada 🪄', 'success');
+            }
+
+            // Defaults de remuneración por tipo
+            const typeName = selectedTypeObj.evento.toUpperCase();
+            if (typeName === 'ENSAYO') {
+                newFormData.remunerado = false;
+            } else if (typeName === 'CONTRATO' || typeName === 'SHOW') {
+                newFormData.remunerado = true;
             }
         }
 
@@ -606,6 +620,28 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                         />
                                     </div>
                                     {errors.hora && <p className="text-xs text-red-500 font-bold ml-1">{errors.hora}</p>}
+                                </div>
+                            </div>
+
+                            {/* DETALLES FINANCIEROS */}
+                            <div className="p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-2xl space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-2 bg-emerald-500/20 rounded-lg">
+                                            <DollarSign className="w-4 h-4 text-emerald-400" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-[11px] font-black text-white uppercase tracking-wider">¿Es actividad remunerada?</h4>
+                                            <p className="text-[9px] text-gray-400 font-medium">Define si el músico recibe un pago por asistir</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, remunerado: !prev.remunerado }))}
+                                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${formData.remunerado ? 'bg-emerald-500' : 'bg-gray-700'}`}
+                                    >
+                                        <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${formData.remunerado ? 'translate-x-6' : 'translate-x-0'}`} />
+                                    </button>
                                 </div>
                             </div>
 

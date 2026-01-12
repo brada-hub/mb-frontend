@@ -15,6 +15,8 @@ import PagosAdmin from '../pages/pagos/PagosAdmin';
 import MisPagos from '../pages/pagos/MisPagos';
 import { Navigate } from 'react-router-dom';
 
+import NotificationsList from '../pages/notificaciones/NotificationsList';
+
 const routes = [
     {
         path: '/login',
@@ -36,7 +38,8 @@ const routes = [
             { path: 'eventos', element: <EventosList /> },
             { path: 'eventos/:id/convocatoria', element: <ConvocatoriaEvento /> },
             { path: 'asistencia', element: <AsistenciasList /> },
-            { path: 'asistencia/reporte', element: <AsistenciaReporte /> }
+            { path: 'asistencia/reporte', element: <AsistenciaReporte /> },
+            { path: 'notificaciones', element: <NotificationsList /> }
         ]
     },
     {

@@ -49,7 +49,7 @@ export default function MemberHistory({ memberId }) {
     );
 
     if (!data) return null;
-
+    
     return (
         <div className="p-5 bg-[#0a0d14] rounded-2xl mt-3 border border-indigo-500/10 space-y-5 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
