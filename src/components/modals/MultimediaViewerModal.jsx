@@ -209,7 +209,7 @@ export default function MultimediaViewerModal({
                         </div>
                     ) : isImage ? (
                         <div 
-                            className="transition-transform duration-300 ease-out flex items-center justify-center"
+                            className="w-full h-full transition-transform duration-300 ease-out flex items-center justify-center"
                             style={{ 
                                 transform: `translate(${position.x}px, ${position.y}px)`,
                             }}
@@ -217,7 +217,7 @@ export default function MultimediaViewerModal({
                             <img 
                                 src={url} 
                                 alt={title}
-                                className="max-w-full max-h-screen object-contain pointer-events-none"
+                                className="w-full h-full object-contain pointer-events-none"
                                 style={{ 
                                     transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
                                 }}

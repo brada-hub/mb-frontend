@@ -394,28 +394,41 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                 </select>
                             </div>
 
-                            <select 
-                                {...register('id_voz', { required: true })}
-                                disabled={!selectedInstrumento || isValidatingVoice}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50"
-                            >
-                                <option value="" className="bg-[#161b2c]">
-                                    {isValidatingVoice ? 'Validando disponibilidad...' : 'Seleccionar Voz...'}
-                                </option>
-                                {catalogs.voces.map(v => {
-                                    const isTaken = takenVoices.includes(String(v.id_voz));
-                                    return (
-                                        <option 
-                                            key={v.id_voz} 
-                                            value={v.id_voz} 
-                                            className={clsx("bg-[#161b2c]", isTaken && "text-gray-500")}
-                                            disabled={isTaken}
-                                        >
-                                            {v.nombre_voz} {isTaken ? '(OCUPADA)' : ''}
+                            {(() => {
+                                const seccionNombre = catalogs.secciones.find(s => String(s.id_seccion) === String(selectedSeccion))?.seccion;
+                                const isPercusion = seccionNombre?.toUpperCase() === 'PERCUSIÓN' || seccionNombre?.toUpperCase() === 'PERCUSION';
+                                
+                                if (isPercusion) {
+                                    // Clear voice value if it's percussion
+                                    if (watch('id_voz')) setValue('id_voz', '');
+                                    return null;
+                                }
+
+                                return (
+                                    <select 
+                                        {...register('id_voz')}
+                                        disabled={!selectedInstrumento || isValidatingVoice}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50"
+                                    >
+                                        <option value="" className="bg-[#161b2c]">
+                                            {isValidatingVoice ? 'Validando disponibilidad...' : 'Seleccionar Voz...'}
                                         </option>
-                                    );
-                                })}
-                            </select>
+                                        {catalogs.voces.map(v => {
+                                            const isTaken = takenVoices.includes(String(v.id_voz));
+                                            return (
+                                                <option 
+                                                    key={v.id_voz} 
+                                                    value={v.id_voz} 
+                                                    className={clsx("bg-[#161b2c]", isTaken && "text-gray-500")}
+                                                    disabled={isTaken}
+                                                >
+                                                    {v.nombre_voz} {isTaken ? '(OCUPADA)' : ''}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                );
+                            })()}
                         </div>
                     </div>
 

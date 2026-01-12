@@ -52,8 +52,8 @@ export default function MixesList() {
         localStorage.setItem('monster_admin_mode', newMode);
     };
 
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role?.includes('JEFE');
-    const canManage = isAdmin && editMode;
+    const authorized = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.permissions?.includes('GESTIONAR_BIBLIOTECA');
+    const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -129,7 +129,7 @@ export default function MixesList() {
                             <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Repertorios disponibles</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            {isAdmin && (
+                            {authorized && (
                                 <button
                                     onClick={toggleEditMode}
                                     className={clsx(
@@ -361,10 +361,15 @@ export default function MixesList() {
                                 <div className="space-y-3 sm:space-y-4">
                                     {selectedMix.temas?.map((tema, index) => {
                                         const themeRecursos = tema.recursos || [];
+                                        const userInstrumentId = user?.miembro?.id_instrumento;
                                         const userVozId = user?.miembro?.id_voz;
                                         
-                                        const filteredThemeRecursos = userVozId 
-                                            ? themeRecursos.filter(r => r.id_voz === userVozId || r.id_voz === null)
+                                        // Filter resources based on user instrument/voice (Library-style logic)
+                                        const filteredThemeRecursos = (userInstrumentId && !canManage)
+                                            ? themeRecursos.filter(r => 
+                                                r.id_instrumento == userInstrumentId && 
+                                                (r.id_voz == userVozId || r.id_voz == null)
+                                            )
                                             : themeRecursos;
 
                                         const hasVisuals = filteredThemeRecursos.some(res => 
@@ -388,8 +393,11 @@ export default function MixesList() {
                                         const handleOpenViewer = () => {
                                             const allMixFiles = selectedMix.temas.flatMap(t => {
                                                 const tRecursos = t.recursos || [];
-                                                const tFilteredResources = userVozId
-                                                    ? tRecursos.filter(r => r.id_voz === userVozId || r.id_voz === null)
+                                                const tFilteredResources = (userInstrumentId && !canManage)
+                                                    ? tRecursos.filter(r => 
+                                                        r.id_instrumento == userInstrumentId && 
+                                                        (r.id_voz == userVozId || r.id_voz == null)
+                                                    )
                                                     : tRecursos;
                                                 
                                                 return tFilteredResources.flatMap(res => 

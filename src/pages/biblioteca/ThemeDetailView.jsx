@@ -193,9 +193,14 @@ export default function ThemeDetailView() {
         .filter(Boolean)
         .sort((a, b) => a.instrumento.localeCompare(b.instrumento));
 
-    const activeVoices = voces.filter(voz => 
+    const activeVoicesBase = voces.filter(voz => 
         filteredRecursos.some(r => r.id_voz === voz.id_voz)
     ).sort((a, b) => a.nombre_voz.localeCompare(b.nombre_voz));
+
+    const activeVoices = [...activeVoicesBase];
+    if (filteredRecursos.some(r => r.id_voz === null)) {
+        activeVoices.unshift({ id_voz: null, nombre_voz: 'GRAL / PERCUSIÓN' });
+    }
 
     const renderMemberView = () => {
         // Preparar lista plana de archivos
@@ -319,7 +324,7 @@ export default function ThemeDetailView() {
                     >
                         {isImage ? (
                             <div 
-                                className="transition-transform duration-100 ease-out flex items-center justify-center p-4 lg:p-10"
+                                className="w-full h-full transition-transform duration-100 ease-out flex items-center justify-center p-4 lg:p-10"
                                 style={{ 
                                     transform: `translate(${viewPosition.x}px, ${viewPosition.y}px) scale(${zoom / 100}) rotate(${rotation}deg)`
                                 }}
@@ -327,7 +332,7 @@ export default function ThemeDetailView() {
                                 <img 
                                     src={currentFile.url_archivo} 
                                     alt={currentFile.title}
-                                    className="max-w-full max-h-[85vh] object-contain drop-shadow-2xl pointer-events-none"
+                                    className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
                                 />
                             </div>
                         ) : (
@@ -534,7 +539,7 @@ export default function ThemeDetailView() {
                                                                 {recursos.filter(r => r.id_instrumento === inst.id_instrumento).map((res) => (
                                                                     <div key={res.id_recurso} className="flex items-center justify-between p-2 bg-black/20 rounded-lg border border-white/5 hover:border-indigo-500/30 transition-all">
                                                                         <span className="text-[10px] font-bold text-indigo-400 uppercase truncate">
-                                                                            {voces.find(v => v.id_voz === res.id_voz)?.nombre_voz}
+                                                                            {res.id_voz ? voces.find(v => v.id_voz === res.id_voz)?.nombre_voz : 'GRAL / PERCUSIÓN'}
                                                                         </span>
                                                                         <div className="flex gap-1">
                                                                             <button 

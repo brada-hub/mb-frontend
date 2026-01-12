@@ -20,7 +20,22 @@ export default function EventosList() {
     const [activeTab, setActiveTab] = useState('ENSAYOS'); // 'ENSAYOS' o 'CONTRATOS'
     
     // Check Permissions
-    const canManage = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role === 'ADMINISTRADOR';
+    const isAdmin = user?.role === 'ADMIN';
+    const canManage = isAdmin || user?.role === 'DIRECTOR' || user?.role === 'ADMINISTRADOR';
+
+    // Helper to check if event is past (already started)
+    const getStatus = (fecha, hora, tipo) => {
+        const eventDate = new Date(`${fecha}T${hora}`);
+        const now = new Date();
+        const isPast = eventDate < now;
+        
+        // Margen dinámico desde el tipo de evento (default 24h)
+        const hrsSellar = tipo?.horas_despues_sellar ?? 24;
+        const lockTime = new Date(eventDate.getTime() + hrsSellar * 60 * 60 * 1000);
+        
+        const isLocked = now > lockTime;
+        return { isPast, isLocked };
+    };
 
     // Modal States
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -141,7 +156,6 @@ export default function EventosList() {
                         activeTab === 'ENSAYOS' ? "bg-blue-600 text-white shadow-lg" : "text-gray-500 hover:text-white"
                     )}
                 >
-                    <Activity className="w-4 h-4" />
                     Ensayos & Actividades
                 </button>
                 <button 
@@ -151,7 +165,6 @@ export default function EventosList() {
                         activeTab === 'CONTRATOS' ? "bg-purple-600 text-white shadow-lg" : "text-gray-500 hover:text-white"
                     )}
                 >
-                    <Briefcase className="w-4 h-4" />
                     Contratos & Shows
                 </button>
             </div>
@@ -165,16 +178,36 @@ export default function EventosList() {
             ) : filteredEventos.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredEventos.map(evento => {
+                        const { isPast, isLocked } = getStatus(evento.fecha, evento.hora, evento.tipo);
+                        const lockActions = isLocked && !isAdmin;
+
                         return (
-                            <div key={evento.id_evento} className={`relative group bg-surface-card border rounded-3xl overflow-hidden transition-all hover:scale-[1.02] hover:shadow-2xl border-white/10 ${canManage ? 'hover:border-brand-primary/50' : ''}`}>
-                                
+                            <div 
+                                key={evento.id_evento} 
+                                className={clsx(
+                                    "relative group bg-surface-card border rounded-3xl overflow-hidden transition-all border-white/10",
+                                    !isPast && "hover:scale-[1.02] hover:shadow-2xl",
+                                    isPast && "opacity-75 grayscale-[0.5]",
+                                    canManage && !lockActions && "hover:border-brand-primary/50"
+                                )}
+                            >
                                 <div className="p-6 space-y-4">
                                     <div className="flex justify-between items-start">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getTypeColor(evento.tipo?.evento)}`}>
-                                            {evento.tipo?.evento}
-                                        </span>
+                                        <div className="flex gap-2">
+                                            <span className={clsx(
+                                                "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                                getTypeColor(evento.tipo?.evento)
+                                            )}>
+                                                {evento.tipo?.evento}
+                                            </span>
+                                            {isPast && (
+                                                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-gray-500/30 bg-gray-500/10 text-gray-400">
+                                                    Histórico
+                                                </span>
+                                            )}
+                                        </div>
                                         
-                                        {canManage && (
+                                        {canManage && !lockActions && (
                                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button onClick={() => handleEdit(evento)} className="p-2 hover:bg-white/10 rounded-lg text-blue-400">
                                                     <Edit className="w-4 h-4" />
@@ -230,36 +263,46 @@ export default function EventosList() {
                                     )}
                                     
                                     {/* Actions Footer - Role Based */}
-                                    {canManage ? (
-                                        <button 
-                                            onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
-                                            className="w-full mt-2 py-2 text-center text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 rounded-xl transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Users className="w-3 h-3" />
-                                            Gestionar Convocatoria
-                                        </button>
-                                    ) : (
-                                        <div className="mt-2 space-y-2">
-                                            <div className="text-center">
-                                                {evento.estoy_convocado ? (
-                                                    <span className="text-[10px] font-bold text-green-500 flex items-center justify-center gap-1 animate-pulse">
-                                                        <CheckCircle className="w-3 h-3" /> TE TOCA IR
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-[10px] font-bold text-gray-600 flex items-center justify-center gap-1">
-                                                        <Info className="w-3 h-3" /> Solo Informativo
-                                                    </span>
-                                                )}
-                                            </div>
+                                    <div className="mt-2 space-y-2">
+                                        {canManage ? (
                                             <button 
                                                 onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
-                                                className="w-full py-2 text-center text-xs font-bold text-gray-400 bg-white/5 hover:bg-white/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                                className={clsx(
+                                                    "w-full py-2 text-center text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2",
+                                                    isPast 
+                                                        ? "text-gray-400 bg-white/5 hover:bg-white/10" 
+                                                        : "text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10"
+                                                )}
                                             >
-                                                <Users className="w-3 h-3" />
-                                                Ver Formación
+                                                {isPast ? <Activity className="w-3 h-3" /> : <Users className="w-3 h-3" />}
+                                                {isPast ? 'Ver Reporte de Asistencia' : 'Gestionar Convocatoria'}
                                             </button>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <>
+                                                <div className="text-center">
+                                                    {evento.estoy_convocado ? (
+                                                        <span className={clsx(
+                                                            "text-[10px] font-bold flex items-center justify-center gap-1",
+                                                            isPast ? "text-gray-500" : "text-green-500 animate-pulse"
+                                                        )}>
+                                                            <CheckCircle className="w-3 h-3" /> {isPast ? 'ESTUVISTE PRESENTE' : 'TE TOCA IR'}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[10px] font-bold text-gray-600 flex items-center justify-center gap-1">
+                                                            <Info className="w-3 h-3" /> Solo Informativo
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <button 
+                                                    onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
+                                                    className="w-full py-2 text-center text-xs font-bold text-gray-400 bg-white/5 hover:bg-white/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                                >
+                                                    <Users className="w-3 h-3" />
+                                                    {isPast ? 'Ver Detalles' : 'Ver Formación'}
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         );

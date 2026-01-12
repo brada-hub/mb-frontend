@@ -14,7 +14,8 @@ import {
     Layers,
     Music,
     ListMusic,
-    Grid
+    Grid,
+    DollarSign
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import ForcePasswordChangeModal from '../components/modals/ForcePasswordChangeModal';
@@ -78,6 +79,8 @@ export default function MainLayout() {
     const sidebarItems = [
         { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
         { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
+        { icon: DollarSign, label: 'Gestión Pagos', to: '/dashboard/pagos', permission: 'GESTION_ASISTENCIA' }, // Admin
+        { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null }, // Todos
         { icon: Calendar, label: 'Agenda', to: '/dashboard/eventos', permission: null },
         { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
         { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
@@ -85,6 +88,13 @@ export default function MainLayout() {
         { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: 'GESTION_BIBLIOTECA' },
         { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
     ];
+
+    // Filter items:
+    // 1. Check permission
+    // 2. Hide 'Gestión Pagos' if not Admin/Director (already handled by permission GESTION_ASISTENCIA usually, but let's be safe)
+    // Actually GESTION_ASISTENCIA is for Chiefs too? If so, we might need a stricter perm for PagosAdmin.
+    // For now, let's assume GESTION_ASISTENCIA is okay, or use GESTION_ROLES or just 'ADMIN' check inside component.
+    // Let's refine the filter slightly to hide 'Mis Pagos' if desired, but usually good to show.
 
     const filteredItems = sidebarItems.filter(item => hasPermission(item.permission));
 

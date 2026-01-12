@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/Input';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import clsx from 'clsx';
 
 export default function ConvocatoriaEvento() {
     const { id } = useParams();
@@ -49,8 +50,23 @@ export default function ConvocatoriaEvento() {
     }, [user]);
 
     const isJefeSeccion = roleName.includes('JEFE');
+    const miSeccion = user?.miembro?.id_seccion;
     const miInstrumentoId = user?.miembro?.id_instrumento;
     const miInstrumentoNombre = user?.miembro?.instrumento?.instrumento;
+    
+    // Check if event is past/locked
+    const eventStatus = (() => {
+        if (!evento) return { isPast: false, isLocked: false };
+        const eventDate = new Date(`${evento.fecha}T${evento.hora}`);
+        const now = new Date();
+        const isPast = eventDate < now;
+        
+        const hrsSellar = evento.tipo?.horas_despues_sellar ?? 24;
+        const isLocked = now > new Date(eventDate.getTime() + hrsSellar * 60 * 60 * 1000);
+        
+        return { isPast, isLocked };
+    })();
+
     const isVirtual = !evento?.requerimientos || evento?.requerimientos.length === 0;
 
     // Helper para verificar si un músico o instrumento es de MI responsabilidad (mismo instrumento)
@@ -94,10 +110,16 @@ export default function ConvocatoriaEvento() {
         }
     };
 
-    const loadMiembrosDisponibles = async (seccionId = null) => {
+    const loadMiembrosDisponibles = async (filterId = null, filterType = 'seccion') => {
         try {
             let url = `/convocatorias/disponibles?id_evento=${id}`;
-            if (seccionId) url += `&id_seccion=${seccionId}`;
+            if (filterId) {
+                if (filterType === 'instrumento') {
+                    url += `&id_instrumento=${filterId}`;
+                } else {
+                    url += `&id_seccion=${filterId}`;
+                }
+            }
             
             const res = await api.get(url);
             setMiembrosDisponibles(res.data);
@@ -118,8 +140,12 @@ export default function ConvocatoriaEvento() {
         setMiembrosDisponibles([]); 
         
         // 3. Iniciar carga de datos
-        const seccionId = isJefeSeccion ? miSeccion : null;
-        loadMiembrosDisponibles(seccionId);
+        // Si es Jefe, filtrar por su instrumento. Si es Admin/Director, carga todo (o por defecto)
+        if (isJefeSeccion) {
+            loadMiembrosDisponibles(miInstrumentoId, 'instrumento');
+        } else {
+            loadMiembrosDisponibles();
+        }
     };
 
     const handleOpenPostularConInstrumento = async (id_instrumento) => {
@@ -127,8 +153,14 @@ export default function ConvocatoriaEvento() {
         setPostularSearch('');
         setPostularInstrumento(id_instrumento.toString());
         setMiembrosDisponibles([]); 
-        const seccionId = isJefeSeccion ? miSeccion : null;
-        loadMiembrosDisponibles(seccionId);
+        
+        if (isJefeSeccion) {
+             // El Jefe solo ve su instrumento, validación extra por seguridad
+             loadMiembrosDisponibles(miInstrumentoId, 'instrumento');
+        } else {
+             // Admin ve los del instrumento solicitado
+             loadMiembrosDisponibles(id_instrumento, 'instrumento');
+        }
     };
 
     const handlePostular = async () => {
@@ -357,7 +389,7 @@ export default function ConvocatoriaEvento() {
                 </div>
 
                 <div className="flex gap-3">
-                    {canManage && (
+                    {canManage && !eventStatus.isPast && (
                         <Button 
                             variant="primary" 
                             onClick={handleOpenPostular}
@@ -366,7 +398,7 @@ export default function ConvocatoriaEvento() {
                             Añadir Músico
                         </Button>
                     )}
-                    {canConfirm && pendientes > 0 && (
+                    {canConfirm && pendientes > 0 && !eventStatus.isPast && (
                         <Button 
                             variant="secondary" 
                             onClick={() => isEventComplete ? handleConfirmarMasivo() : notify('Debes completar todas las vacantes antes de confirmar todo el escenario', 'warning')}
@@ -375,6 +407,14 @@ export default function ConvocatoriaEvento() {
                             <CheckCircle2 className="w-5 h-5 mr-2" />
                             Validar Formación ({pendientes})
                         </Button>
+                    )}
+                    {eventStatus.isPast && (
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                            <Shield className="w-4 h-4 text-gray-500" />
+                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                Registro Sellado
+                            </span>
+                        </div>
                     )}
                 </div>
             </div>
@@ -388,7 +428,7 @@ export default function ConvocatoriaEvento() {
                         </div>
                         <div>
                             <p className="text-2xl font-bold text-white">{statsConvocatorias.length}</p>
-                            <p className="text-xs text-gray-500 font-medium">{isJefeSeccion && !canConfirm ? `Mis ${miInstrumentoNombre}s` : 'Total Convocados'}</p>
+                            <p className="text-xs text-gray-500 font-medium">{isJefeSeccion && !canConfirm ? `Mis ${miInstrumentoNombre || 'Músicos'}` : 'Total Convocados'}</p>
                         </div>
                     </div>
                 </div>
@@ -520,8 +560,12 @@ export default function ConvocatoriaEvento() {
                                 <thead className="bg-surface-input border-b border-white/5 sticky top-0 z-20">
                                     <tr>
                                         <th className="text-left px-8 py-5 text-[9px] font-bold text-gray-500 uppercase tracking-wider">Músico</th>
-                                        <th className="text-center px-8 py-5 text-[9px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="text-right px-8 py-5 text-[9px] font-bold text-gray-500 uppercase tracking-wider w-32">Acción</th>
+                                        <th className="text-center px-8 py-5 text-[9px] font-bold text-gray-500 uppercase tracking-wider">
+                                            {eventStatus.isPast ? 'Asistencia' : 'Status'}
+                                        </th>
+                                        <th className="text-right px-8 py-5 text-[9px] font-bold text-gray-500 uppercase tracking-wider w-32">
+                                            {eventStatus.isPast ? 'Info' : 'Acción'}
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -529,16 +573,13 @@ export default function ConvocatoriaEvento() {
                                         // 💡 LOGICA INTELIGENTE: Si no hay requerimientos (ej. Ensayo), construye una lista basada en los convocados reales
                                         let displayReqs = evento?.requerimientos || [];
 
-                                        // 🛡️ FILTRO JEFE: Si es jefe, SOLO ve requerimientos de SU INSTRUMENTO
-                                        if (isJefeSeccion && !canConfirm) {
-                                            displayReqs = displayReqs.filter(r => isMyResponsibility(r));
-                                        }
+                                        // 🛡️ Nota: Jefe de sección ahora ve TODO por defecto, no filtramos displayReqs aquí
                                         
                                         if (displayReqs.length === 0 && convocatorias.length > 0) {
                                             // Generar requerimientos virtuales basados en lo que hay
                                             const instrumentosMap = new Map();
                                             const sourceDocs = (isJefeSeccion && !canConfirm)
-                                                ? convocatorias.filter(c => String(c.miembro?.id_seccion) === String(miSeccion))
+                                                ? convocatorias.filter(c => String(c.miembro?.id_instrumento) === String(miInstrumentoId))
                                                 : convocatorias;
 
                                             sourceDocs.forEach(c => {
@@ -659,8 +700,24 @@ export default function ConvocatoriaEvento() {
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td className="px-8 py-5 text-center">
-                                                                    {c.confirmado_por_director ? (
+                                                                 <td className="px-8 py-5 text-center">
+                                                                    {eventStatus.isPast ? (
+                                                                        <div className="flex flex-col items-center gap-1">
+                                                                            <div className={clsx(
+                                                                                "inline-flex items-center gap-1.5 text-[9px] font-bold uppercase px-3 py-1.5 rounded-full border",
+                                                                                (c.asistencia?.estado === 'PRESENTE' || c.asistencia?.estado === 'PUNTUAL' || c.asistencia?.estado === 'RETRASO') && "text-green-500 bg-green-500/5 border-green-500/10",
+                                                                                (c.asistencia?.estado === 'FALTA' || (!c.asistencia && eventStatus.isPast)) && "text-red-500 bg-red-500/5 border-red-500/10",
+                                                                                c.asistencia?.estado === 'JUSTIFICADO' && "text-blue-500 bg-blue-500/5 border-blue-500/10"
+                                                                            )}>
+                                                                                {c.asistencia?.estado === 'PUNTUAL' || c.asistencia?.estado === 'RETRASO' ? 'PRESENTE' : (c.asistencia?.estado || 'FALTA')}
+                                                                            </div>
+                                                                            {c.asistencia?.observacion && (
+                                                                                <span className="text-[7px] text-gray-500 uppercase font-black tracking-tighter truncate max-w-[100px]" title={c.asistencia.observacion}>
+                                                                                    {c.asistencia.observacion}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    ) : c.confirmado_por_director ? (
                                                                         <div className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase text-green-500 bg-green-500/5 px-3 py-1.5 rounded-full border border-green-500/10">
                                                                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                                                             READY
@@ -674,25 +731,30 @@ export default function ConvocatoriaEvento() {
                                                                 </td>
                                                                 <td className="px-8 py-5 text-right w-32">
                                                                     <div className="flex justify-end gap-2">
-                                                                        {!c.confirmado_por_director && canConfirm && (
-                                                                            <button
-                                                                                onClick={() => handleConfirmar(c.id_convocatoria)}
-                                                                                className="w-9 h-9 flex items-center justify-center bg-green-500/10 hover:bg-green-500 rounded-xl text-green-500 hover:text-white transition-all active:scale-90 border border-green-500/20 shadow-lg shadow-green-500/5"
-                                                                                title="Confirmar"
-                                                                            >
-                                                                                <Check className="w-4 h-4 stroke-[3]" />
-                                                                            </button>
-                                                                        )}
-                                                                        {/* Un Jefe solo puede eliminar de su instrumento exacto. Admin/Dir borran todo. */}
-                                                                        {(canConfirm || (isJefeSeccion && isMyResponsibility(c.miembro))) && (
-                                                                            <button
-                                                                                onClick={() => handleEliminar(c.id_convocatoria)}
-                                                                                className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-white transition-all active:scale-95 border border-red-500/20 shadow-lg shadow-red-500/5 group/del"
-                                                                                title="Quitar"
-                                                                            >
-                                                                                <Trash2 className="w-3.5 h-3.5 group-hover/del:rotate-12 transition-transform" />
-                                                                                <span className="text-[10px] font-bold uppercase tracking-wider">Eliminar</span>
-                                                                            </button>
+                                                                        {eventStatus.isPast ? (
+                                                                            <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Cerrado</span>
+                                                                        ) : (
+                                                                            <>
+                                                                                {!c.confirmado_por_director && canConfirm && (
+                                                                                    <button
+                                                                                        onClick={() => handleConfirmar(c.id_convocatoria)}
+                                                                                        className="w-9 h-9 flex items-center justify-center bg-green-500/10 hover:bg-green-500 rounded-xl text-green-500 hover:text-white transition-all active:scale-90 border border-green-500/20 shadow-lg shadow-green-500/5"
+                                                                                        title="Confirmar"
+                                                                                    >
+                                                                                        <Check className="w-4 h-4 stroke-[3]" />
+                                                                                    </button>
+                                                                                )}
+                                                                                {(canConfirm || (isJefeSeccion && isMyResponsibility(c.miembro) && !c.confirmado_por_director)) && (
+                                                                                    <button
+                                                                                        onClick={() => handleEliminar(c.id_convocatoria)}
+                                                                                        className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 hover:bg-red-500 rounded-xl text-red-500 hover:text-white transition-all active:scale-95 border border-red-500/20 shadow-lg shadow-red-500/5 group/del"
+                                                                                        title="Quitar"
+                                                                                    >
+                                                                                        <Trash2 className="w-3.5 h-3.5 group-hover/del:rotate-12 transition-transform" />
+                                                                                        <span className="text-[10px] font-bold uppercase tracking-wider">Eliminar</span>
+                                                                                    </button>
+                                                                                )}
+                                                                            </>
                                                                         )}
                                                                     </div>
                                                                 </td>
@@ -700,7 +762,7 @@ export default function ConvocatoriaEvento() {
                                                         ))}
 
                                                         {/* Empty Placeholder Slots - Solo si es MI INSTRUMENTO */}
-                                                        {!isVirtual && isMyResponsibility(req) && Array.from({ length: emptySlots }).map((_, idx) => (
+                                                        {!isVirtual && isMyResponsibility(req) && !eventStatus.isPast && Array.from({ length: emptySlots }).map((_, idx) => (
                                                             <tr key={`empty-${req.id_instrumento}-${idx}`} className="group opacity-40 hover:opacity-100 transition-opacity">
                                                                 <td className="px-8 py-5">
                                                                     <div className="flex items-center gap-5">

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown, Activity, Shield } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
+import SmartDateInput from '../ui/SmartDateInput';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 
@@ -17,6 +18,10 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
     // Quick Add Type State
     const [showNewTypeForm, setShowNewTypeForm] = useState(false);
     const [newTypeName, setNewTypeName] = useState('');
+    const [newTypeMinAntes, setNewTypeMinAntes] = useState(15);
+    const [newTypeHrsSellar, setNewTypeHrsSellar] = useState(24);
+    const [newTypeMinTolerancia, setNewTypeMinTolerancia] = useState(15);
+    const [newTypeMinCierre, setNewTypeMinCierre] = useState(60);
     const [creatingType, setCreatingType] = useState(false);
     
     // CONSTANTES DE LUGARES
@@ -40,6 +45,14 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         return `${year}-${month}-${day}`;
     };
 
+    const calculateTimeWithOffset = (baseTime, offsetMinutes) => {
+        if (!baseTime || offsetMinutes === undefined) return '--:--';
+        const [hours, minutes] = baseTime.split(':').map(Number);
+        const date = new Date();
+        date.setHours(hours, minutes + offsetMinutes, 0);
+        return date.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', hour12: false });
+    };
+
     // Form State
     const [formData, setFormData] = useState({
         id_tipo_evento: '',
@@ -50,6 +63,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         latitud: '',
         longitud: '',
         radio: 100,
+        minutos_tolerancia: 15,
+        minutos_cierre: 60,
         requerimientos: []
     });
 
@@ -77,6 +92,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 latitud: eventoToEdit.latitud || '',
                 longitud: eventoToEdit.longitud || '',
                 radio: eventoToEdit.radio || 100,
+                minutos_tolerancia: eventoToEdit.minutos_tolerancia ?? (eventoToEdit.tipo?.minutos_tolerancia || 15),
+                minutos_cierre: eventoToEdit.minutos_cierre ?? (eventoToEdit.tipo?.minutos_cierre || 60),
                 // Mapear solo los campos necesarios para evitar basura en el state
                 requerimientos: eventoToEdit.requerimientos?.map(r => ({
                     id_instrumento: r.id_instrumento,
@@ -94,6 +111,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 latitud: '',
                 longitud: '',
                 radio: 100,
+                minutos_tolerancia: 15,
+                minutos_cierre: 60,
                 requerimientos: []
             });
         }
@@ -205,18 +224,23 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         let newFormData = { ...formData, id_tipo_evento: typeId };
         
         // AUTO-RELLENO MAGICO PARA ENSAYOS
-        if (selectedTypeObj && selectedTypeObj.evento === 'ENSAYO') {
-            // 1. Título automático
-            newFormData.evento = generateEnsayoTitle(formData.fecha);
-            
-            // 2. Ubicación automática (Sala Principal)
-            const sala = LUGARES_FRECUENTES[0];
-            if (sala) {
-                newFormData.latitud = sala.lat;
-                newFormData.longitud = sala.lng;
-                newFormData.direccion = sala.direccion;
-                newFormData.radio = sala.radio;
-                notify('Titulo y ubicación de ensayo autocompletados 🪄', 'success');
+        if (selectedTypeObj) {
+            newFormData.minutos_tolerancia = selectedTypeObj.minutos_tolerancia || 15;
+            newFormData.minutos_cierre = selectedTypeObj.minutos_cierre || 60;
+
+            if (selectedTypeObj.evento === 'ENSAYO') {
+                // 1. Título automático
+                newFormData.evento = generateEnsayoTitle(formData.fecha);
+                
+                // 2. Ubicación automática (Sala Principal)
+                const sala = LUGARES_FRECUENTES[0];
+                if (sala) {
+                    newFormData.latitud = sala.lat;
+                    newFormData.longitud = sala.lng;
+                    newFormData.direccion = sala.direccion;
+                    newFormData.radio = sala.radio;
+                }
+                notify('Configuración de ensayo autocompletada 🪄', 'success');
             }
         }
 
@@ -282,7 +306,13 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         if (!newTypeName.trim()) return;
         setCreatingType(true);
         try {
-            const res = await api.post('/eventos/tipos', { evento: newTypeName });
+            const res = await api.post('/eventos/tipos', { 
+                evento: newTypeName,
+                minutos_antes_marcar: newTypeMinAntes,
+                horas_despues_sellar: newTypeHrsSellar,
+                minutos_tolerancia: newTypeMinTolerancia,
+                minutos_cierre: newTypeMinCierre
+            });
             setTipos(prev => [...prev, res.data]);
             setFormData(prev => ({ ...prev, id_tipo_evento: res.data.id_tipo_evento }));
             setNewTypeName('');
@@ -417,26 +447,87 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                 </div>
 
                                 {showNewTypeForm ? (
-                                    <div className="flex gap-2 animate-in slide-in-from-top-2 duration-300">
-                                        <div className="relative flex-1">
+                                    <div className="space-y-3 p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-2xl animate-in slide-in-from-top-2 duration-300">
+                                        <div className="relative">
                                             <Hash className="absolute left-4 top-3.5 w-5 h-5 text-brand-primary" />
                                             <input 
                                                 autoFocus
                                                 value={newTypeName}
                                                 onChange={(e) => setNewTypeName(e.target.value.toUpperCase())}
-                                                placeholder="EJ: BAUTIZO, DESFILE..."
-                                                className="w-full pl-12 pr-4 py-3 bg-brand-primary/10 border border-brand-primary/30 rounded-xl text-white font-bold outline-none placeholder:text-brand-primary/40"
-                                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreateNewType())}
+                                                placeholder="NOMBRE DEL TIPO (EJ: BAUTIZO)"
+                                                className="w-full pl-12 pr-4 py-3 bg-black/20 border border-brand-primary/30 rounded-xl text-white font-bold outline-none placeholder:text-brand-primary/30 text-sm"
                                             />
                                         </div>
-                                        <Button 
-                                            type="button"
-                                            onClick={handleCreateNewType}
-                                            loading={creatingType}
-                                            className="px-6 rounded-xl bg-brand-primary"
-                                        >
-                                            GUARDAR
-                                        </Button>
+                                        
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Abrir (Min previos)</label>
+                                                <div className="relative">
+                                                    <Clock className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
+                                                    <input 
+                                                        type="number"
+                                                        value={newTypeMinAntes}
+                                                        onChange={(e) => setNewTypeMinAntes(parseInt(e.target.value) || 0)}
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Cierre Automático (Min)</label>
+                                                <div className="relative">
+                                                    <X className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
+                                                    <input 
+                                                        type="number"
+                                                        value={newTypeMinCierre}
+                                                        onChange={(e) => setNewTypeMinCierre(parseInt(e.target.value) || 0)}
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Tolerancia (Min)</label>
+                                                <div className="relative">
+                                                    <Shield className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
+                                                    <input 
+                                                        type="number"
+                                                        value={newTypeMinTolerancia}
+                                                        onChange={(e) => setNewTypeMinTolerancia(parseInt(e.target.value) || 0)}
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Sellar Auditoría (Hrs)</label>
+                                                <div className="relative">
+                                                    <Activity className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
+                                                    <input 
+                                                        type="number"
+                                                        value={newTypeHrsSellar}
+                                                        onChange={(e) => setNewTypeHrsSellar(parseInt(e.target.value) || 0)}
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                type="button"
+                                                variant="ghost"
+                                                onClick={() => setShowNewTypeForm(false)}
+                                                className="flex-1 h-10 text-[10px] font-black"
+                                            >
+                                                CANCELAR
+                                            </Button>
+                                            <Button 
+                                                type="button"
+                                                onClick={handleCreateNewType}
+                                                loading={creatingType}
+                                                className="flex-[2] h-10 bg-brand-primary text-[10px] font-black"
+                                            >
+                                                GUARDAR TIPO 🪄
+                                            </Button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="relative group">
@@ -484,19 +575,24 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
 
                             {/* Fecha y Hora */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className={`space-y-2 ${errors.fecha ? 'has-error' : ''}`}>
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Fecha</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
-                                        <input 
-                                            type="date"
-                                            min={getLocalDateString()} 
-                                            value={formData.fecha}
-                                            onChange={handleFechaChange}
-                                            className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
-                                        />
-                                    </div>
-                                    {errors.fecha && <p className="text-xs text-red-500 font-bold ml-1">{errors.fecha}</p>}
+                                <div className="space-y-2">
+                                    <SmartDateInput 
+                                        label="Fecha"
+                                        value={formData.fecha}
+                                        onChange={(val) => {
+                                            const currentType = tipos.find(t => t.id_tipo_evento == formData.id_tipo_evento);
+                                            setFormData(prev => {
+                                                let nextData = { ...prev, fecha: val };
+                                                if (currentType && currentType.evento === 'ENSAYO') {
+                                                    nextData.evento = generateEnsayoTitle(val);
+                                                }
+                                                return nextData;
+                                            });
+                                            if (errors.fecha) setErrors({...errors, fecha: null});
+                                        }}
+                                        min={getLocalDateString()}
+                                        error={errors.fecha}
+                                    />
                                 </div>
                                 <div className={`space-y-2 ${errors.hora ? 'has-error' : ''}`}>
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Hora</label>
@@ -511,6 +607,53 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                     </div>
                                     {errors.hora && <p className="text-xs text-red-500 font-bold ml-1">{errors.hora}</p>}
                                 </div>
+                            </div>
+
+                            {/* Configuración de Asistencia */}
+                            <div className="pt-4 border-t border-white/5 space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-4 h-4 text-brand-primary" />
+                                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Reglas de Asistencia</h4>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center px-1">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Tolerancia</label>
+                                            <span className="text-[10px] font-black text-brand-primary">+{formData.minutos_tolerancia} MIN</span>
+                                        </div>
+                                        <div className="relative">
+                                            <Shield className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                            <input 
+                                                type="number"
+                                                value={formData.minutos_tolerancia}
+                                                onChange={(e) => setFormData({...formData, minutos_tolerancia: parseInt(e.target.value) || 0})}
+                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
+                                                placeholder="Minutos"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center px-1">
+                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Tiempo Límite</label>
+                                            <span className="text-[10px] font-black text-red-400">CIERRE: {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}</span>
+                                        </div>
+                                        <div className="relative">
+                                            <X className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                            <input 
+                                                type="number"
+                                                value={formData.minutos_cierre}
+                                                onChange={(e) => setFormData({...formData, minutos_cierre: parseInt(e.target.value) || 0})}
+                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
+                                                placeholder="Minutos"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-[9px] text-gray-500 font-medium italic px-1">
+                                    * Los músicos podran marcar asistencia hasta las {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}. Después de esa hora, se considerarán FALTA automáticamente.
+                                </p>
                             </div>
                         </div>
 

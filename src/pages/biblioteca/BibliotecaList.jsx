@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -59,8 +59,8 @@ export default function BibliotecaList() {
         localStorage.setItem('monster_admin_mode', newMode);
     };
 
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role?.includes('JEFE');
-    const canManage = isAdmin && editMode;
+    const authorized = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.permissions?.includes('GESTIONAR_BIBLIOTECA');
+    const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -104,7 +104,9 @@ export default function BibliotecaList() {
     }, [generos, genreSearch]);
 
     return (
-        <div className="h-full overflow-y-auto lg:overflow-hidden custom-scrollbar animate-in fade-in duration-700 pr-2 lg:pr-0">
+        <div 
+            className="h-full overflow-y-auto lg:overflow-hidden custom-scrollbar animate-in fade-in duration-700 pr-2 lg:pr-0"
+        >
             <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 lg:h-full">
                 
                 {/* Columna Izquierda: Géneros */}
@@ -112,43 +114,47 @@ export default function BibliotecaList() {
                     "flex flex-col lg:h-full lg:overflow-y-auto lg:pr-2 lg:pb-10 lg:custom-scrollbar px-2",
                     mobileView === 'themes' && 'hidden lg:flex'
                 )}>
-                    {/* Header Géneros - Compacto */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
-                        <div>
-                            <h2 className="text-lg font-black text-white uppercase tracking-tight">Géneros</h2>
-                            <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Explora por categoría</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {isAdmin && (
+                    {/* Header Géneros - Separated for Scroll Effect */}
+                    <div className="px-1 mb-2">
+                        <h2 className="text-lg font-black text-white uppercase tracking-tight">Géneros</h2>
+                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Explora por categoría</p>
+                    </div>
+
+                    <div className="sticky top-0 z-30 bg-[#090b14] -mx-2 px-3 py-2 mb-3 border-b border-white/5 shadow-2xl shadow-black/50">
+                        <div className="flex items-center gap-2 w-full">
+                            {authorized && (
                                 <button
                                     onClick={toggleEditMode}
                                     className={clsx(
-                                        "h-9 px-3 rounded-lg flex items-center gap-1.5 transition-all duration-300 font-black text-[9px] uppercase tracking-widest border",
+                                        "h-10 px-3 rounded-xl flex items-center justify-center transition-all duration-300 border shrink-0",
                                         editMode 
                                             ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
-                                            : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                            : "bg-surface-card border-white/10 text-gray-400 hover:bg-white/10"
                                     )}
                                 >
-                                    {editMode ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                                    {editMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                                 </button>
                             )}
-                            <Input 
-                                icon={Search}
-                                placeholder="Buscar..."
-                                value={genreSearch}
-                                onChange={(e) => setGenreSearch(e.target.value)}
-                                className="h-9 w-32 bg-[#161b2c] border-white/5 rounded-lg text-xs"
-                            />
+                            <div className="flex-1">
+                                <Input 
+                                    icon={Search}
+                                    placeholder="Buscar género..."
+                                    value={genreSearch}
+                                    onChange={(e) => setGenreSearch(e.target.value)}
+                                    className="h-10 w-full bg-surface-card border-white/5 rounded-xl text-sm"
+                                />
+                            </div>
                             {canManage && (
-                                <Button 
-                                    onClick={() => {
-                                        setGenreToEdit(null);
-                                        setIsCatalogModalOpen(true);
-                                    }}
-                                    className="h-9 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-primary/90"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                </Button>
+                                    <Button 
+                                        size="icon"
+                                        onClick={() => {
+                                            setGenreToEdit(null);
+                                            setIsCatalogModalOpen(true);
+                                        }}
+                                        className="h-10 w-10 rounded-xl shrink-0 z-50 shadow-lg"
+                                    >
+                                        <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                                    </Button>
                             )}
                         </div>
                     </div>
@@ -240,32 +246,36 @@ export default function BibliotecaList() {
                         </button>
                     )}
 
-                    {/* Header Temas - Compacto */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
-                        <div className="min-w-0">
-                            <h2 className="text-lg font-black text-white uppercase tracking-tight truncate">
-                                {selectedGenero?.nombre_genero || 'Temas'}
-                            </h2>
-                            <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Canciones disponibles</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Input 
-                                icon={Search}
-                                placeholder="Buscar..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-9 w-32 bg-[#161b2c] border-white/5 rounded-lg text-xs"
-                            />
+                    {/* Header Temas - Separated for Scroll Effect */}
+                    <div className="px-1 mb-2">
+                        <h2 className="text-lg font-black text-white uppercase tracking-tight truncate">
+                            {selectedGenero?.nombre_genero || 'Temas'}
+                        </h2>
+                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Canciones disponibles</p>
+                    </div>
+
+                    <div className="sticky top-0 z-30 bg-[#090b14] -mx-2 px-3 py-2 mb-3 border-b border-white/5 shadow-2xl shadow-black/50">
+                        <div className="flex items-center gap-2 w-full">
+                            <div className="flex-1">
+                                <Input 
+                                    icon={Search}
+                                    placeholder="Buscar canción..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="h-10 w-full bg-surface-card border-white/5 rounded-xl text-sm"
+                                />
+                            </div>
                             {canManage && (
-                                <Button 
-                                    onClick={() => {
-                                        setEditTemaInitialData(null);
-                                        setIsTemaModalOpen(true);
-                                    }} 
-                                    className="h-9 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-primary/90"
-                                >
-                                    <Plus className="w-3.5 h-3.5 mr-1" /> Tema
-                                </Button>
+                                    <Button 
+                                        size="icon"
+                                        onClick={() => {
+                                            setEditTemaInitialData(null);
+                                            setIsTemaModalOpen(true);
+                                        }} 
+                                        className="h-10 w-10 rounded-xl shrink-0 z-50 shadow-lg"
+                                    >
+                                        <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                                    </Button>
                             )}
                         </div>
                     </div>
@@ -281,8 +291,11 @@ export default function BibliotecaList() {
                                 {filteredTemas.map((tema) => (
                                     <div 
                                         key={tema.id_tema}
-                                        onClick={() => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`)}
-                                        className="group bg-surface-card border border-white/5 rounded-3xl p-6 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer"
+                                        onClick={authorized ? () => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`) : undefined}
+                                        className={clsx(
+                                            "group bg-surface-card border border-white/5 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl",
+                                            authorized ? "hover:border-indigo-500/30 hover:-translate-y-1 cursor-pointer" : "cursor-default"
+                                        )}
                                     >
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex items-center gap-4 text-left">
@@ -296,9 +309,11 @@ export default function BibliotecaList() {
                                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">{selectedGenero?.nombre_genero}</p>
                                                 </div>
                                             </div>
-                                            <div className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
-                                                <ChevronRight className="w-5 h-5" />
-                                            </div>
+                                            {authorized && (
+                                                <div className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shrink-0">
+                                                    <ChevronRight className="w-5 h-5" />
+                                                </div>
+                                            )}
                                         </div>
 
                                         {(() => {

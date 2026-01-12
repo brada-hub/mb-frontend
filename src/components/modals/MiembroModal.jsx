@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import api from '../../api';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
+import SmartDateInput from '../ui/SmartDateInput';
 import { 
     X, User, MapPin, Calendar, Smartphone, 
     Fingerprint, Home, Phone, ShieldCheck, 
@@ -13,7 +14,7 @@ import { clsx } from 'clsx';
 import { useToast } from '../../context/ToastContext';
 
 export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = null }) {
-    const { register, handleSubmit, reset, watch, setValue, formState: { errors, isDirty } } = useForm({
+    const { register, handleSubmit, reset, watch, setValue, control, formState: { errors, isDirty } } = useForm({
         mode: "onChange", // VALIDACIÓN EN TIEMPO REAL
         defaultValues: {
             has_emergency_contact: false,
@@ -316,25 +317,30 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         }
                                     })} 
                                 />
-                                <Input 
+                                <Controller
                                     name="fecha"
-                                    label="Fecha Nacimiento" 
-                                    type="date" 
-                                    icon={Calendar} 
-                                    max={new Date().toISOString().split("T")[0]}
-                                    error={errors.fecha?.message}
-                                    {...register('fecha', {
+                                    control={control}
+                                    rules={{
                                         required: "La fecha de nacimiento es obligatoria",
                                         validate: (value) => {
-                                            const selectedDate = new Date(value);
+                                            if (!value) return true;
+                                            const selectedDate = new Date(value + 'T12:00:00');
                                             const today = new Date();
                                             today.setHours(0, 0, 0, 0);
                                             if (selectedDate > today) return "La fecha no puede ser futura";
-                                            // Validación de rango razonable (ej. no nacidos en 1900)
                                             if (selectedDate.getFullYear() < 1920) return "Fecha no válida";
                                             return true;
                                         }
-                                    })} 
+                                    }}
+                                    render={({ field }) => (
+                                        <SmartDateInput 
+                                            label="Fecha Nacimiento"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            error={errors.fecha?.message}
+                                            max={new Date().toISOString().split("T")[0]}
+                                        />
+                                    )}
                                 />
                             </div>
 
@@ -357,9 +363,17 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                     {...register('direccion', { 
                                         required: "La dirección es necesaria",
                                         minLength: { value: 10, message: "Mínimo 10 caracteres" },
-                                        maxLength: { value: 200, message: "Máximo 200 caracteres" },
-                                        pattern: { value: /^[A-ZÁÉÍÓÚÜÑ0-9\s.,#\-\/]+$/, message: "Solo letras, números y caracteres comunes" }
+                                        maxLength: { value: 200, message: "Máximo 200 caracteres" }
                                     })} 
+                                />
+                                <Input 
+                                    name="referencia_vivienda"
+                                    label="REFERENCIA / DETALLES DE LA CASA" 
+                                    placeholder="EJ: CASA CON REJAS BLANCAS, FRENTE A LA PLAZA..." 
+                                    icon={MapPin}
+                                    onInput={filterAlphanumeric}
+                                    error={errors.referencia_vivienda?.message}
+                                    {...register('referencia_vivienda')} 
                                 />
                             </div>
                         </section>
