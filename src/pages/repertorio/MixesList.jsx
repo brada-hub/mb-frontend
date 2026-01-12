@@ -52,7 +52,9 @@ export default function MixesList() {
         localStorage.setItem('monster_admin_mode', newMode);
     };
 
-    const authorized = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.permissions?.includes('GESTIONAR_BIBLIOTECA');
+    const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
+    // Bloqueo estricto: Solo ADMIN y DIRECTOR gestionan. Jefes y Miembros solo ven/estudian.
+    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR';
     const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {

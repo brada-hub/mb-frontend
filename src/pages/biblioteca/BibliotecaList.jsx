@@ -59,7 +59,9 @@ export default function BibliotecaList() {
         localStorage.setItem('monster_admin_mode', newMode);
     };
 
-    const authorized = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.permissions?.includes('GESTIONAR_BIBLIOTECA');
+    const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
+    // Bloqueo estricto: Solo ADMIN y DIRECTOR gestionan. Jefes y Miembros solo ven/estudian.
+    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR';
     const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {
@@ -120,43 +122,41 @@ export default function BibliotecaList() {
                         <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Explora por categoría</p>
                     </div>
 
-                    <div className="sticky top-0 z-30 bg-[#090b14] -mx-2 px-3 py-2 mb-3 border-b border-white/5 shadow-2xl shadow-black/50">
-                        <div className="flex items-center gap-2 w-full">
-                            {authorized && (
-                                <button
-                                    onClick={toggleEditMode}
-                                    className={clsx(
-                                        "h-10 px-3 rounded-xl flex items-center justify-center transition-all duration-300 border shrink-0",
-                                        editMode 
-                                            ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
-                                            : "bg-surface-card border-white/10 text-gray-400 hover:bg-white/10"
-                                    )}
-                                >
-                                    {editMode ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                                </button>
-                            )}
-                            <div className="flex-1">
-                                <Input 
-                                    icon={Search}
-                                    placeholder="Buscar género..."
-                                    value={genreSearch}
-                                    onChange={(e) => setGenreSearch(e.target.value)}
-                                    className="h-10 w-full bg-surface-card border-white/5 rounded-xl text-sm"
-                                />
-                            </div>
-                            {canManage && (
-                                    <Button 
-                                        size="icon"
-                                        onClick={() => {
-                                            setGenreToEdit(null);
-                                            setIsCatalogModalOpen(true);
-                                        }}
-                                        className="h-10 w-10 rounded-xl shrink-0 z-50 shadow-lg"
-                                    >
-                                        <Plus className="w-6 h-6 text-white" strokeWidth={3} />
-                                    </Button>
-                            )}
+                    <div className="sticky top-0 z-30 bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-white/5 flex items-center gap-2">
+                        {authorized && (
+                            <button
+                                onClick={toggleEditMode}
+                                title={editMode ? "Desactivar Edición" : "Activar Edición"}
+                                className={clsx(
+                                    "h-12 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 border shrink-0",
+                                    editMode 
+                                        ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                        : "bg-surface-card border-white/10 text-gray-400 hover:bg-white/10"
+                                )}
+                            >
+                                {editMode ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                            </button>
+                        )}
+                        <div className="flex-1">
+                            <Input 
+                                icon={Search}
+                                placeholder="Buscar género..."
+                                value={genreSearch}
+                                onChange={(e) => setGenreSearch(e.target.value)}
+                                className="bg-surface-card border-white/5 h-12 text-sm rounded-2xl shadow-inner shadow-black/20"
+                            />
                         </div>
+                        {canManage && (
+                            <Button 
+                                onClick={() => {
+                                    setGenreToEdit(null);
+                                    setIsCatalogModalOpen(true);
+                                }}
+                                className="h-12 w-12 rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary p-0 flex items-center justify-center"
+                            >
+                                <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                            </Button>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-3">
@@ -254,30 +254,27 @@ export default function BibliotecaList() {
                         <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Canciones disponibles</p>
                     </div>
 
-                    <div className="sticky top-0 z-30 bg-[#090b14] -mx-2 px-3 py-2 mb-3 border-b border-white/5 shadow-2xl shadow-black/50">
-                        <div className="flex items-center gap-2 w-full">
-                            <div className="flex-1">
-                                <Input 
-                                    icon={Search}
-                                    placeholder="Buscar canción..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="h-10 w-full bg-surface-card border-white/5 rounded-xl text-sm"
-                                />
-                            </div>
-                            {canManage && (
-                                    <Button 
-                                        size="icon"
-                                        onClick={() => {
-                                            setEditTemaInitialData(null);
-                                            setIsTemaModalOpen(true);
-                                        }} 
-                                        className="h-10 w-10 rounded-xl shrink-0 z-50 shadow-lg"
-                                    >
-                                        <Plus className="w-6 h-6 text-white" strokeWidth={3} />
-                                    </Button>
-                            )}
+                    <div className="sticky top-0 z-30 bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-white/5 flex items-center gap-2">
+                        <div className="flex-1">
+                            <Input 
+                                icon={Search}
+                                placeholder="Buscar canción..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-surface-card border-white/5 h-12 text-sm rounded-2xl shadow-inner shadow-black/20 w-full"
+                            />
                         </div>
+                        {canManage && (
+                            <Button 
+                                onClick={() => {
+                                    setEditTemaInitialData(null);
+                                    setIsTemaModalOpen(true);
+                                }} 
+                                className="h-12 w-12 rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary p-0 flex items-center justify-center"
+                            >
+                                <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                            </Button>
+                        )}
                     </div>
 
                     <div>

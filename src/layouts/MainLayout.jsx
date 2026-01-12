@@ -58,17 +58,23 @@ export default function MainLayout() {
     if (loading || checking) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white font-black tracking-widest animate-pulse uppercase">Cargando Accesos...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
 
-    const userRole = user?.role || user?.miembro?.rol?.rol || '';
+    const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
     const isJefe = userRole.includes('JEFE');
-    const isPowerUser = ['ADMIN', 'DIRECTOR'].includes(userRole) || isJefe;
+    const isAdminOrDirector = ['ADMIN', 'DIRECTOR'].includes(userRole);
+    const isPowerUser = isAdminOrDirector || isJefe;
 
     const hasPermission = (perm) => {
         if (!perm) return true;
+        
+        // Bloqueo total de finanzas para Jefes/Miembros
+        if (perm === 'GESTION_FINANZAS') return isAdminOrDirector;
+        
+        // Bloqueo total de ROLES para todos menos el ADMIN
+        if (perm === 'GESTION_ROLES') return userRole === 'ADMIN';
+
         if (user?.permissions?.includes(perm)) return true;
         
-        // Si es un power user, tiene ciertos accesos implícitos si faltan en permisos
         if (isPowerUser) {
-            if (perm === 'GESTION_BIBLIOTECA') return true;
             if (perm === 'VER_DASHBOARD') return true;
             if (perm === 'GESTION_ASISTENCIA') return true;
         }
@@ -76,46 +82,60 @@ export default function MainLayout() {
         return false;
     };
 
-    const sidebarItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
-        { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
-        { icon: DollarSign, label: 'Gestión Pagos', to: '/dashboard/pagos', permission: 'GESTION_ASISTENCIA' }, // Admin
-        { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null }, // Todos
-        { icon: Calendar, label: 'Agenda', to: '/dashboard/eventos', permission: null },
-        { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
-        { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
-        { icon: Music, label: 'Biblioteca', to: '/dashboard/biblioteca', permission: 'GESTION_BIBLIOTECA' },
-        { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: 'GESTION_BIBLIOTECA' },
-        { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
+    const menuGroups = [
+        {
+            title: 'Centro de Control',
+            items: [
+                { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
+                { icon: Calendar, label: 'Agenda', to: '/dashboard/eventos', permission: null },
+                { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
+            ]
+        },
+        {
+            title: 'Gestión de Personal',
+            items: [
+                { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
+                { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+            ]
+        },
+        {
+            title: 'Contenido Musical',
+            items: [
+                { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: null },
+                { icon: Music, label: 'Biblioteca', to: '/dashboard/biblioteca', permission: null },
+            ]
+        },
+        {
+            title: 'Administración y Finanzas',
+            items: [
+                { icon: DollarSign, label: 'Gestión Pagos', to: '/dashboard/pagos', permission: 'GESTION_FINANZAS' },
+                { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null },
+                { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
+            ]
+        }
     ];
 
-    // Filter items:
-    // 1. Check permission
-    // 2. Hide 'Gestión Pagos' if not Admin/Director (already handled by permission GESTION_ASISTENCIA usually, but let's be safe)
-    // Actually GESTION_ASISTENCIA is for Chiefs too? If so, we might need a stricter perm for PagosAdmin.
-    // For now, let's assume GESTION_ASISTENCIA is okay, or use GESTION_ROLES or just 'ADMIN' check inside component.
-    // Let's refine the filter slightly to hide 'Mis Pagos' if desired, but usually good to show.
+    const filteredGroups = menuGroups.map(group => ({
+        ...group,
+        items: group.items.filter(item => hasPermission(item.permission))
+    })).filter(group => group.items.length > 0);
 
-    const filteredItems = sidebarItems.filter(item => hasPermission(item.permission));
+    const flattenedItems = filteredGroups.flatMap(g => g.items);
 
-    // Lógica de redirección inteligente solo cuando ya confirmamos permisos
     const onDashboardRoot = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
     
-    // Si estamos en la raíz y no tenemos permiso de dashboard, buscamos el primero disponible
     if (onDashboardRoot && !hasPermission('VER_DASHBOARD')) {
-        if (filteredItems.length > 0) {
-            return <Navigate to={filteredItems[0].to} replace />;
+        if (flattenedItems.length > 0) {
+            return <Navigate to={flattenedItems[0].to} replace />;
         }
     }
 
-    // Redirigir si intenta entrar a una ruta manual sin permiso
-    const currentItem = sidebarItems.find(i => i.to !== '/dashboard' && location.pathname.startsWith(i.to));
+    const currentItem = flattenedItems.find(i => i.to !== '/dashboard' && location.pathname.startsWith(i.to));
     if (currentItem && !hasPermission(currentItem.permission)) {
         return <Navigate to="/dashboard" replace />;
     }
 
-    // Si NO hay carga pendiente Y no hay ítems filtrados, entonces mostrar error
-    if (!loading && !checking && filteredItems.length === 0) {
+    if (!loading && !checking && flattenedItems.length === 0) {
         return (
             <div className="h-screen w-full bg-[#0f111a] flex flex-col items-center justify-center p-6 text-center">
                 <Shield className="w-16 h-16 text-gray-600 mb-4" />
@@ -136,7 +156,6 @@ export default function MainLayout() {
 
     return (
         <div className="h-screen w-full bg-[#0f111a] flex text-gray-100 font-sans overflow-hidden">
-            {/* Mobile Overlay */}
             {isMobileMenuOpen && (
                 <div 
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
@@ -144,7 +163,6 @@ export default function MainLayout() {
                 />
             )}
 
-            {/* Sidebar - SIEMPRE FIJO */}
             <aside className={clsx(
                 "fixed top-0 left-0 z-50 h-screen w-72 bg-[#161b2c]/80 backdrop-blur-xl border-r border-white/5 transition-transform duration-300 flex flex-col",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
@@ -160,7 +178,6 @@ export default function MainLayout() {
                             <p className="text-xs text-indigo-400 font-medium tracking-wider">PANEL ADMIN</p>
                         </div>
                     </div>
-                    {/* Close Button for Mobile */}
                     <button 
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="lg:hidden p-2 text-gray-400 hover:text-white bg-white/5 rounded-lg"
@@ -169,14 +186,26 @@ export default function MainLayout() {
                     </button>
                 </div>
 
-                <div className="p-4 space-y-1 mt-4 flex-1 overflow-y-auto">
-                    {filteredItems.map((item) => (
-                        <SidebarItem 
-                            key={item.to} 
-                            {...item} 
-                            active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        />
+                <div className="p-4 flex-1 overflow-y-auto custom-scrollbar">
+                    {filteredGroups.map((group, gIdx) => (
+                        <div key={group.title} className={clsx(gIdx !== 0 && "mt-6")}>
+                            <h3 className="px-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">
+                                {group.title}
+                            </h3>
+                            <div className="space-y-1">
+                                {group.items.map((item) => (
+                                    <SidebarItem 
+                                        key={item.to} 
+                                        {...item} 
+                                        active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    />
+                                ))}
+                            </div>
+                            {gIdx !== filteredGroups.length - 1 && (
+                                <div className="mx-4 mt-6 border-b border-white/[0.03]" />
+                            )}
+                        </div>
                     ))}
                 </div>
 
@@ -188,7 +217,7 @@ export default function MainLayout() {
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{user?.user}</p>
                             <p className="text-xs text-indigo-400 font-bold tracking-wider truncate">
-                                {user?.role || user?.miembro?.rol?.rol || 'Administrador'}
+                                {userRole}
                             </p>
                         </div>
                     </div>
@@ -202,12 +231,10 @@ export default function MainLayout() {
                 </div>
             </aside>
 
-            {/* Main Content - Con margen izquierdo para el sidebar fijo */}
             <main className={clsx(
                 "flex-1 h-screen flex flex-col relative transition-all duration-300",
                 isSidebarOpen ? "lg:ml-72" : "lg:ml-0"
             )}>
-                {/* Topbar - Ultra Compacto en móvil para ganar espacio vertical */}
                 <header className="h-10 sm:h-16 lg:h-20 px-2 sm:px-8 flex items-center justify-between border-b border-white/5 bg-[#0f111a]/50 backdrop-blur-md shrink-0 sticky top-0 z-30">
                     <div className="flex items-center gap-2 sm:gap-4">
                         <button 
@@ -223,8 +250,8 @@ export default function MainLayout() {
                             <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                         </button>
 
-                        <h2 className="text-sm sm:text-xl font-bold text-white hidden sm:block">
-                            {[...sidebarItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
+                        <h2 className="text-sm sm:text-xl font-bold text-white hidden sm:block uppercase tracking-tighter">
+                            {[...flattenedItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
                         </h2>
                     </div>
 
@@ -241,7 +268,6 @@ export default function MainLayout() {
                 </div>
             </main>
             
-            {/* Modal Obligatorio de Cambio de Contraseña */}
             <ForcePasswordChangeModal />
         </div>
     );

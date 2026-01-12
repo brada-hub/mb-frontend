@@ -51,105 +51,146 @@ export default function MisPagos() {
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 max-w-4xl mx-auto">
+        <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto px-2 sm:px-6 pb-20">
             {/* Header / Resumen */}
-            <div className="bg-gradient-to-br from-indigo-900 via-[#161b2c] to-[#0f111a] rounded-3xl p-6 sm:p-8 border border-white/10 relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
-                    <PiggyBank className="w-64 h-64 text-white" />
+            <div className="bg-gradient-to-br from-indigo-900/40 via-[#161b2c] to-[#0f111a] rounded-[2.5rem] sm:rounded-[4rem] p-6 sm:p-12 border border-white/10 relative overflow-hidden shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]">
+                <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
+                    <PiggyBank className="w-64 h-64 sm:w-96 sm:h-96 text-white -rotate-12 translate-x-20 -translate-y-10" />
                 </div>
                 
-                <h1 className="text-2xl font-black text-white uppercase tracking-tighter mb-1 relative z-10">Mi Billetera</h1>
-                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-8 relative z-10">Resumen de Actividad Remunerada</p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-                    <div className="bg-surface-card/50 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-emerald-500/20 rounded-lg">
-                                <DollarSign className="w-5 h-5 text-emerald-400" />
-                            </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Por Cobrar</span>
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+                    <div className="flex flex-col">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit mb-4">
+                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+                            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Estado Financiero</span>
                         </div>
-                        <p className="text-3xl font-black text-white">{totalPorCobrar} <span className="text-sm text-gray-500 font-medium">Eventos</span></p>
+                        <h1 className="text-3xl sm:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-2">Mi Billetera</h1>
+                        <p className="text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg">Control total de tus ingresos y actividad remunerada en tiempo real.</p>
                     </div>
-
-                    <div className="bg-surface-card/50 backdrop-blur-md border border-white/10 rounded-2xl p-5 flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-blue-500/20 rounded-lg">
-                                <History className="w-5 h-5 text-blue-400" />
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0 lg:min-w-[500px]">
+                        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-emerald-500/20 rounded-2xl group-hover:scale-110 transition-transform">
+                                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400" />
+                                </div>
+                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Pendiente</span>
                             </div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Historial Cobrado</span>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-4xl sm:text-6xl font-black text-white tracking-tighter">{totalPorCobrar}</p>
+                                <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
+                            </div>
                         </div>
-                        <p className="text-3xl font-black text-white">{data.historial_cobrado.length} <span className="text-sm text-gray-500 font-medium">Eventos</span></p>
+
+                        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="p-3 bg-blue-500/20 rounded-2xl group-hover:scale-110 transition-transform">
+                                    <History className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+                                </div>
+                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Completado</span>
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <p className="text-4xl sm:text-6xl font-black text-white tracking-tighter">{data.historial_cobrado.length}</p>
+                                <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex items-center gap-2 p-1 bg-surface-card border border-white/5 rounded-xl w-full max-w-sm mx-auto sm:mx-0">
-                <button 
-                    onClick={() => setActiveTab('COBRAR')}
-                    className={clsx(
-                        "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
-                        activeTab === 'COBRAR' ? "bg-indigo-600 text-white shadow-lg" : "text-gray-500 hover:text-white hover:bg-white/5"
-                    )}
-                >
-                    Por Cobrar ({data.por_cobrar.length})
-                </button>
-                <button 
-                    onClick={() => setActiveTab('HISTORIAL')}
-                    className={clsx(
-                        "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
-                        activeTab === 'HISTORIAL' ? "bg-indigo-600 text-white shadow-lg" : "text-gray-500 hover:text-white hover:bg-white/5"
-                    )}
-                >
-                    Historial
-                </button>
+            {/* Tabs & Controls */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-1.5 p-1.5 bg-[#161b2c] border border-white/5 rounded-2xl w-full md:w-auto shadow-2xl">
+                    <button 
+                        onClick={() => setActiveTab('COBRAR')}
+                        className={clsx(
+                            "flex-1 md:min-w-[180px] px-6 py-3.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] rounded-xl transition-all duration-500",
+                            activeTab === 'COBRAR' ? "bg-indigo-600 text-white shadow-[0_10px_20px_-5px_rgba(79,70,229,0.5)] scale-[1.05]" : "text-gray-500 hover:text-white hover:bg-white/5"
+                        )}
+                    >
+                        Pendientes de Cobro ({data.por_cobrar.length})
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('HISTORIAL')}
+                        className={clsx(
+                            "flex-1 md:min-w-[180px] px-6 py-3.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] rounded-xl transition-all duration-500",
+                            activeTab === 'HISTORIAL' ? "bg-indigo-600 text-white shadow-[0_10px_20px_-5px_rgba(79,70,229,0.5)] scale-[1.05]" : "text-gray-500 hover:text-white hover:bg-white/5"
+                        )}
+                    >
+                        Historial de Cobros
+                    </button>
+                </div>
+
+                <div className="hidden md:flex items-center gap-4 text-gray-400">
+                    <p className="text-[10px] font-black uppercase tracking-widest">Filtrar por:</p>
+                    <select className="bg-[#161b2c] border border-white/5 rounded-xl px-4 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500/50 text-white">
+                        <option>Todos los eventos</option>
+                        <option>Contratos</option>
+                        <option>Rematitos</option>
+                    </select>
+                </div>
             </div>
 
-            {/* Content Switch */}
-            <div className="space-y-4">
+            {/* Main Content Area */}
+            <div className="min-h-[50vh]">
                 {activeTab === 'COBRAR' ? (
                     data.por_cobrar.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 text-center bg-surface-card border border-white/5 rounded-3xl">
-                            <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4 opacity-50" />
-                            <h3 className="text-lg font-bold text-white">¡Todo al día!</h3>
-                            <p className="text-gray-500 text-sm mt-1">No tienes pagos pendientes por recoger.</p>
+                        <div className="flex flex-col items-center justify-center py-32 text-center bg-[#161b2c]/20 border-2 border-dashed border-white/5 rounded-[3rem] animate-in zoom-in duration-700">
+                            <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mb-8 relative">
+                                <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+                                <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" />
+                            </div>
+                            <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">¡Finanzas al día!</h3>
+                            <p className="text-gray-500 text-sm sm:text-base mt-3 max-w-sm mx-auto leading-relaxed">No tienes liquidaciones pendientes en este momento. ¡Buen trabajo!</p>
                         </div>
                     ) : (
-                        <div className="grid gap-3">
-                            {data.por_cobrar.map(item => (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                            {data.por_cobrar.map((item, idx) => (
                                 <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
+                                    initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05, type: 'spring', damping: 20 }}
                                     key={item.id_convocatoria}
-                                    className="bg-surface-card border border-white/5 p-4 rounded-2xl flex items-center justify-between group hover:border-indigo-500/30 transition-all"
+                                    className="bg-surface-card border border-white/5 p-6 rounded-[2.5rem] flex flex-col gap-6 group hover:border-indigo-500/40 transition-all hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-white/5 rounded-xl flex flex-col items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-indigo-500/20 transition-all">
-                                            <span className="text-xs font-black uppercase">{new Date(item.fecha).toLocaleString('es', { month: 'short' })}</span>
-                                            <span className="text-lg font-black leading-none">{new Date(item.fecha).getDate()}</span>
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="p-4 bg-white/5 rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 min-w-[70px]">
+                                            <span className="text-[10px] font-black uppercase leading-none mb-1">{new Date(item.fecha).toLocaleString('es', { month: 'short' })}</span>
+                                            <span className="text-2xl font-black leading-none">{new Date(item.fecha).getDate()}</span>
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold text-white text-sm sm:text-base">{item.evento}</h3>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className={clsx(
-                                                    "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border",
-                                                    item.tipo === 'CONTRATO' 
-                                                        ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
-                                                        : "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                                )}>
-                                                    {item.tipo}
-                                                </span>
-                                                <span className="flex items-center gap-1 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                                                    <Clock className="w-3 h-3" /> {item.hora?.substr(0, 5)}
-                                                </span>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <span className={clsx(
+                                                "text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border",
+                                                item.tipo === 'CONTRATO' 
+                                                    ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
+                                                    : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                            )}>
+                                                {item.tipo}
+                                            </span>
+                                            <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-black uppercase">
+                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                                Listo
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-emerald-400 text-xs font-black uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20">
-                                            Pendiente
-                                        </span>
+                                    
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-white text-lg sm:text-xl truncate tracking-tight mb-2">{item.evento}</h3>
+                                        <div className="flex items-center gap-4 text-xs text-gray-500 font-bold uppercase">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="w-4 h-4 text-indigo-400" />
+                                                {item.hora?.substr(0, 5)}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-indigo-400" />
+                                                {new Date(item.fecha).getFullYear()}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+                                        <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Monto estimado</span>
+                                        <div className="text-white font-black text-lg">---</div>
                                     </div>
                                 </motion.div>
                             ))}
@@ -157,31 +198,40 @@ export default function MisPagos() {
                     )
                 ) : (
                     Object.entries(historialGrouped).length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 text-center bg-surface-card border border-white/5 rounded-3xl">
-                            <History className="w-16 h-16 text-gray-700 mb-4" />
-                            <h3 className="text-lg font-bold text-white">Sin Historial</h3>
-                            <p className="text-gray-500 text-sm mt-1">Aún no tienes pagos registrados en el sistema.</p>
+                        <div className="flex flex-col items-center justify-center py-32 text-center bg-[#161b2c]/20 border-2 border-dashed border-white/5 rounded-[3rem]">
+                            <History className="w-16 h-16 text-gray-700 mb-6 opacity-30" />
+                            <h3 className="text-2xl font-black text-white uppercase tracking-tight">Sin Historial</h3>
+                            <p className="text-gray-500 text-sm mt-2 max-w-sm mx-auto">Aún no se registran liquidaciones en tu cuenta histórica.</p>
                         </div>
                     ) : (
-                        <div className="space-y-6">
-                            {Object.entries(historialGrouped).map(([mes, eventos]) => (
-                                <div key={mes}>
-                                    <h3 className="text-gray-500 text-xs font-black uppercase tracking-widest mb-3 pl-2 border-l-2 border-indigo-500">{mes}</h3>
-                                    <div className="grid gap-3">
+                        <div className="space-y-12 pb-20">
+                            {Object.entries(historialGrouped).sort((a,b) => b[1][0].fecha_pago.localeCompare(a[1][0].fecha_pago)).map(([mes, eventos]) => (
+                                <div key={mes} className="relative">
+                                    <div className="sticky top-[100px] z-20 py-4 mb-6">
+                                        <div className="inline-flex items-center gap-4 px-6 py-3 bg-[#161b2c] border border-white/5 rounded-2xl shadow-2xl">
+                                            <Calendar className="w-5 h-5 text-indigo-500" />
+                                            <h3 className="text-white text-sm sm:text-base font-black uppercase tracking-[0.3em]">{mes}</h3>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 relative z-10">
                                         {eventos.map(item => (
                                             <div 
                                                 key={item.id_convocatoria}
-                                                className="bg-surface-card border border-white/5 p-4 rounded-2xl flex items-center justify-between opacity-75 hover:opacity-100 transition-opacity"
+                                                className="bg-[#161b2c]/30 border border-white/5 p-6 rounded-[2rem] flex flex-col gap-4 opacity-80 hover:opacity-100 transition-all hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
                                             >
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-500">
-                                                        <CheckCircle2 className="w-5 h-5" />
+                                                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 border border-white/10 group-hover:bg-emerald-500/10 transition-colors">
+                                                        <CheckCircle2 className="w-6 h-6" />
                                                     </div>
-                                                    <div>
-                                                        <h3 className="font-bold text-gray-200 text-sm">{item.evento}</h3>
-                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-                                                            Pagado el: {new Date(item.fecha_pago).toLocaleDateString()}
-                                                        </p>
+                                                    <div className="min-w-0">
+                                                        <h3 className="font-bold text-gray-200 text-base truncate">{item.evento}</h3>
+                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Cobrado con éxito</p>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2 pt-4 border-t border-white/5 flex flex-col gap-1">
+                                                    <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-wider">
+                                                        <span>Fecha de Pago</span>
+                                                        <span className="text-gray-300">{new Date(item.fecha_pago).toLocaleDateString()}</span>
                                                     </div>
                                                 </div>
                                             </div>
