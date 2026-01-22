@@ -12,18 +12,23 @@ export default function ForcePasswordChangeModal() {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
-    // Solo mostramos si el usuario está autenticado, su perfil está completo y no ha cambiado su contraseña
-    if (!user || user.profile_completed === false || user.password_changed) return null;
+    // Solo mostramos si el usuario está autenticado y NO ha cambiado su contraseña aún.
+    // El completado de perfil viene DESPUÉS de esto.
+    if (!user || user.password_changed) return null;
 
     const onSubmit = async (data) => {
         setLoading(true);
         setErrorMsg('');
         try {
-            await api.post('/change-password', {
+            const res = await api.post('/change-password', {
                 password: data.password,
                 password_confirmation: data.confirmPassword
             });
-            updateUser({ password_changed: true });
+            // Actualizar el estado del usuario con los datos del servidor
+            updateUser({ 
+                password_changed: res.data.password_changed,
+                profile_completed: res.data.profile_completed
+            });
         } catch (error) {
             setErrorMsg(error.response?.data?.message || 'Error al actualizar contraseña');
         } finally {
