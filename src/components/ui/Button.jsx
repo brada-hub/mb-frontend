@@ -19,9 +19,9 @@ const Button = forwardRef(({
     };
     
     const sizes = {
-        default: 'h-13 px-8 text-base', // Botón alto (min 52px) perfecto para dedos
+        default: 'h-14 px-8 text-base', // Botón alto (56px) perfecto para dedos
         sm: 'h-10 px-4 text-sm',
-        lg: 'h-15 px-10 text-lg font-bold',
+        lg: 'h-16 px-10 text-lg font-bold',
         icon: 'h-12 w-12'
     };
 

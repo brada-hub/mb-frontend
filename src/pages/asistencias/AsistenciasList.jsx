@@ -20,13 +20,13 @@ const getEstadoClasses = (estado) => {
     const normalized = (estado === 'PUNTUAL' || estado === 'RETRASO') ? 'PRESENTE' : estado;
     switch (normalized) {
         case 'PRESENTE':
-            return 'bg-green-500/20 text-green-400 border-green-500/30';
+            return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
         case 'FALTA':
-            return 'bg-red-500/20 text-red-400 border-red-500/30';
+            return 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30';
         case 'JUSTIFICADO':
-            return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+            return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
         default:
-            return 'bg-white/5 text-gray-400 border-white/10';
+            return 'bg-black/5 dark:bg-white/5 text-gray-400 border-gray-300 dark:border-white/10';
     }
 };
 
@@ -128,8 +128,8 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                 onPointerCancel={onPointerUp}
                 style={{ x }}
                 className={clsx(
-                    "relative z-10 p-3 border-b border-white/5 transition-all duration-300",
-                    isLongPressing ? "bg-blue-500/20 scale-[0.98] shadow-inner" : "bg-[#111522] hover:bg-white/[0.02]",
+                    "relative z-10 p-3 border-b border-surface-border transition-all duration-300",
+                    isLongPressing ? "bg-blue-500/20 scale-[0.98] shadow-inner" : "bg-surface-card hover:bg-black/[0.02] dark:hover:bg-white/[0.02]",
                     estadoActual === 'PRESENTE' && !isLongPressing && "bg-green-500/[0.04]",
                     estadoActual === 'FALTA' && !isLongPressing && "bg-red-500/[0.04]",
                     estadoActual === 'JUSTIFICADO' && !isLongPressing && "bg-blue-500/[0.04]"
@@ -152,7 +152,7 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                                 {estadoActual ? getEstadoIcon(estadoActual) : conv.miembro?.nombres?.charAt(0)}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-white truncate leading-tight flex items-center gap-2">
+                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate leading-tight flex items-center gap-2 transition-colors">
                                     {conv.miembro?.nombres} {conv.miembro?.apellidos}
                                     {isExpanded && <ChevronDown className="w-3 h-3 text-gray-500" />}
                                 </p>
@@ -161,12 +161,12 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                                         {conv.miembro?.instrumento?.instrumento}
                                         {conv.miembro?.seccion && ` • ${conv.miembro.seccion.seccion}`}
                                         {conv.asistencia?.latitud_marcado && (
-                                            <span className="flex items-center gap-1 text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-md text-[7px] font-black border border-indigo-500/20">
+                                            <span className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-md text-[7px] font-black border border-indigo-500/20 transition-colors">
                                                 <MapPin className="w-2 h-2" /> GPS
                                             </span>
                                         )}
                                         {!puedeMarcar && (
-                                            <span className="flex items-center gap-1 text-gray-400 bg-white/5 px-1.5 py-0.5 rounded-md text-[7px] font-black border border-white/10">
+                                            <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded-md text-[7px] font-black border border-gray-200 dark:border-white/10 transition-colors">
                                                 <Shield className="w-2 h-2" /> PROTEGIDO
                                             </span>
                                         )}
@@ -187,7 +187,7 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                                     e.stopPropagation();
                                     onReemplazar(conv);
                                 }}
-                                className="p-2 bg-white/5 hover:bg-brand-primary/10 text-gray-500 hover:text-brand-primary rounded-xl transition-all border border-white/5 hover:border-brand-primary/20 group/rep"
+                                className="p-2 bg-black/5 dark:bg-white/5 hover:bg-brand-primary/10 text-gray-500 hover:text-brand-primary rounded-xl transition-all border border-gray-200 dark:border-white/5 hover:border-brand-primary/20 group/rep"
                                 title="Reemplazar por Suplente"
                             >
                                 <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
@@ -224,7 +224,7 @@ export default function AsistenciasList() {
     const isJefe = roleName.includes('JEFE');
     const miInstrumento = user?.miembro?.id_instrumento;
     const isDirector = roleName === 'DIRECTOR';
-    const isAdmin = roleName === 'ADMIN';
+    const isAdmin = roleName === 'ADMIN' || roleName === 'SUPER_ADMIN';
     const hasFullAccess = isAdmin || isDirector;
     
     const [eventosHoy, setEventosHoy] = useState([]);
@@ -625,12 +625,12 @@ export default function AsistenciasList() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between pb-2">
-                <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Control de Asistencia</h1>
+                <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter transition-colors">Control de Asistencia</h1>
                 <button 
                     onClick={() => navigate('/dashboard/asistencia/reporte')}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10"
+                    className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-surface-border"
                 >
-                    <FileText className="w-4 h-4 text-indigo-500" />
+                    <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
                     Reporte Grupal
                 </button>
             </div>
@@ -644,10 +644,10 @@ export default function AsistenciasList() {
                     selectedEvento && "hidden xl:block animate-out slide-out-to-left duration-300"
                 )}>
                     {eventosHoy.length === 0 ? (
-                        <div className="bg-surface-card border border-white/5 rounded-3xl p-8 text-center">
-                            <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                            <p className="text-gray-400 font-medium">No hay eventos programados hoy</p>
-                            <p className="text-gray-600 text-sm mt-2">Los eventos aparecerán cuando llegue su fecha</p>
+                        <div className="bg-surface-card border border-surface-border rounded-3xl p-8 text-center transition-colors">
+                            <Calendar className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4 transition-colors" />
+                            <p className="text-gray-500 dark:text-gray-400 font-medium transition-colors">No hay eventos programados hoy</p>
+                            <p className="text-gray-400 dark:text-gray-600 text-sm mt-2 transition-colors">Los eventos aparecerán cuando llegue su fecha</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -665,7 +665,7 @@ export default function AsistenciasList() {
                                         className={`w-full text-left p-4 rounded-xl border transition-all cursor-pointer ${
                                             isSelected 
                                                 ? 'bg-brand-primary/10 border-brand-primary/40 shadow-lg shadow-brand-primary/5' 
-                                                : 'bg-surface-card border-white/5 hover:border-white/10'
+                                                : 'bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/10'
                                         }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
@@ -705,7 +705,7 @@ export default function AsistenciasList() {
                                             })()}
                                         </div>
                                         
-                                        <h3 className="text-sm font-bold text-white mb-2 line-clamp-1 truncate">{evento.evento}</h3>
+                                        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-1 truncate transition-colors">{evento.evento}</h3>
                                         
                                         <div className="flex items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                                             <div className="flex items-center gap-3">
@@ -757,17 +757,17 @@ export default function AsistenciasList() {
                     !selectedEvento && "hidden xl:block"
                 )}>
                     {!selectedEvento ? (
-                        <div className="bg-surface-card border border-white/5 rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px]">
-                            <UserCheck className="w-20 h-20 text-gray-700 mb-6" />
-                            <h3 className="text-xl font-bold text-white mb-2">Selecciona un Evento</h3>
-                            <p className="text-gray-500 max-w-md">
+                        <div className="bg-surface-card border border-surface-border rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px] transition-colors">
+                            <UserCheck className="w-20 h-20 text-gray-400 dark:text-gray-700 mb-6 transition-colors" />
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Selecciona un Evento</h3>
+                            <p className="text-gray-500 dark:text-gray-500 max-w-md transition-colors">
                                 Elige un evento de la lista para iniciar el control de asistencia
                             </p>
                         </div>
                     ) : (
-                        <div className="bg-surface-card border border-white/5 rounded-3xl overflow-hidden animate-in slide-in-from-right duration-500">
+                        <div className="bg-surface-card border border-surface-border rounded-3xl overflow-hidden animate-in slide-in-from-right duration-500 transition-colors">
                             {/* Header Pegajoso (Sticky) - Solid background to prevent overlap */}
-                            <div className="sticky top-0 z-40 bg-[#1e2335] border-b border-white/5 p-3 sm:p-6 shadow-lg">
+                            <div className="sticky top-0 z-40 bg-white dark:bg-[#1e2335] border-b border-surface-border p-3 sm:p-6 shadow-lg transition-colors">
                                 <div className="flex items-center justify-between mb-3 xl:hidden">
                                     <div className="flex items-center gap-2">
                                         <button 
@@ -791,7 +791,7 @@ export default function AsistenciasList() {
                                 </div>
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-sm sm:text-lg font-black text-white uppercase tracking-tighter truncate leading-tight">{selectedEvento.evento}</h3>
+                                        <h3 className="text-sm sm:text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter truncate leading-tight transition-colors">{selectedEvento.evento}</h3>
                                         <div className="flex items-center gap-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
                                             <Clock className="w-3 h-3" />
                                             {selectedEvento.hora?.substr(0, 5)}

@@ -12,8 +12,8 @@ export default function ForcePasswordChangeModal() {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
-    // Solo mostramos si el usuario está autenticado y no ha cambiado su contraseña
-    if (!user || user.password_changed) return null;
+    // Solo mostramos si el usuario está autenticado, su perfil está completo y no ha cambiado su contraseña
+    if (!user || user.profile_completed === false || user.password_changed) return null;
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -32,15 +32,15 @@ export default function ForcePasswordChangeModal() {
     };
 
     return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-[#0f111a]/95 backdrop-blur-xl">
-            <div className="w-full max-w-md p-8 bg-[#161b2c] border border-white/10 rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-gray-900/90 dark:bg-[#0f111a]/95 backdrop-blur-xl transition-all">
+            <div className="w-full max-w-md p-8 bg-surface-card border border-surface-border rounded-3xl shadow-2xl animate-in zoom-in-95 duration-300 transition-colors">
                 
                 <div className="text-center mb-8">
-                    <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20 mb-6">
-                        <ShieldAlert className="w-8 h-8 text-amber-500" />
+                    <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20 mb-6 font-bold">
+                        <ShieldAlert className="w-8 h-8 text-amber-600 dark:text-amber-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Cambio de Contraseña Obligatorio</h2>
-                    <p className="text-gray-400 text-sm leading-relaxed px-4">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight transition-colors">Cambio de Contraseña Obligatorio</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed px-4 transition-colors">
                         Por seguridad, debes actualizar tu contraseña inicial antes de continuar.
                     </p>
                 </div>
@@ -92,7 +92,7 @@ export default function ForcePasswordChangeModal() {
                     </Button>
                 </form>
 
-                <p className="mt-8 text-center text-[10px] text-gray-600 uppercase tracking-widest font-bold">
+                <p className="mt-8 text-center text-[10px] text-gray-500 dark:text-gray-600 uppercase tracking-widest font-bold transition-colors">
                     Panel de Seguridad Monster Band
                 </p>
             </div>

@@ -2,7 +2,7 @@ describe('Módulo de Miembros - Monster Band', () => {
     beforeEach(() => {
       // 1. Limpiar el miembro de prueba de la BD antes de empezar para que no se acumulen
       // (Enviamos una petición al endpoint secreto de limpieza)
-      cy.request('POST', 'http://localhost:8000/api/cleanup-test-member').then((response) => {
+      cy.request('POST', 'http://localhost:8081/api/cleanup-test-member').then((response) => {
         cy.log('Resultado limpieza:', response.body.message);
       });
 

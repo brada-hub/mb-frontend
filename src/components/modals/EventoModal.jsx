@@ -8,7 +8,7 @@ import SmartDateInput from '../ui/SmartDateInput';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 
-export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null, defaultType = null }) {
+export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null, defaultType = null, defaultDate = null }) {
     const { notify } = useToast();
     const [loading, setLoading] = useState(false);
     const [tipos, setTipos] = useState([]);
@@ -109,7 +109,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
             setFormData({
                 id_tipo_evento: '',
                 evento: '',
-                fecha: getLocalDateString(),
+                fecha: defaultDate || getLocalDateString(),
                 hora: '19:00',
                 direccion: '',
                 latitud: '',
@@ -122,7 +122,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 requerimientos: []
             });
         }
-    }, [isOpen, eventoToEdit]);
+    }, [isOpen, eventoToEdit, defaultDate]);
 
     useEffect(() => {
         if (isOpen) {
@@ -423,17 +423,17 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="relative w-full max-w-2xl max-h-[90vh] bg-surface-card border border-white/10 rounded-3xl shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-2xl max-h-[90vh] bg-surface-card border border-surface-border rounded-3xl shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
                 
                 {/* Header */}
-                <div className="flex-none px-6 py-4 border-b border-white/5 flex justify-between items-center bg-surface-card rounded-t-3xl">
+                <div className="flex-none px-6 py-4 border-b border-surface-border flex justify-between items-center transition-colors">
                     <div>
-                        <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">
                             {eventoToEdit ? 'EDITAR EVENTO' : 'NUEVO EVENTO'}
                         </h2>
-                        <p className="text-sm text-gray-400 font-medium">Programación de actividades</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Programación de actividades</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -447,13 +447,13 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                             {/* Tipo de Evento */}
                             <div className={`space-y-2 ${errors.id_tipo_evento ? 'has-error' : ''}`}>
                                 <div className="flex items-center justify-between ml-1">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
                                         Tipo de Evento <span className="text-red-500">*</span>
                                     </label>
                                     <button 
                                         type="button"
                                         onClick={() => setShowNewTypeForm(!showNewTypeForm)}
-                                        className="text-[10px] font-black text-brand-primary hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1"
+                                        className="text-[10px] font-black text-brand-primary hover:text-brand-dark dark:hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1"
                                     >
                                         {showNewTypeForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
                                         {showNewTypeForm ? 'CANCELAR' : 'AÑADIR OTRO TIPO'}
@@ -469,7 +469,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                 value={newTypeName}
                                                 onChange={(e) => setNewTypeName(e.target.value.toUpperCase())}
                                                 placeholder="NOMBRE DEL TIPO (EJ: BAUTIZO)"
-                                                className="w-full pl-12 pr-4 py-3 bg-black/20 border border-brand-primary/30 rounded-xl text-white font-bold outline-none placeholder:text-brand-primary/30 text-sm"
+                                                className="w-full pl-12 pr-4 py-3 bg-black/5 dark:bg-black/20 border border-brand-primary/30 rounded-xl text-gray-900 dark:text-white font-bold outline-none placeholder:text-brand-primary/30 text-sm transition-colors"
                                             />
                                         </div>
                                         
@@ -482,7 +482,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         type="number"
                                                         value={newTypeMinAntes}
                                                         onChange={(e) => setNewTypeMinAntes(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
                                                     />
                                                 </div>
                                             </div>
@@ -494,7 +494,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         type="number"
                                                         value={newTypeMinCierre}
                                                         onChange={(e) => setNewTypeMinCierre(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
                                                     />
                                                 </div>
                                             </div>
@@ -506,7 +506,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         type="number"
                                                         value={newTypeMinTolerancia}
                                                         onChange={(e) => setNewTypeMinTolerancia(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
                                                     />
                                                 </div>
                                             </div>
@@ -518,7 +518,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         type="number"
                                                         value={newTypeHrsSellar}
                                                         onChange={(e) => setNewTypeHrsSellar(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/20 border border-brand-primary/20 rounded-lg text-white font-bold outline-none text-xs"
+                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
                                                     />
                                                 </div>
                                             </div>
@@ -545,20 +545,20 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                     </div>
                                 ) : (
                                     <div className="relative group">
-                                        <Hash className={`absolute left-4 top-3.5 w-5 h-5 z-10 ${errors.id_tipo_evento ? 'text-red-500' : 'text-gray-500'}`} />
+                                        <Hash className={`absolute left-4 top-3.5 w-5 h-5 z-10 transition-colors ${errors.id_tipo_evento ? 'text-red-500' : 'text-gray-400 group-focus-within:text-brand-primary'}`} />
                                         <select 
                                             value={formData.id_tipo_evento}
                                             onChange={handleTipoChange}
-                                            className={`w-full pl-12 pr-10 py-3 bg-surface-input border rounded-xl text-white font-bold outline-none appearance-none cursor-pointer transition-all ${
-                                                errors.id_tipo_evento ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 focus:border-brand-primary hover:border-white/20'
+                                            className={`w-full pl-12 pr-10 py-3 bg-surface-input border rounded-xl text-gray-900 dark:text-white font-bold outline-none appearance-none cursor-pointer transition-all ${
+                                                errors.id_tipo_evento ? 'border-red-500/50 bg-red-500/5' : 'border-surface-border focus:border-brand-primary hover:border-gray-300 dark:hover:border-white/20'
                                             }`}
                                         >
-                                            <option value="" disabled>SELECCIONE UN TIPO...</option>
+                                            <option value="" disabled className="bg-surface-card">SELECCIONE UN TIPO...</option>
                                             {tipos.map(t => (
-                                                <option key={t.id_tipo_evento} value={t.id_tipo_evento}>{t.evento}</option>
+                                                <option key={t.id_tipo_evento} value={t.id_tipo_evento} className="bg-surface-card">{t.evento}</option>
                                             ))}
                                         </select>
-                                        <div className="absolute right-4 top-4 pointer-events-none text-gray-500 group-hover:text-white transition-colors">
+                                        <div className="absolute right-4 top-4 pointer-events-none text-gray-400 group-hover:text-gray-600 dark:group-hover:text-white transition-colors">
                                             <ChevronDown className="w-4 h-4" />
                                         </div>
                                     </div>
@@ -568,19 +568,19 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
 
                             {/* Título */}
                             <div className={`space-y-2 ${errors.evento ? 'has-error' : ''}`}>
-                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">
                                     Título <span className="text-red-500">*</span>
                                 </label>
-                                <div className="relative">
-                                    <AlignLeft className={`absolute left-4 top-3.5 w-5 h-5 z-10 ${errors.evento ? 'text-red-500' : 'text-gray-500'}`} />
+                                <div className="relative group">
+                                    <AlignLeft className={`absolute left-4 top-3.5 w-5 h-5 z-10 transition-colors ${errors.evento ? 'text-red-500' : 'text-gray-400 group-focus-within:text-brand-primary'}`} />
                                     <input 
                                         value={formData.evento}
                                         onChange={(e) => {
                                             setFormData({...formData, evento: e.target.value.toUpperCase()});
                                             if (errors.evento) setErrors({...errors, evento: null});
                                         }}
-                                        className={`w-full pl-12 pr-4 py-3 bg-surface-input border rounded-xl text-white font-bold outline-none uppercase ${
-                                            errors.evento ? 'border-red-500/50 bg-red-500/5' : 'border-white/10 focus:border-brand-primary'
+                                        className={`w-full pl-12 pr-4 py-3 bg-surface-input border rounded-xl text-gray-900 dark:text-white font-bold outline-none uppercase transition-all ${
+                                            errors.evento ? 'border-red-500/50 bg-red-500/5' : 'border-surface-border focus:border-brand-primary'
                                         }`}
                                     />
                                 </div>
@@ -609,14 +609,14 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                     />
                                 </div>
                                 <div className={`space-y-2 ${errors.hora ? 'has-error' : ''}`}>
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Hora</label>
-                                    <div className="relative">
-                                        <Clock className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">Hora</label>
+                                    <div className="relative group">
+                                        <Clock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
                                         <input 
                                             type="time"
                                             value={formData.hora}
                                             onChange={(e) => setFormData({...formData, hora: e.target.value})}
-                                            className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
+                                            className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
                                         />
                                     </div>
                                     {errors.hora && <p className="text-xs text-red-500 font-bold ml-1">{errors.hora}</p>}
@@ -628,17 +628,17 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-emerald-500/20 rounded-lg">
-                                            <DollarSign className="w-4 h-4 text-emerald-400" />
+                                            <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                         </div>
                                         <div>
-                                            <h4 className="text-[11px] font-black text-white uppercase tracking-wider">¿Es actividad remunerada?</h4>
-                                            <p className="text-[9px] text-gray-400 font-medium">Define si el músico recibe un pago por asistir</p>
+                                            <h4 className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-wider">¿Es actividad remunerada?</h4>
+                                            <p className="text-[9px] text-gray-500 dark:text-gray-400 font-medium">Define si el músico recibe un pago por asistir</p>
                                         </div>
                                     </div>
                                     <button 
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, remunerado: !prev.remunerado }))}
-                                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${formData.remunerado ? 'bg-emerald-500' : 'bg-gray-700'}`}
+                                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${formData.remunerado ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-700'}`}
                                     >
                                         <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${formData.remunerado ? 'translate-x-6' : 'translate-x-0'}`} />
                                     </button>
@@ -646,10 +646,10 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                             </div>
 
                             {/* Configuración de Asistencia */}
-                            <div className="pt-4 border-t border-white/5 space-y-4">
+                            <div className="pt-4 border-t border-surface-border space-y-4">
                                 <div className="flex items-center gap-2">
                                     <Shield className="w-4 h-4 text-brand-primary" />
-                                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Reglas de Asistencia</h4>
+                                    <h4 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-widest">Reglas de Asistencia</h4>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -658,13 +658,13 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                             <label className="text-[10px] font-bold text-gray-500 uppercase">Tolerancia</label>
                                             <span className="text-[10px] font-black text-brand-primary">+{formData.minutos_tolerancia} MIN</span>
                                         </div>
-                                        <div className="relative">
-                                            <Shield className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                        <div className="relative group">
+                                            <Shield className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
                                             <input 
                                                 type="number"
                                                 value={formData.minutos_tolerancia}
                                                 onChange={(e) => setFormData({...formData, minutos_tolerancia: parseInt(e.target.value) || 0})}
-                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
+                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
                                                 placeholder="Minutos"
                                             />
                                         </div>
@@ -673,21 +673,21 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center px-1">
                                             <label className="text-[10px] font-bold text-gray-500 uppercase">Tiempo Límite</label>
-                                            <span className="text-[10px] font-black text-red-400">CIERRE: {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}</span>
+                                            <span className="text-[10px] font-black text-red-500">CIERRE: {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}</span>
                                         </div>
-                                        <div className="relative">
-                                            <X className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                        <div className="relative group">
+                                            <X className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
                                             <input 
                                                 type="number"
                                                 value={formData.minutos_cierre}
                                                 onChange={(e) => setFormData({...formData, minutos_cierre: parseInt(e.target.value) || 0})}
-                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-white/10 rounded-xl text-white font-bold outline-none focus:border-brand-primary"
+                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
                                                 placeholder="Minutos"
                                             />
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-[9px] text-gray-500 font-medium italic px-1">
+                                <p className="text-[9px] text-gray-500 dark:text-gray-400 font-medium italic px-1">
                                     * Los músicos podran marcar asistencia hasta las {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}. Después de esa hora, se considerarán FALTA automáticamente.
                                 </p>
                             </div>
@@ -695,17 +695,17 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
 
                         {/* 2. REQUERIMIENTOS (Condicional) */}
                         {showRequerimientos && (
-                            <div className="space-y-4 pt-4 border-t border-white/5">
+                            <div className="space-y-4 pt-4 border-t border-surface-border">
                                 <div className="flex items-center justify-between">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Requerimientos</label>
+                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Requerimientos</label>
                                     <div className="flex items-center gap-2">
                                         <input 
                                             type="checkbox" 
                                             onChange={(e) => handleSelectAll(e.target.checked)}
-                                            className="w-4 h-4 rounded border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
+                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
                                             id="selectAll"
                                         />
-                                        <label htmlFor="selectAll" className="text-xs font-bold text-white cursor-pointer select-none">
+                                        <label htmlFor="selectAll" className="text-xs font-bold text-gray-900 dark:text-white cursor-pointer select-none">
                                             Seleccionar Todo (Full Casa)
                                         </label>
                                     </div>
@@ -721,7 +721,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                         return (
                                             <div key={inst.id_instrumento} 
                                                 className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                                                    isChecked ? 'bg-brand-primary/10 border-brand-primary/30' : 'bg-surface-input border-white/5'
+                                                    isChecked ? 'bg-brand-primary/10 border-brand-primary/30' : 'bg-surface-input border-surface-border'
                                                 }`}
                                             >
                                                 <div className="flex items-center gap-3">
@@ -729,10 +729,10 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         type="checkbox"
                                                         checked={isChecked}
                                                         onChange={() => handleToggleInstrumento(inst.id_instrumento)}
-                                                        className="w-5 h-5 rounded border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
+                                                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
                                                     />
                                                     <div>
-                                                        <span className={`text-sm font-bold block ${isChecked ? 'text-white' : 'text-gray-400'}`}>
+                                                        <span className={`text-sm font-bold block transition-colors ${isChecked ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
                                                             {inst.instrumento}
                                                         </span>
                                                         <span className="text-[10px] text-gray-500">Disponible: {maxAvailable}</span>
@@ -745,7 +745,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                         max={maxAvailable}
                                                         value={cantidad}
                                                         onChange={(e) => handleQuantityChange(inst.id_instrumento, e.target.value)}
-                                                        className="w-16 py-1 px-2 bg-black/20 border border-white/10 rounded-lg text-center text-sm font-bold text-white outline-none"
+                                                        className="w-16 py-1 px-2 bg-gray-200 dark:bg-black/20 border border-surface-border rounded-lg text-center text-sm font-bold text-gray-900 dark:text-white outline-none"
                                                     />
                                                 )}
                                             </div>
@@ -756,14 +756,14 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                         )}
 
                         {/* 3. UBICACIÓN (Mapa) */}
-                        <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="space-y-4 pt-4 border-t border-surface-border">
                             <div className="flex items-center justify-between">
-                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ubicación</label>
+                                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Ubicación</label>
                                 {LUGARES_FRECUENTES.length > 0 && (
                                     <button 
                                         type="button"
                                         onClick={() => handleSetLugar(LUGARES_FRECUENTES[0])}
-                                        className="text-xs flex items-center gap-1 text-brand-primary hover:text-brand-light transition-colors font-bold px-3 py-1 bg-brand-primary/10 rounded-lg"
+                                        className="text-xs flex items-center gap-1 text-brand-primary hover:text-brand-dark dark:hover:text-brand-light transition-colors font-bold px-3 py-1 bg-brand-primary/10 rounded-lg"
                                     >
                                         <Home className="w-3 h-3" />
                                         {LUGARES_FRECUENTES[0].nombre}
@@ -771,7 +771,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                 )}
                             </div>
 
-                            <div className={`h-[250px] w-full rounded-2xl overflow-hidden border relative ${errors.ubicacion ? 'border-red-500' : 'border-white/10'}`}>
+                            <div className={`h-[250px] w-full rounded-2xl overflow-hidden border relative transition-all ${errors.ubicacion ? 'border-red-500' : 'border-surface-border'}`}>
                                 <MapPicker 
                                     label="Mapa"
                                     value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null}
@@ -789,8 +789,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="relative">
-                                    <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
+                                <div className="relative group">
+                                    <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
                                     <Input 
                                         placeholder="Dirección / Referencia"
                                         value={formData.direccion}
@@ -798,9 +798,9 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                         className="pl-12 uppercase"
                                     />
                                 </div>
-                                <div className="space-y-2 px-3 py-2 bg-surface-input rounded-xl border border-white/5">
+                                <div className="space-y-2 px-3 py-2 bg-surface-input rounded-xl border border-surface-border">
                                     <div className="flex justify-between">
-                                        <span className="text-xs font-bold text-gray-400">RADIO</span>
+                                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 transition-colors">RADIO</span>
                                         <span className="text-xs font-bold text-brand-primary">{formData.radio}m</span>
                                     </div>
                                     <input 
@@ -810,7 +810,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                         step="10" 
                                         value={formData.radio} 
                                         onChange={(e) => setFormData({...formData, radio: parseInt(e.target.value)})}
-                                        className="w-full h-1.5 bg-black/40 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                                        className="w-full h-1.5 bg-gray-300 dark:bg-black/40 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                                     />
                                 </div>
                             </div>
@@ -820,7 +820,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 </form>
 
                 {/* Footer */}
-                <div className="flex-none p-4 border-t border-white/5 bg-surface-card/50 flex justify-end gap-3 rounded-b-3xl">
+                <div className="flex-none p-4 border-t border-surface-border bg-surface-card flex justify-end gap-3 rounded-b-3xl">
                     <Button variant="ghost" onClick={onClose} disabled={loading}>
                         Cancelar
                     </Button>

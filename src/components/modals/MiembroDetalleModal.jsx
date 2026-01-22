@@ -89,7 +89,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
     if (!isOpen || !miembro) return null;
 
     const getStatusColor = (estado) => {
-        return estado ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20';
+        return estado 
+            ? 'text-green-600 dark:text-green-400 bg-green-500/10 border-green-500/20' 
+            : 'text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/20';
     };
 
     const googleMapsUrl = miembro.latitud && miembro.longitud 
@@ -121,7 +123,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
             />
             
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-2xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] bg-surface-card md:border md:border-white/10 md:rounded-4xl shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300">
+            <div className="relative w-full max-w-2xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
                 {/* Header / Banner */}
                 <div className="relative h-32 bg-gradient-to-r from-brand-primary to-monster-purple group">
@@ -137,17 +139,17 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                          {/* Spacer for avatar */}
                         <div className="w-24 md:w-32 hidden md:block"></div>
                         
-                        <div className="flex gap-2 pointer-events-auto bg-surface-card/80 backdrop-blur-md p-1 rounded-2xl border border-white/10 shadow-lg">
+                        <div className="flex gap-2 pointer-events-auto bg-surface-card/80 backdrop-blur-md p-1 rounded-2xl border border-surface-border shadow-lg">
                              <button
                                 onClick={() => setActiveTab('profile')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'profile' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'profile' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                              >
                                 <User className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                 Perfil
                              </button>
                              <button
                                 onClick={() => setActiveTab('scurity')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'scurity' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'scurity' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                              >
                                 <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                 Seguridad
@@ -161,15 +163,15 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         <div className="flex flex-col md:flex-row md:items-end gap-6 pt-8 md:pt-0">
                              {/* Avatar - Adjusted position */}
                             <div className="relative md:absolute md:-top-16 md:left-0 mx-auto md:mx-0">
-                                <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-input border-4 border-surface-card rounded-3xl flex items-center justify-center shadow-xl">
-                                    <User className="w-12 h-12 md:w-16 md:h-16 text-gray-500" />
+                                <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-input border-4 border-surface-card rounded-3xl flex items-center justify-center shadow-xl transition-all">
+                                    <User className="w-12 h-12 md:w-16 md:h-16 text-gray-400 dark:text-gray-500 transition-colors" />
                                 </div>
-                                <div className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-4 border-surface-card ${miembro.user?.estado ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                <div className={`absolute bottom-2 right-2 w-5 h-5 rounded-full border-4 border-surface-card transition-all ${miembro.user?.estado ? 'bg-green-500' : 'bg-red-500'}`}></div>
                             </div>
                             
                             {/* Name & Basic Info - Adjusted margin */}
                             <div className="space-y-1 py-0 md:py-2 md:pl-36 text-center md:text-left w-full">
-                                <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
+                                <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
                                     {miembro.nombres} {miembro.apellidos}
                                 </h2>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start">
@@ -186,9 +188,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         
                         {/* Personal Details */}
                         <div className="space-y-6">
-                            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                            <div className="flex items-center gap-2 border-b border-surface-border pb-2">
                                 <Shield className="w-4 h-4 text-brand-primary" />
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Información Personal</h3>
+                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Información Personal</h3>
                             </div>
                             
                             <div className="space-y-4">
@@ -201,9 +203,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
 
                         {/* Operational Details */}
                         <div className="space-y-6">
-                            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                            <div className="flex items-center gap-2 border-b border-surface-border pb-2">
                                 <Music className="w-4 h-4 text-brand-primary" />
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Asignación Band</h3>
+                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Asignación Band</h3>
                             </div>
                             
                             <div className="space-y-4">
@@ -220,9 +222,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
 
                         {/* Location Details */}
                         <div className="md:col-span-2 space-y-6 pt-4">
-                            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                            <div className="flex items-center gap-2 border-b border-surface-border pb-2">
                                 <MapPin className="w-4 h-4 text-brand-primary" />
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ubicación y Vivienda</h3>
+                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Ubicación y Vivienda</h3>
                             </div>
                             <div className="flex flex-col md:flex-row gap-6">
                                 <div className="flex-1">
@@ -239,8 +241,8 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                             <Map className="w-5 h-5 text-blue-400" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">GPS Disponible</p>
-                                            <p className="text-sm font-bold text-white">Ver en Google Maps</p>
+                                            <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest transition-colors">GPS Disponible</p>
+                                            <p className="text-sm font-bold text-blue-700 dark:text-white transition-colors">Ver en Google Maps</p>
                                         </div>
                                     </a>
                                 )}
@@ -265,27 +267,27 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                     ) : (
                         <div className="mt-8 space-y-6">
                             {/* Device Controls */}
-                            <div className="p-6 bg-surface-input/30 rounded-3xl border border-white/5">
+                            <div className="p-6 bg-surface-input/30 rounded-3xl border border-surface-border">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                                      <div>
-                                         <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
                                              <Smartphone className="w-5 h-5 text-brand-primary" />
                                              Control de Dispositivos Móviles
                                          </h3>
-                                         <p className="text-sm text-gray-400 mt-1">
+                                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">
                                              Gestiona cuántos y cuáles teléfonos pueden acceder a esta cuenta.
                                          </p>
                                      </div>
-                                     <div className="flex items-end gap-2 p-3 bg-surface-card rounded-2xl border border-white/5">
+                                     <div className="flex items-end gap-2 p-3 bg-surface-card rounded-2xl border border-surface-border">
                                          <div>
-                                             <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Límite Permitido</label>
+                                             <label className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 block mb-1 transition-colors">Límite Permitido</label>
                                              <input 
                                                  type="number" 
                                                  min="1" 
                                                  max="10" 
                                                  value={deviceLimit}
                                                  onChange={(e) => setDeviceLimit(parseInt(e.target.value))}
-                                                 className="w-20 h-8 bg-surface-input text-center text-white font-bold rounded-lg border border-white/10 focus:border-brand-primary outline-none"
+                                                 className="w-20 h-8 bg-surface-input text-center text-gray-900 dark:text-white font-bold rounded-lg border border-surface-border focus:border-brand-primary outline-none transition-colors"
                                              />
                                          </div>
                                          <Button onClick={handleUpdateLimit} size="sm" className="h-8">
@@ -298,11 +300,11 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                 {/* Password Reset Section */}
                                 <div className="mb-6 p-4 bg-orange-500/10 rounded-2xl border border-orange-500/20 flex items-center justify-between gap-4">
                                     <div>
-                                        <h4 className="text-white font-bold flex items-center gap-2">
+                                        <h4 className="text-orange-900 dark:text-white font-bold flex items-center gap-2 transition-colors">
                                             <Key className="w-4 h-4 text-orange-400" />
                                             Accesos del Usuario
                                         </h4>
-                                        <p className="text-xs text-orange-200/70 mt-1">
+                                        <p className="text-xs text-orange-600 dark:text-orange-200/70 mt-1 transition-colors">
                                             Si olvidó su contraseña, puedes restablecerla aquí.
                                         </p>
                                     </div>
@@ -323,21 +325,21 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                         <div className="text-center py-8 text-gray-500">Cargando...</div>
                                     ) : devices.length > 0 ? (
                                         devices.map(device => (
-                                            <div key={device.id_dispositivo} className="flex items-center justify-between p-4 bg-surface-card rounded-2xl border border-white/5 hover:border-brand-primary/20 transition-all">
+                                            <div key={device.id_dispositivo} className="flex items-center justify-between p-4 bg-surface-card rounded-2xl border border-surface-border hover:border-brand-primary/20 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
                                                         <Smartphone className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-white">{device.nombre_modelo}</p>
-                                                        <p className="text-xs text-gray-500 font-mono tracking-wider">
+                                                        <p className="font-bold text-gray-900 dark:text-white transition-colors">{device.nombre_modelo}</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-500 font-mono tracking-wider transition-colors">
                                                             {new Date(device.fecha_registro).toLocaleDateString()} • {device.estado ? 'ACTIVO' : 'BLOQUEADO'}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <button 
                                                     onClick={() => handleDeleteDevice(device.id_dispositivo)}
-                                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
                                                     title="Eliminar dispositivo"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -345,9 +347,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="text-center py-10 border-2 border-dashed border-white/5 rounded-2xl">
-                                            <Smartphone className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                                            <p className="text-gray-500 font-medium px-6 text-center">
+                                        <div className="text-center py-10 border-2 border-dashed border-surface-border rounded-2xl">
+                                            <Smartphone className="w-8 h-8 text-gray-400 dark:text-gray-600 mx-auto mb-2" />
+                                            <p className="text-gray-500 dark:text-gray-500 font-medium px-6 text-center transition-colors">
                                                 Aún no ha iniciado sesión en la App Móvil.<br/>
                                                 <span className="text-xs opacity-70">El dispositivo se registrará automáticamente al ingresar.</span>
                                             </p>
@@ -356,7 +358,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-blue-500/5 text-blue-200 text-sm rounded-2xl border border-blue-500/10 flex gap-3">
+                            <div className="p-4 bg-blue-500/5 text-blue-700 dark:text-blue-200 text-sm rounded-2xl border border-blue-500/10 flex gap-3 transition-colors">
                                 <AlertCircle className="w-5 h-5 shrink-0" />
                                 <p>Nota: Al eliminar un dispositivo, el usuario deberá iniciar sesión nuevamente para registrar el nuevo teléfono. Si superan el límite establecido, el sistema les impedirá entrar.</p>
                             </div>
@@ -364,7 +366,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                     )}
 
                     {/* Footer Actions */}
-                    <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap justify-end gap-3">
+                    <div className="mt-8 pt-6 border-t border-surface-border flex flex-wrap justify-end gap-3">
                         <Button variant="ghost" onClick={onClose}>Cerrar</Button>
                         <Button 
                             variant="secondary" 
@@ -395,13 +397,13 @@ function DetailItem({ icon: Icon, label, value, light = false }) {
     return (
         <div className="flex items-start gap-3">
             {Icon && (
-                <div className={`mt-1 p-1.5 rounded-lg ${light ? 'bg-white/10' : 'bg-surface-input'} border border-white/5`}>
-                    <Icon className="w-3.5 h-3.5 text-gray-400" />
+                <div className={`mt-1 p-1.5 rounded-lg ${light ? 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-400' : 'bg-surface-input'} border border-surface-border transition-colors`}>
+                    <Icon className="w-3.5 h-3.5" />
                 </div>
             )}
             <div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter leading-none mb-1">{label}</p>
-                <p className="text-sm font-semibold text-white/90 leading-tight">{value || 'N/A'}</p>
+                <p className="text-[10px] font-bold text-gray-500 dark:text-gray-500 uppercase tracking-tighter leading-none mb-1 transition-colors">{label}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white/90 leading-tight transition-colors">{value || 'N/A'}</p>
             </div>
         </div>
     );

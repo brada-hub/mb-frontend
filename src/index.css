@@ -3,12 +3,42 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light mode - por defecto */
+  :root {
+    --surface-base: #f9fafb; 
+    --surface-card: #ffffff;
+    --surface-input: #f3f4f6;
+    --surface-border: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Dark mode - sobrescribe cuando html tiene clase 'dark' */
+  html.dark {
+    --surface-base: #0f111a;
+    --surface-card: #161b2c;
+    --surface-input: #1d233a;
+    --surface-border: rgba(255, 255, 255, 0.08);
+  }
+
   body {
-    @apply bg-surface-base text-gray-100 antialiased selection:bg-brand-primary/30 selection:text-white;
+    background-color: var(--surface-base);
+    color: #111827; /* gray-900 */
+    transition: background-color 0.3s, color 0.3s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  html.dark body {
+    color: #f3f4f6; /* gray-100 */
+  }
+
+  ::selection {
+    background-color: var(--brand-primary);
+    color: white;
   }
 
   /* Standardizing interactive elements for mobile (Play Store rules) */
-  button, a {
+  button,
+  a {
     @apply touch-manipulation;
   }
 }
@@ -17,7 +47,7 @@
   .glass {
     @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
-  
+
   .monster-gradient {
     @apply bg-gradient-to-br from-brand-primary via-monster-purple to-monster-pink;
   }
@@ -34,15 +64,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-brand-primary/40 transition-colors;
+  @apply bg-gray-300 dark:bg-white/10 rounded-full hover:bg-brand-primary transition-colors;
 }
 
 /* Leaflet Overrides for Design System */
 .leaflet-container {
-    background: #161b2c !important; /* surface-card */
+  background: #161b2c !important; /* surface-card */
 }
 
 /* Fix for mobile keyboard covering inputs in Safari/Android */
-input, textarea {
-    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+input,
+textarea {
+  font-size: 16px !important; /* Prevents auto-zoom on iOS */
 }

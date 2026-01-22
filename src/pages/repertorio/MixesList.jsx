@@ -26,6 +26,11 @@ import MixModal from '../../components/modals/MixModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
 
+const getCleanUrl = (url) => {
+    if (!url) return '';
+    return url.replace(/^https?:\/\/[^/]+/, '');
+};
+
 export default function MixesList() {
     const navigate = useNavigate();
     const { notify } = useToast();
@@ -54,7 +59,7 @@ export default function MixesList() {
 
     const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
     // Bloqueo estricto: Solo ADMIN y DIRECTOR gestionan. Jefes y Miembros solo ven/estudian.
-    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR';
+    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR' || !!user?.is_super_admin;
     const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {
@@ -218,7 +223,7 @@ export default function MixesList() {
                                                         e.stopPropagation();
                                                         setViewerData({
                                                             files: [{
-                                                                url: mix.audio.url_audio.replace('monster-back:8000', 'localhost:8000'),
+                                                        url: getCleanUrl(mix.audio.url_audio),
                                                                 title: `Mix: ${mix.nombre} - Guía Principal`,
                                                                 type: 'audio'
                                                             }],
@@ -310,7 +315,7 @@ export default function MixesList() {
                                 <button
                                     onClick={() => setViewerData({
                                         files: [{
-                                            url: selectedMix.audio.url_audio.replace('monster-back:8000', 'localhost:8000'),
+                                            url: getCleanUrl(selectedMix.audio.url_audio),
                                             title: `Mix: ${selectedMix.nombre} - Guía Principal`,
                                             type: 'audio'
                                         }],
@@ -345,7 +350,7 @@ export default function MixesList() {
                                             <button
                                                 onClick={() => setViewerData({
                                                     files: [{
-                                                        url: selectedMix.audio.url_audio.replace('monster-back:8000', 'localhost:8000'),
+                                                       url: getCleanUrl(selectedMix.audio.url_audio),
                                                         title: `Mix: ${selectedMix.nombre} - Guía Principal`,
                                                         type: 'audio'
                                                     }],
@@ -456,14 +461,14 @@ export default function MixesList() {
                                                                 : "bg-surface-card border border-white/5 text-gray-600 cursor-not-allowed"
                                                         )}
                                                     >
-                                                        <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> 
+                                                        <FileText className="w-4 h-4 sm:w-5 h-5" /> 
                                                         {hasVisuals ? 'Abrir Partituras' : 'Sin Material'}
                                                     </button>
                                                     {audioFiles.length > 0 && (
                                                         <button
                                                             onClick={() => setViewerData({
                                                                 files: audioFiles.map(a => ({
-                                                                    url: a.url.replace('monster-back:8000', 'localhost:8000'),
+                                                                    url: getCleanUrl(a.url),
                                                                     title: a.title,
                                                                     type: 'audio'
                                                                 })),

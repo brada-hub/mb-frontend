@@ -60,7 +60,7 @@ function SortableItem({ id, children }) {
                     type="button"
                     {...attributes} 
                     {...listeners}
-                    className="p-2 text-gray-500 hover:text-indigo-400 cursor-grab active:cursor-grabbing touch-none shrink-0"
+                    className="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors"
                 >
                     <GripVertical className="w-5 h-5" />
                 </button>
@@ -311,7 +311,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
 
     return createPortal(
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-0 md:p-4 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-300">
-            <div className="relative w-full max-w-2xl bg-[#161b2c] border border-white/10 md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            <div className="relative w-full max-w-2xl bg-surface-card border border-surface-border md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transition-colors">
                 
                 {/* Header */}
                 <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-between text-white shrink-0">
@@ -338,59 +338,59 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Género y Tema */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Asignación de Tema</label>
+                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-2 transition-colors">Asignación de Tema</label>
                             <select 
                                 {...register('id_genero', { required: true })}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
                             >
-                                <option value="" className="bg-[#161b2c]">Seleccionar Género...</option>
-                                {catalogs.generos.map(g => <option key={g.id_genero} value={g.id_genero} className="bg-[#161b2c]">{g.nombre_genero}</option>)}
+                                <option value="" className="bg-surface-card">Seleccionar Género...</option>
+                                {catalogs.generos.map(g => <option key={g.id_genero} value={g.id_genero} className="bg-surface-card">{g.nombre_genero}</option>)}
                             </select>
 
                             <select 
                                 {...register('id_tema', { required: true })}
                                 disabled={!selectedGenero}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50"
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
                             >
-                                <option value="" className="bg-[#161b2c]">Seleccionar Tema...</option>
-                                <option value="NEW" className="bg-[#161b2c] text-indigo-400 font-bold">+ NUEVO TEMA (Escribir nombre)</option>
+                                <option value="" className="bg-surface-card">Seleccionar Tema...</option>
+                                <option value="NEW" className="bg-surface-card text-indigo-600 dark:text-indigo-400 font-bold">+ NUEVO TEMA (Escribir nombre)</option>
                                 {catalogs.temas.filter(t => String(t.id_genero) === String(selectedGenero)).map(t => (
-                                    <option key={t.id_tema} value={t.id_tema} className="bg-[#161b2c]">{t.nombre_tema}</option>
+                                    <option key={t.id_tema} value={t.id_tema} className="bg-surface-card">{t.nombre_tema}</option>
                                 ))}
                             </select>
 
                             {selectedTema === 'NEW' && (
                                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                                    <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-2">Nombre del Nuevo Tema</label>
+                                    <label className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest ml-2 transition-colors">Nombre del Nuevo Tema</label>
                                     <input 
                                         {...register('nuevo_tema_nombre', { required: selectedTema === 'NEW' })}
                                         placeholder="EJ: LA MARIPOSA..."
-                                        className="w-full bg-indigo-500/5 border border-indigo-500/30 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
                                     />
                                 </div>
                             )}
                         </div>
 
-                        {/* Sección e Instrumento */}
+                         {/* Sección e Instrumento */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Asignación Instrumental</label>
+                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-2 transition-colors">Asignación Instrumental</label>
                             
                             <div className="grid grid-cols-2 gap-2">
                                 <select 
                                     {...register('id_seccion', { required: true })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
                                 >
-                                    <option value="" className="bg-[#161b2c]">Sección...</option>
-                                    {catalogs.secciones.map(s => <option key={s.id_seccion} value={s.id_seccion} className="bg-[#161b2c]">{s.seccion}</option>)}
+                                    <option value="" className="bg-surface-card">Sección...</option>
+                                    {catalogs.secciones.map(s => <option key={s.id_seccion} value={s.id_seccion} className="bg-surface-card">{s.seccion}</option>)}
                                 </select>
 
                                 <select 
                                     {...register('id_instrumento', { required: true })}
                                     disabled={!selectedSeccion || availableInstruments.length === 0}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50"
+                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
                                 >
-                                    <option value="" className="bg-[#161b2c]">Instrumento...</option>
-                                    {availableInstruments.map(i => <option key={i.id_instrumento} value={i.id_instrumento} className="bg-[#161b2c]">{i.instrumento}</option>)}
+                                    <option value="" className="bg-surface-card">Instrumento...</option>
+                                    {availableInstruments.map(i => <option key={i.id_instrumento} value={i.id_instrumento} className="bg-surface-card">{i.instrumento}</option>)}
                                 </select>
                             </div>
 
@@ -404,13 +404,13 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                     return null;
                                 }
 
-                                return (
+                                 return (
                                     <select 
                                         {...register('id_voz')}
                                         disabled={!selectedInstrumento || isValidatingVoice}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50"
+                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
                                     >
-                                        <option value="" className="bg-[#161b2c]">
+                                        <option value="" className="bg-surface-card">
                                             {isValidatingVoice ? 'Validando disponibilidad...' : 'Seleccionar Voz...'}
                                         </option>
                                         {catalogs.voces.map(v => {
@@ -419,7 +419,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                                 <option 
                                                     key={v.id_voz} 
                                                     value={v.id_voz} 
-                                                    className={clsx("bg-[#161b2c]", isTaken && "text-gray-500")}
+                                                    className={clsx("bg-surface-card", isTaken && "text-gray-400 dark:text-gray-600")}
                                                     disabled={isTaken}
                                                 >
                                                     {v.nombre_voz} {isTaken ? '(OCUPADA)' : ''}
@@ -432,8 +432,8 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-2">Partituras</label>
+                     <div className="space-y-4">
+                         <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-2 transition-colors">Partituras</label>
                          
                          <div className="grid grid-cols-1">
                              <div className="relative group text-center">
@@ -441,13 +441,13 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                     "flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
                                     fileList.length > 0
                                         ? "bg-emerald-500/10 border-emerald-500/50 hover:bg-emerald-500/20" 
-                                        : "bg-white/5 border-white/10 hover:border-indigo-500/50 hover:bg-indigo-500/5"
+                                        : "bg-surface-input border-surface-border hover:border-indigo-500/50 hover:bg-indigo-500/5"
                                 )}>
-                                    <div className="flex gap-2 text-indigo-400">
+                                    <div className="flex gap-2 text-indigo-600 dark:text-indigo-400">
                                         <FileText className="w-8 h-8" />
                                         <ImageIcon className="w-8 h-8" />
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-tighter mt-2 text-white/50">
+                                    <span className="text-[10px] font-black uppercase tracking-tighter mt-2 text-gray-500 dark:text-white/50 transition-colors">
                                         SUBIR PARTITURAS (PDF/IMÁGENES)
                                     </span>
                                     <input 
@@ -474,8 +474,8 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
 
                          {/* FILE LIST PREVIEW & REORDER */}
                          {fileList.length > 0 && (
-                             <div className="space-y-3 bg-[#0f111a]/50 p-4 rounded-3xl border border-white/5">
-                                 <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest px-2">Orden de Partituras</h4>
+                             <div className="space-y-3 bg-black/5 dark:bg-[#0f111a]/50 p-4 rounded-3xl border border-surface-border transition-colors">
+                                 <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest px-2 transition-colors">Orden de Partituras</h4>
                                  <div className="space-y-2">
                                      <DndContext 
                                         sensors={sensors} 
@@ -486,9 +486,9 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                             items={fileList.map(f => f.id)} 
                                             strategy={verticalListSortingStrategy}
                                         >
-                                            {fileList.map((item, index) => (
+                                             {fileList.map((item, index) => (
                                                 <SortableItem key={item.id} id={item.id}>
-                                                    <div className="flex-1 flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5 group/file">
+                                                    <div className="flex-1 flex items-center gap-4 p-3 bg-surface-card rounded-2xl border border-surface-border group/file transition-all">
                                                         <button 
                                                             type="button"
                                                             onClick={() => setViewerData({
@@ -496,7 +496,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                                                 type: item.fileType,
                                                                 title: item.name
                                                             })}
-                                                            className="w-12 h-12 bg-indigo-500/10 rounded-xl overflow-hidden flex items-center justify-center text-indigo-400 shrink-0 hover:ring-2 hover:ring-indigo-500 transition-all cursor-zoom-in"
+                                                            className="w-12 h-12 bg-indigo-500/10 rounded-xl overflow-hidden flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 hover:ring-2 hover:ring-indigo-500 transition-all cursor-zoom-in"
                                                         >
                                                             {item.fileType === 'pdf' ? (
                                                                 <FileText className="w-6 h-6" />
@@ -505,8 +505,8 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                                             )}
                                                         </button>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-xs font-bold text-white truncate uppercase">{item.name}</p>
-                                                            <p className="text-[9px] text-gray-500 font-black uppercase">Página {index + 1}</p>
+                                                            <p className="text-xs font-bold text-gray-900 dark:text-white truncate uppercase transition-colors">{item.name}</p>
+                                                            <p className="text-[9px] text-gray-500 dark:text-gray-500 font-black uppercase transition-colors">Página {index + 1}</p>
                                                         </div>
                                                         <div className="flex items-center gap-1">
                                                             <button 
@@ -530,7 +530,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                          )}
                     </div>
 
-                    <div className="flex justify-end bg-white/5 rounded-3xl p-4">
+                    <div className="flex justify-end bg-black/5 dark:bg-white/5 rounded-3xl p-4 transition-colors">
                         <Button type="submit" loading={loading} className="w-full md:w-auto px-12 h-12">
                              {initialData?.id_recurso ? 'Guardar Cambios' : 'Confirmar Subida'}
                         </Button>

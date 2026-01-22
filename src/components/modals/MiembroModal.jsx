@@ -217,7 +217,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-4xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] overflow-y-auto bg-surface-card md:border md:border-white/10 md:rounded-4xl shadow-2xl animate-in zoom-in-95 duration-300 text-gray-100">
+            <div className="relative w-full max-w-4xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] overflow-y-auto bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
                 <div className="sticky top-0 z-[60] flex items-center justify-between p-5 md:p-6 bg-brand-primary text-white shadow-xl shadow-brand-primary/10">
                     <div className="flex items-center gap-3">
@@ -225,11 +225,11 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             <User className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold tracking-tight">{miembro ? 'Editar Miembro' : 'Nuevo Miembro'}</h2>
+                            <h2 className="text-xl font-bold tracking-tight text-white">{miembro ? 'Editar Miembro' : 'Nuevo Miembro'}</h2>
                             <p className="text-xs text-white/60 font-medium">{miembro ? 'Actualización de datos' : 'Registro oficial de integrante'}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2.5 hover:bg-white/20 rounded-2xl transition-all active:scale-90">
+                    <button onClick={onClose} className="p-2.5 hover:bg-white/20 rounded-2xl transition-all active:scale-90 text-white">
                         <X className="w-7 h-7" />
                     </button>
                 </div>
@@ -238,9 +238,9 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                     <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-10 space-y-12">
                         
                         <section className="space-y-8 animate-in slide-up duration-500">
-                            <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                            <div className="flex items-center gap-2 border-b border-surface-border pb-4">
                                 <div className="w-1.5 h-6 bg-brand-primary rounded-full"></div>
-                                <h3 className="text-lg font-bold text-white uppercase tracking-wider text-sm">Datos Personales</h3>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">Datos Personales</h3>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8">
@@ -379,42 +379,42 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                         </section>
 
                         <section className="space-y-8 animate-in slide-up duration-700">
-                            <div className="flex items-center gap-2 border-b border-white/5 pb-4">
+                            <div className="flex items-center gap-2 border-b border-surface-border pb-4">
                                 <div className="w-1.5 h-6 bg-monster-purple rounded-full"></div>
-                                <h3 className="text-lg font-bold text-white uppercase tracking-wider text-sm">Asignación Operativa</h3>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">Asignación Operativa</h3>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="space-y-2.5 text-gray-100 col-span-1">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">Sección</label>
+                                <div className="space-y-2.5 col-span-1">
+                                    <label className="text-sm font-bold text-gray-500 dark:text-gray-400 ml-1 transition-colors">Sección</label>
                                     <select 
                                         id="select-seccion"
                                         {...register('id_seccion', { required: "Selecciona una sección" })} 
                                         className={clsx(
-                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white active:scale-[0.99] outline-none transition-all",
-                                            errors.id_seccion ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all",
+                                            errors.id_seccion ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Sección...</option>
-                                        {catalogs.secciones?.map(s => <option key={s.id_seccion} value={s.id_seccion.toString()}>{s.seccion}</option>)}
+                                        <option value="" className="bg-surface-card">Sección...</option>
+                                        {catalogs.secciones?.map(s => <option key={s.id_seccion} value={s.id_seccion.toString()} className="bg-surface-card">{s.seccion}</option>)}
                                     </select>
                                     {errors.id_seccion && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_seccion.message}</p>}
                                 </div>
                                 
-                                <div className="space-y-2.5 text-gray-100 col-span-1">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">Instrumento</label>
+                                <div className="space-y-2.5 col-span-1">
+                                    <label className="text-sm font-bold text-gray-500 dark:text-gray-400 ml-1 transition-colors">Instrumento</label>
                                     <select 
                                         id="select-instrumento"
                                         {...register('id_instrumento', { required: "Selecciona un instrumento" })} 
                                         disabled={!selectedSeccion}
                                         className={clsx(
-                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white active:scale-[0.99] outline-none transition-all disabled:opacity-50",
-                                            errors.id_instrumento ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all disabled:opacity-50",
+                                            errors.id_instrumento ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Instrumento...</option>
+                                        <option value="" className="bg-surface-card">Instrumento...</option>
                                         {(catalogs.secciones?.find(s => s.id_seccion.toString() === selectedSeccion)?.instrumentos || []).map(i => (
-                                            <option key={i.id_instrumento} value={i.id_instrumento.toString()}>{i.instrumento}</option>
+                                            <option key={i.id_instrumento} value={i.id_instrumento.toString()} className="bg-surface-card">{i.instrumento}</option>
                                         ))}
                                     </select>
                                     {errors.id_instrumento && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_instrumento.message}</p>}
@@ -428,19 +428,19 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                     if (!showVoz) return null;
 
                                     return (
-                                        <div className="space-y-2.5 text-gray-100 col-span-1 animate-in fade-in slide-in-from-left-4">
-                                            <label className="text-sm font-bold text-gray-400 ml-1">Voz / Registro</label>
+                                        <div className="space-y-2.5 col-span-1 animate-in fade-in slide-in-from-left-4">
+                                            <label className="text-sm font-bold text-gray-500 dark:text-gray-400 ml-1 transition-colors">Voz / Registro</label>
                                             <select 
                                                 id="select-voz"
                                                 {...register('id_voz', { required: "Selecciona una voz" })} 
                                                 className={clsx(
-                                                    "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white active:scale-[0.99] outline-none transition-all",
-                                                    errors.id_voz ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                                    "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all",
+                                                    errors.id_voz ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
                                                 )}
                                             >
-                                                <option value="">Seleccionar Voz...</option>
+                                                <option value="" className="bg-surface-card">Seleccionar Voz...</option>
                                                 {catalogs.voces?.map(v => (
-                                                    <option key={v.id_voz} value={v.id_voz.toString()}>{v.nombre_voz}</option>
+                                                    <option key={v.id_voz} value={v.id_voz.toString()} className="bg-surface-card">{v.nombre_voz}</option>
                                                 ))}
                                             </select>
                                             {errors.id_voz && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_voz.message}</p>}
@@ -449,48 +449,48 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                 })()}
 
                                 <div className="space-y-2.5">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">Categoría</label>
+                                    <label className="text-sm font-bold text-gray-500 dark:text-gray-400 ml-1 transition-colors">Categoría</label>
                                     <select 
                                         id="select-categoria"
                                         {...register('id_categoria', { required: "Selecciona una categoría" })} 
                                         className={clsx(
-                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white outline-none transition-all",
-                                            errors.id_categoria ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white outline-none transition-all",
+                                            errors.id_categoria ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Categoría...</option>
-                                        {catalogs.categorias?.map(c => <option key={c.id_categoria} value={c.id_categoria.toString()}>{c.nombre_categoria}</option>)}
+                                        <option value="" className="bg-surface-card">Categoría...</option>
+                                        {catalogs.categorias?.map(c => <option key={c.id_categoria} value={c.id_categoria.toString()} className="bg-surface-card">{c.nombre_categoria}</option>)}
                                     </select>
                                     {errors.id_categoria && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_categoria.message}</p>}
                                 </div>
                                 <div className="space-y-2.5">
-                                    <label className="text-sm font-bold text-gray-400 ml-1">Rol Sistema</label>
+                                    <label className="text-sm font-bold text-gray-500 dark:text-gray-400 ml-1 transition-colors">Rol Sistema</label>
                                     <select 
                                         id="select-rol"
                                         {...register('id_rol', { required: "Selecciona un rol" })} 
                                         className={clsx(
-                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-white outline-none transition-all",
-                                            errors.id_rol ? "border-red-500/50 ring-2 ring-red-500/20" : "border-white/5 focus:ring-2 focus:ring-brand-primary/30"
+                                            "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white outline-none transition-all",
+                                            errors.id_rol ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
                                         )}
                                     >
-                                        <option value="">Rol...</option>
-                                        {catalogs.roles?.map(r => <option key={r.id_rol} value={r.id_rol.toString()}>{r.rol}</option>)}
+                                        <option value="" className="bg-surface-card">Rol...</option>
+                                        {catalogs.roles?.map(r => <option key={r.id_rol} value={r.id_rol.toString()} className="bg-surface-card">{r.rol}</option>)}
                                     </select>
                                     {errors.id_rol && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_rol.message}</p>}
                                 </div>
                             </div>
                         </section>
 
-                        <section className="pt-8 border-t border-white/5 space-y-8 animate-in slide-up duration-1000">
+                        <section className="pt-8 border-t border-surface-border space-y-8 animate-in slide-up duration-1000">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-1.5 h-6 bg-red-500 rounded-full"></div>
-                                    <h3 className="text-lg font-bold text-white uppercase tracking-wider text-sm">Emergencia</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">Emergencia</h3>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer group">
                                     <input id="check-emergency" type="checkbox" {...register('has_emergency_contact')} className="sr-only peer" />
-                                    <div className="w-14 h-7 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-[20px] after:w-[22px] after:transition-all peer-checked:bg-red-600 shadow-inner"></div>
-                                    <span className="ml-3 text-sm font-bold text-gray-400 group-hover:text-white transition-colors">¿Tiene contacto?</span>
+                                    <div className="w-14 h-7 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-[20px] after:w-[22px] after:transition-all peer-checked:bg-red-600 shadow-inner"></div>
+                                    <span className="ml-3 text-sm font-bold text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">¿Tiene contacto?</span>
                                 </label>
                             </div>
 
@@ -557,20 +557,20 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                     </form>
                 ) : (
                     <div className="p-8 md:p-16 text-center space-y-10 animate-in zoom-in-95">
-                        <div className="w-24 h-24 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto ring-8 ring-green-500/5">
+                        <div className="w-24 h-24 bg-green-500/20 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto ring-8 ring-green-500/5">
                             <ShieldCheck className="w-12 h-12" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">¡Bienvenido a la Banda!</h2>
-                            <p className="text-gray-400 text-lg font-medium">Credenciales de acceso generadas correctamente</p>
+                            <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">¡Bienvenido a la Banda!</h2>
+                            <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">Credenciales de acceso generadas correctamente</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto text-gray-100">
-                            <div className="p-6 bg-surface-input rounded-[24px] border border-white/5 text-left group hover:border-brand-primary/30 transition-all">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
+                            <div className="p-6 bg-surface-input rounded-[24px] border border-surface-border text-left group hover:border-brand-primary/30 transition-all">
                                 <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Usuario</p>
                                 <p className="text-brand-primary font-mono text-2xl truncate">{createdCredentials.username}</p>
                             </div>
-                            <div className="p-6 bg-surface-input rounded-[24px] border border-white/5 text-left group hover:border-brand-primary/30 transition-all">
+                            <div className="p-6 bg-surface-input rounded-[24px] border border-surface-border text-left group hover:border-brand-primary/30 transition-all">
                                 <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Contraseña</p>
                                 <p className="text-brand-primary font-mono text-2xl">{createdCredentials.password}</p>
                             </div>
@@ -588,7 +588,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             </a>
                             <button 
                                 onClick={onClose}
-                                className="text-gray-500 hover:text-white font-bold transition-colors text-sm uppercase tracking-widest"
+                                className="text-gray-500 hover:text-gray-900 dark:hover:text-white font-bold transition-colors text-sm uppercase tracking-widest"
                             >
                                 Finalizar Registro
                             </button>

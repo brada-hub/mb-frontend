@@ -62,7 +62,7 @@ export default function SeccionModal({ isOpen, onClose, onSuccess, seccion = nul
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-xl bg-surface-card md:border md:border-white/10 md:rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
+            <div className="relative w-full max-w-xl bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh] text-gray-900 dark:text-gray-100">
                 
                 <div className="flex items-center justify-between p-6 bg-brand-primary text-white shadow-xl">
                     <div className="flex items-center gap-3">
@@ -82,12 +82,13 @@ export default function SeccionModal({ isOpen, onClose, onSuccess, seccion = nul
                 <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8 overflow-y-auto">
                     
                     <div className="space-y-6">
-                        <Input 
+                         <Input 
                             label="Nombre de la Sección" 
                             placeholder="EJ. TROMPETAS, PLATILLOS, VIENTOS" 
                             icon={Layers}
                             helperText="Solo letras"
                             onInput={filterLettersOnly}
+                            className="bg-black/5 dark:bg-black/20 border-surface-border text-gray-900 dark:text-white"
                             {...register('seccion', { 
                                 required: "El nombre es obligatorio",
                                 pattern: {
@@ -105,6 +106,7 @@ export default function SeccionModal({ isOpen, onClose, onSuccess, seccion = nul
                             icon={AlertCircle}
                             helperText="Solo letras"
                             onInput={filterLettersOnly}
+                            className="bg-black/5 dark:bg-black/20 border-surface-border text-gray-900 dark:text-white"
                             {...register('descripcion', {
                                 pattern: {
                                     value: /^[A-ZÁÉÍÓÚÜÑ\s]*$/,

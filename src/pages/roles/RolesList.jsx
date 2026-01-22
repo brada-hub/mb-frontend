@@ -98,8 +98,8 @@ export default function RolesList() {
 
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Roles y Permisos</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Gestión de accesos y facultades del sistema</p>
+                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Roles y Permisos</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Gestión de accesos y facultades del sistema</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
@@ -107,7 +107,7 @@ export default function RolesList() {
                         <Input 
                             icon={Search}
                             placeholder="Buscar rol..." 
-                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
+                            className="h-12 w-full text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -123,12 +123,12 @@ export default function RolesList() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 animate-pulse">
                     <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-400 font-bold">Cargando roles...</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-bold transition-colors">Cargando roles...</p>
                 </div>
             ) : error ? (
                 <div className="flex flex-col items-center justify-center py-20 bg-red-500/5 border border-dashed border-red-500/20 rounded-[32px] text-center px-4">
                     <Shield className="w-16 h-16 text-red-500/30 mb-4" />
-                    <p className="text-white font-bold uppercase tracking-widest text-lg">Error de Acceso</p>
+                    <p className="text-gray-900 dark:text-white font-bold uppercase tracking-widest text-lg transition-colors">Error de Acceso</p>
                     <p className="text-gray-400 text-sm mt-2 max-w-md">
                         {error}
                         {error.includes("401") || error.includes("403") || error.includes("sesión") ? 
@@ -144,7 +144,7 @@ export default function RolesList() {
                     {filteredRoles.map((rol) => (
                         <div 
                             key={rol.id_rol} 
-                            className="group bg-surface-card border border-white/5 rounded-[32px] p-6 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/5 flex flex-col h-full"
+                            className="group bg-surface-card border border-surface-border rounded-[32px] p-6 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/5 flex flex-col h-full"
                         >
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-4">
@@ -152,21 +152,21 @@ export default function RolesList() {
                                         <Shield className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-black text-white uppercase tracking-tight">{rol.rol}</h3>
-                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{rol.permisos?.length || 0} Permisos</p>
+                                        <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{rol.rol}</h3>
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest transition-colors">{rol.permisos?.length || 0} Permisos</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <p className="text-sm text-indigo-200/70 mb-6 flex-grow leading-relaxed font-medium">
+                            <p className="text-sm text-gray-600 dark:text-indigo-200/70 mb-6 flex-grow leading-relaxed font-medium transition-colors">
                                 {rol.descripcion || 'Sin descripción detallada.'}
                             </p>
 
                             <div className="space-y-3 mb-8">
-                                <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Permisos Asignados</h4>
+                                <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 transition-colors">Permisos Asignados</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {rol.permisos?.slice(0, 5).map(p => (
-                                        <span key={p.id_permiso} className="px-2 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] text-gray-400 font-bold uppercase">
+                                        <span key={p.id_permiso} className="px-2 py-1 bg-black/5 dark:bg-white/5 border border-surface-border rounded-lg text-[10px] text-gray-600 dark:text-gray-400 font-bold uppercase transition-colors">
                                             {p.permiso}
                                         </span>
                                     ))}
@@ -176,38 +176,45 @@ export default function RolesList() {
                                         </span>
                                     )}
                                     {(!rol.permisos || rol.permisos.length === 0) && (
-                                        <span className="text-[10px] text-gray-600 italic uppercase">Sin permisos</span>
+                                        <span className="text-[10px] text-gray-500 dark:text-gray-600 italic uppercase transition-colors">Sin permisos</span>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 pt-4 border-t border-white/5">
+                            <div className="flex items-center gap-2 pt-4 border-t border-surface-border transition-colors">
                                 <Button 
                                     className="flex-1 h-10 text-xs font-bold" 
                                     variant="secondary"
                                     onClick={() => handleEdit(rol)}
                                 >
-                                    <Edit2 className="w-3.5 h-3.5 mr-2" /> EDITAR
+                                    {rol.es_protegido ? (
+                                        <Search className="w-3.5 h-3.5 mr-2" />
+                                    ) : (
+                                        <Edit2 className="w-3.5 h-3.5 mr-2" />
+                                    )}
+                                    {rol.es_protegido ? 'VER' : 'EDITAR'}
                                 </Button>
-                                <Button 
-                                    className="flex-1 h-10 text-xs font-bold" 
-                                    variant="danger"
-                                    onClick={() => handleDeleteClick(rol.id_rol)}
-                                    title="Eliminar rol"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5 mr-2" /> ELIMINAR
-                                </Button>
+                                {!rol.es_protegido && (
+                                    <Button 
+                                        className="flex-1 h-10 text-xs font-bold" 
+                                        variant="danger"
+                                        onClick={() => handleDeleteClick(rol.id_rol)}
+                                        title="Eliminar rol"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5 mr-2" /> ELIMINAR
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-white/10 rounded-[32px]">
-                    <Search className="w-16 h-16 text-white/5 mb-4" />
-                    <p className="text-white font-bold uppercase tracking-widest">
+                <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-surface-border rounded-[32px] transition-colors">
+                    <Search className="w-16 h-16 text-gray-200 dark:text-white/5 mb-4 transition-colors" />
+                    <p className="text-gray-900 dark:text-white font-bold uppercase tracking-widest transition-colors">
                         {roles.length === 0 ? "No hay roles registrados" : "Sin resultados"}
                     </p>
-                    <p className="text-gray-500 text-sm mt-1">
+                    <p className="text-gray-500 text-sm mt-1 transition-colors">
                         {roles.length === 0 ? "Usa el botón superior para crear el primer rol." : "Intenta con otro término de búsqueda."}
                     </p>
                 </div>

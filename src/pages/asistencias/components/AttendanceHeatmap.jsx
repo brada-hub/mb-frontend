@@ -25,8 +25,29 @@ export default function AttendanceHeatmap({ heatmapData }) {
         return map;
     }, [heatmapData]);
 
-    const cellSize = 12;
-    const gap = 4;
+    const [dimensions, setDimensions] = useState({ cellSize: 12, gap: 4 });
+
+    useEffect(() => {
+        const updateDimensions = () => {
+            const width = window.innerWidth;
+            if (width < 640) {
+                // Mobile: Fit 53 weeks in ~320px
+                setDimensions({ cellSize: 4.5, gap: 1 });
+            } else if (width < 1024) {
+                // Tablet
+                setDimensions({ cellSize: 8, gap: 2 });
+            } else {
+                // Desktop
+                setDimensions({ cellSize: 12, gap: 4 });
+            }
+        };
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
+    const { cellSize, gap } = dimensions;
     
     // Calculate month labels positions
     const monthLabels = useMemo(() => {
@@ -135,8 +156,8 @@ export default function AttendanceHeatmap({ heatmapData }) {
     };
 
     return (
-        <div className="w-full overflow-x-auto pb-4 custom-scrollbar" ref={containerRef}>
-            <div className="min-w-[700px] relative">
+        <div className="w-full overflow-hidden pb-4" ref={containerRef}>
+            <div className="w-full flex flex-col items-center lg:items-start relative">
                 {/* Tooltip renderizado una sola vez en el DOM */}
                 {hoveredCell && (
                     <div 
@@ -186,8 +207,15 @@ export default function AttendanceHeatmap({ heatmapData }) {
                     ))}
                 </div>
                 
-                <div className="flex gap-2">
-                    <div className="flex flex-col gap-[3.5px] text-[8px] text-gray-600 font-bold uppercase pt-0.5 w-4">
+                <div className="flex gap-1 sm:gap-2">
+                    <div 
+                        className="flex flex-col text-gray-600 font-bold uppercase pt-0.5"
+                        style={{ 
+                            gap: `${gap + (cellSize - 3)}px`, 
+                            fontSize: cellSize < 6 ? '5px' : '8px',
+                            width: cellSize < 6 ? '6px' : '16px'
+                        }}
+                    >
                         <span>L</span>
                         <span className="opacity-0">M</span>
                         <span>M</span>

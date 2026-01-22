@@ -29,13 +29,13 @@ const Input = forwardRef(({
                 <div className="flex items-center gap-2.5 mb-2.5 px-1">
                     {Icon && <Icon className={clsx(
                         "w-5 h-5 transition-colors",
-                        error ? "text-red-400" : "text-gray-400 group-focus-within:text-brand-primary"
+                        error ? "text-red-400" : "text-gray-500 dark:text-gray-400 group-focus-within:text-brand-primary"
                     )} />}
                     <label 
                         htmlFor={inputId}
                         className={clsx(
                             "text-sm font-bold tracking-tight transition-colors",
-                            error ? "text-red-400" : "text-gray-300 pointer-events-auto cursor-pointer"
+                            error ? "text-red-400" : "text-gray-700 dark:text-gray-300 pointer-events-auto cursor-pointer"
                         )}
                     >
                         {label} {props.required && <span className="text-brand-primary">*</span>}
@@ -57,7 +57,7 @@ const Input = forwardRef(({
                     onInput={onInput}
                     aria-label={props['aria-label'] || label || props.placeholder}
                     className={clsx(
-                        'flex w-full rounded-2xl bg-surface-input px-5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none',
+                        'flex w-full rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none',
                         isTextArea ? 'min-h-[100px] py-4 resize-none' : 'h-14',
                         // Left padding for start icon
                         !label && Icon && 'pl-12',
@@ -65,7 +65,7 @@ const Input = forwardRef(({
                         isPassword && 'pr-12',
                         error 
                             ? 'border-red-500/50 ring-2 ring-red-500/20 focus:ring-red-500/40' 
-                            : 'border-white/5 focus:ring-brand-primary/30 hover:border-white/10 focus:border-brand-primary/50',
+                            : 'border-surface-border focus:ring-brand-primary/30 hover:border-gray-300 dark:hover:border-white/10 focus:border-brand-primary/50',
                         className
                     )}
                     {...props}
@@ -75,7 +75,7 @@ const Input = forwardRef(({
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors focus:outline-none"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none"
                     >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>

@@ -126,27 +126,27 @@ export default function PagosAdmin() {
         <div className="space-y-6 animate-in fade-in duration-500 h-full flex flex-col">
             <div className="flex items-center justify-between shrink-0">
                 <div>
-                    <h1 className="text-2xl font-black text-white uppercase tracking-tighter">Cuentas por Pagar</h1>
-                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Gestión de Tesorería</p>
+                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter transition-colors">Cuentas por Pagar</h1>
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1 transition-colors">Gestión de Tesorería</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <Button 
                         onClick={handlePrintPlanilla}
                         variant="ghost"
-                        className="hidden sm:flex bg-white/5 hover:bg-white/10 text-gray-300 gap-2 border border-white/10"
+                        className="hidden sm:flex bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-600 dark:text-gray-300 gap-2 border border-surface-border transition-colors"
                     >
                         <Printer className="w-4 h-4" />
                         <span className="text-xs font-bold uppercase tracking-widest">Imprimir Planilla</span>
                     </Button>
-                    <div className="bg-surface-card border border-white/10 px-4 py-2 rounded-xl flex items-center gap-3">
+                    <div className="bg-surface-card border border-surface-border px-4 py-2 rounded-xl flex items-center gap-3 transition-colors">
                         <div className="p-2 bg-emerald-500/10 rounded-lg">
                             <DollarSign className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Total Pendiente</p>
-                            <p className="text-xl font-black text-white leading-none">
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest transition-colors">Total Pendiente</p>
+                            <p className="text-xl font-black text-gray-900 dark:text-white leading-none transition-colors">
                                 {deudas.reduce((acc, curr) => acc + curr.total_eventos, 0)} 
-                                <span className="text-xs text-gray-500 font-black ml-1 uppercase">Eventos</span>
+                                <span className="text-xs text-gray-500 font-black ml-1 uppercase transition-colors">Eventos</span>
                             </p>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ export default function PagosAdmin() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
                 {/* Lista de Deudores */}
                 <div className={clsx(
-                    "lg:col-span-5 flex flex-col gap-4 bg-surface-card border border-white/5 rounded-3xl p-4 overflow-hidden",
+                    "lg:col-span-5 flex flex-col gap-4 bg-surface-card border border-surface-border rounded-3xl p-4 overflow-hidden transition-colors",
                     selectedMember && "hidden lg:flex"
                 )}>
                     {/* Buscador */}
@@ -167,7 +167,7 @@ export default function PagosAdmin() {
                             placeholder="Buscar músico..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[#11141d] border border-white/5 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
+                            className="w-full bg-surface-input border border-surface-border rounded-xl py-3 pl-10 pr-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
                         />
                     </div>
 
@@ -176,13 +176,13 @@ export default function PagosAdmin() {
                         {loading ? (
                             <div className="flex flex-col items-center justify-center py-12 gap-3">
                                 <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Calculando deudas...</p>
+                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest transition-colors">Calculando deudas...</p>
                             </div>
                         ) : filteredDeudas.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
-                                <DollarSign className="w-12 h-12 text-gray-600 mb-2" />
-                                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Todo al día</p>
-                                <p className="text-xs text-gray-600">No hay pagos pendientes</p>
+                                <DollarSign className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-2 transition-colors" />
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Todo al día</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-600 transition-colors">No hay pagos pendientes</p>
                             </div>
                         ) : (
                             filteredDeudas.map(item => (
@@ -193,7 +193,7 @@ export default function PagosAdmin() {
                                         "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
                                         selectedMember?.id_miembro === item.id_miembro 
                                             ? "bg-brand-primary/10 border-brand-primary/50" 
-                                            : "bg-[#161b2c] border-white/5 hover:border-white/10 hover:bg-[#1a2035]"
+                                            : "bg-black/[0.02] dark:bg-[#161b2c] border-surface-border hover:border-gray-300 dark:hover:border-white/10 hover:bg-black/5 dark:hover:bg-[#1a2035]"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
@@ -201,25 +201,25 @@ export default function PagosAdmin() {
                                             "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-colors",
                                             selectedMember?.id_miembro === item.id_miembro
                                                 ? "bg-brand-primary text-white"
-                                                : "bg-[#252b43] text-gray-400 group-hover:text-white"
+                                                : "bg-black/10 dark:bg-[#252b43] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                                         )}>
                                             {item.nombres.charAt(0)}
                                         </div>
                                         <div>
                                             <p className={clsx(
-                                                "font-bold text-sm leading-tight",
-                                                selectedMember?.id_miembro === item.id_miembro ? "text-white" : "text-gray-300"
+                                                "font-bold text-sm leading-tight transition-colors",
+                                                selectedMember?.id_miembro === item.id_miembro ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
                                             )}>
                                                 {item.nombres} {item.apellidos}
                                             </p>
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{item.instrumento}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest transition-colors">{item.instrumento}</p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
-                                        <span className="text-lg font-black text-white">
+                                        <span className="text-lg font-black text-gray-900 dark:text-white transition-colors">
                                             {item.total_eventos}
                                         </span>
-                                        <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Pendientes</span>
+                                        <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest transition-colors">Pendientes</span>
                                     </div>
                                 </button>
                             ))
@@ -233,18 +233,18 @@ export default function PagosAdmin() {
                     !selectedMember && "hidden lg:flex lg:items-center lg:justify-center"
                 )}>
                     {selectedMember ? (
-                        <div className="bg-surface-card border border-white/5 rounded-3xl overflow-hidden flex flex-col h-full animate-in slide-in-from-right duration-300">
+                        <div className="bg-surface-card border border-surface-border rounded-3xl overflow-hidden flex flex-col h-full animate-in slide-in-from-right duration-300 transition-colors">
                             {/* Header Detalle */}
-                            <div className="p-6 border-b border-white/5 bg-[#161b2c]">
+                            <div className="p-6 border-b border-surface-border bg-black/[0.02] dark:bg-[#161b2c] transition-colors">
                                 <div className="flex items-center gap-4 mb-6">
                                     <button 
                                         onClick={() => setSelectedMember(null)}
-                                        className="lg:hidden p-2 -ml-2 text-gray-400 hover:text-white"
+                                        className="lg:hidden p-2 -ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                                     >
                                         <ArrowLeft className="w-5 h-5" />
                                     </button>
                                     <div>
-                                        <h2 className="text-xl font-black text-white uppercase tracking-tight">{selectedMember.nombres} {selectedMember.apellidos}</h2>
+                                        <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{selectedMember.nombres} {selectedMember.apellidos}</h2>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border border-purple-500/20">
                                                 {memberDetails.length} Eventos
@@ -267,7 +267,7 @@ export default function PagosAdmin() {
                             </div>
 
                             {/* Lista Detalle */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#0b0e14] custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-black/[0.02] dark:bg-[#0b0e14] custom-scrollbar transition-colors">
                                 {loadingDetails ? (
                                     <div className="flex justify-center py-10">
                                         <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -281,7 +281,7 @@ export default function PagosAdmin() {
                                                 "flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all select-none group",
                                                 selection.includes(detalle.id_convocatoria)
                                                     ? "bg-indigo-600/10 border-indigo-500/50"
-                                                    : "bg-[#161b2c] border-white/5 hover:border-white/10"
+                                                    : "bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/10"
                                             )}
                                         >
                                             <div className={clsx(
@@ -295,7 +295,7 @@ export default function PagosAdmin() {
                                             
                                             <div className="flex-1">
                                                 <div className="flex justify-between items-start mb-1">
-                                                    <h3 className="text-white font-bold text-sm leading-tight">{detalle.evento}</h3>
+                                                    <h3 className="text-gray-900 dark:text-white font-bold text-sm leading-tight transition-colors">{detalle.evento}</h3>
                                                     <div className="flex flex-col items-end gap-1">
                                                         <span className={clsx(
                                                             "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border",
@@ -331,11 +331,11 @@ export default function PagosAdmin() {
                         </div>
                     ) : (
                         <div className="hidden lg:flex flex-col items-center justify-center h-full text-center p-8 opacity-40">
-                            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                                <DollarSign className="w-10 h-10 text-white" />
+                            <div className="w-24 h-24 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 transition-colors">
+                                <DollarSign className="w-10 h-10 text-gray-600 dark:text-white transition-colors" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-widest">Tesorería</h3>
-                            <p className="text-sm text-gray-400 max-w-xs">Selecciona un músico de la lista para ver su detalle de pagos pendientes.</p>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 uppercase tracking-widest transition-colors">Tesorería</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs transition-colors">Selecciona un músico de la lista para ver su detalle de pagos pendientes.</p>
                         </div>
                     )}
                 </div>

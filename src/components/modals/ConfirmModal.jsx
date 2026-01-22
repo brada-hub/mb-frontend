@@ -7,7 +7,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
 
     return createPortal(
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-md bg-[#161b2c] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden transform animate-in zoom-in-95 duration-300">
+            <div className="relative w-full max-w-md bg-surface-card border border-surface-border rounded-[32px] shadow-2xl overflow-hidden transform animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
                 {/* Header/Icon Area */}
                 <div className="p-8 pb-4 flex flex-col items-center text-center">
@@ -17,10 +17,10 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                         <AlertCircle className="w-10 h-10" />
                     </div>
                     
-                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2 transition-colors">
                         {title}
                     </h3>
-                    <p className="text-gray-400 text-sm font-bold uppercase tracking-widest leading-relaxed">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-widest leading-relaxed transition-colors">
                         {message}
                     </p>
                 </div>
@@ -39,7 +39,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                     </Button>
                     <button 
                         onClick={onClose}
-                        className="w-full py-3 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] hover:text-white transition-colors"
+                        className="w-full py-3 text-[10px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-[0.2em] hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                         {cancelText}
                     </button>
@@ -48,7 +48,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                 {/* Close Button */}
                 <button 
                     onClick={onClose}
-                    className="absolute top-6 right-6 p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-500 transition-all"
+                    className="absolute top-6 right-6 p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl text-gray-500 transition-all"
                 >
                     <X className="w-5 h-5" />
                 </button>

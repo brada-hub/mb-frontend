@@ -4,11 +4,12 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         brand: {
-          primary: '#5e5ce6', // El azul/índigo de tu cabecera
+          primary: '#5e5ce6',
           secondary: '#818cf8',
           dark: '#4f46e5',
         },
@@ -18,10 +19,10 @@ export default {
           cyan: '#22d3ee',
         },
         surface: {
-          base: '#0f111a',    // Fondo principal
-          card: '#161b2c',    // Fondo de tarjetas/modales
-          input: '#1d233a',   // Fondo de inputs
-          border: 'rgba(255, 255, 255, 0.08)',
+          base: 'var(--surface-base)',
+          card: 'var(--surface-card)',
+          input: 'var(--surface-input)',
+          border: 'var(--surface-border)',
           hover: 'rgba(255, 255, 255, 0.03)',
         }
       },

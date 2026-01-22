@@ -61,7 +61,7 @@ export default function BibliotecaList() {
 
     const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
     // Bloqueo estricto: Solo ADMIN y DIRECTOR gestionan. Jefes y Miembros solo ven/estudian.
-    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR';
+    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR' || !!user?.is_super_admin;
     const canManage = authorized && editMode;
 
     const loadData = useCallback(async () => {
@@ -118,11 +118,11 @@ export default function BibliotecaList() {
                 )}>
                     {/* Header Géneros - Separated for Scroll Effect */}
                     <div className="px-1 mb-2">
-                        <h2 className="text-lg font-black text-white uppercase tracking-tight">Géneros</h2>
-                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Explora por categoría</p>
+                        <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Géneros</h2>
+                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest transition-colors">Explora por categoría</p>
                     </div>
 
-                    <div className="sticky top-0 z-30 bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-white/5 flex items-center gap-2">
+                    <div className="sticky top-0 z-30 bg-white/95 dark:bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-surface-border flex items-center gap-2 transition-colors">
                         {authorized && (
                             <button
                                 onClick={toggleEditMode}
@@ -131,20 +131,22 @@ export default function BibliotecaList() {
                                     "h-12 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 border shrink-0",
                                     editMode 
                                         ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
-                                        : "bg-surface-card border-white/10 text-gray-400 hover:bg-white/10"
+                                        : "bg-surface-card border-surface-border text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10"
                                 )}
                             >
                                 {editMode ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
                             </button>
                         )}
                         <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                             <Input 
                                 icon={Search}
-                                placeholder="Buscar género..."
+                                placeholder="BUSCAR..."
                                 value={genreSearch}
                                 onChange={(e) => setGenreSearch(e.target.value)}
-                                className="bg-surface-card border-white/5 h-12 text-sm rounded-2xl shadow-inner shadow-black/20"
+                                className="bg-surface-input border-surface-border h-11 text-[10px] font-black uppercase rounded-xl shadow-inner shadow-black/10 dark:shadow-black/20 w-full"
                             />
+                        </div>
                         </div>
                         {canManage && (
                             <Button 
@@ -152,9 +154,9 @@ export default function BibliotecaList() {
                                     setGenreToEdit(null);
                                     setIsCatalogModalOpen(true);
                                 }}
-                                className="h-12 w-12 rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary p-0 flex items-center justify-center"
+                                className="h-11 w-11 rounded-xl shrink-0 z-50 shadow-lg bg-indigo-600 p-0 flex items-center justify-center active:scale-90"
                             >
-                                <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                                <Plus className="w-5 h-5 text-white" strokeWidth={3} />
                             </Button>
                         )}
                     </div>
@@ -171,7 +173,7 @@ export default function BibliotecaList() {
                                     "relative flex flex-col rounded-[32px] transition-all duration-500 group overflow-hidden shadow-xl shrink-0 cursor-pointer border-2",
                                     selectedGenero?.id_genero === gen.id_genero
                                         ? "border-brand-primary bg-brand-primary/5 scale-[1.02] z-10"
-                                        : "border-white/5 hover:border-white/20"
+                                        : "border-surface-border hover:border-gray-300 dark:hover:border-white/20"
                                 )}
                             >
                                 <div 
@@ -201,16 +203,16 @@ export default function BibliotecaList() {
                                 </div>
 
                                 {canManage && (
-                                    <div className="bg-[#161b2c] p-3 flex items-center gap-3 border-t border-white/5 animate-in slide-in-from-bottom duration-300">
+                                    <div className="bg-black/5 dark:bg-[#1a2035] p-3 flex items-center gap-2 border-t border-surface-border animate-in slide-in-from-bottom duration-300 transition-colors">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setGenreToEdit(gen);
                                                 setIsCatalogModalOpen(true);
                                             }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-widest transition-all"
+                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-surface-border text-[9px] font-black text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10 uppercase tracking-widest transition-all active:scale-95"
                                         >
-                                            <Edit className="w-3 h-3" /> Editar
+                                            <Edit className="w-4 h-4" /> <span className="hidden sm:inline">EDITAR</span>
                                         </button>
                                         <button
                                             onClick={(e) => {
@@ -221,9 +223,9 @@ export default function BibliotecaList() {
                                                 }
                                                 setDeleteConfirmation({ isOpen: true, id: gen.id_genero, type: 'genero' });
                                             }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/10 text-red-600 dark:text-red-500/50 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-500/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
                                         >
-                                            <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                                            <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">ELIMINAR</span>
                                         </button>
                                     </div>
                                 )}
@@ -240,28 +242,28 @@ export default function BibliotecaList() {
                     {mobileView === 'themes' && (
                         <button 
                             onClick={() => setMobileView('genres')}
-                            className="lg:hidden flex items-center gap-2 mb-2 text-indigo-400 font-black text-[10px] uppercase tracking-widest bg-indigo-400/10 w-fit px-3 py-1.5 rounded-xl"
+                            className="lg:hidden flex items-center gap-2 mb-4 text-indigo-400 font-black text-[10px] uppercase tracking-[0.2em] bg-indigo-400/10 w-full justify-center py-4 rounded-2xl border border-indigo-500/20 active:scale-95 transition-all"
                         >
-                            <ArrowLeft className="w-4 h-4" /> Volver
+                            <ArrowLeft className="w-5 h-5" /> Volver a Géneros
                         </button>
                     )}
 
                     {/* Header Temas - Separated for Scroll Effect */}
                     <div className="px-1 mb-2">
-                        <h2 className="text-lg font-black text-white uppercase tracking-tight truncate">
+                        <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight truncate transition-colors">
                             {selectedGenero?.nombre_genero || 'Temas'}
                         </h2>
-                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Canciones disponibles</p>
+                        <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest transition-colors">Canciones disponibles</p>
                     </div>
 
-                    <div className="sticky top-0 z-30 bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-white/5 flex items-center gap-2">
+                    <div className="sticky top-0 z-30 bg-white/95 dark:bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-3 mb-4 border-b border-surface-border flex items-center gap-2 transition-colors">
                         <div className="flex-1">
                             <Input 
                                 icon={Search}
                                 placeholder="Buscar canción..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-surface-card border-white/5 h-12 text-sm rounded-2xl shadow-inner shadow-black/20 w-full"
+                                className="bg-surface-input border-surface-border h-12 text-sm rounded-2xl shadow-inner shadow-black/10 dark:shadow-black/20 w-full"
                             />
                         </div>
                         {canManage && (
@@ -290,25 +292,25 @@ export default function BibliotecaList() {
                                         key={tema.id_tema}
                                         onClick={authorized ? () => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`) : undefined}
                                         className={clsx(
-                                            "group bg-surface-card border border-white/5 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl",
+                                            "group bg-surface-card border border-surface-border rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl",
                                             authorized ? "hover:border-indigo-500/30 hover:-translate-y-1 cursor-pointer" : "cursor-default"
                                         )}
                                     >
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex items-center gap-4 text-left">
-                                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-indigo-600/20 group-hover:text-indigo-400 transition-colors shrink-0">
+                                                <div className="w-12 h-12 bg-black/5 dark:bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover:bg-indigo-600/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0">
                                                     <Music className="w-6 h-6" />
                                                 </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <h4 className="text-white font-black text-lg group-hover:text-indigo-300 transition-colors uppercase tracking-tight leading-tight line-clamp-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-gray-900 dark:text-white font-black text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors uppercase tracking-tight leading-tight line-clamp-2">
                                                         {tema.nombre_tema}
                                                     </h4>
-                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate">{selectedGenero?.nombre_genero}</p>
+                                                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest truncate transition-colors">{selectedGenero?.nombre_genero}</p>
                                                 </div>
                                             </div>
                                             {authorized && (
-                                                <div className="p-2 bg-indigo-600/10 text-indigo-400 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shrink-0">
-                                                    <ChevronRight className="w-5 h-5" />
+                                                <div className="w-11 h-11 bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all flex items-center justify-center shrink-0 shadow-lg active:scale-90">
+                                                    <ChevronRight className="w-6 h-6" />
                                                 </div>
                                             )}
                                         </div>
@@ -338,19 +340,19 @@ export default function BibliotecaList() {
                                             }
 
                                             return (
-                                                <div className="flex items-center gap-1 text-[9px] font-black text-gray-400 uppercase tracking-tight border-t border-white/5 pt-4 pb-4 px-1">
+                                                <div className="flex items-center gap-1 text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-tight border-t border-surface-border pt-4 pb-4 px-1 transition-colors">
                                                     <div className="flex items-center gap-1 flex-1 justify-center min-w-0">
                                                         <FileText className="w-3 h-3 shrink-0" />
                                                         <span className="truncate">{displayPartituras} <span className="hidden sm:inline">PARTITURAS</span><span className="sm:hidden">PART.</span></span>
                                                     </div>
-                                                    <div className="w-px h-3 bg-white/10 shrink-0"></div>
-                                                    <div className="flex items-center gap-1 text-indigo-400/60 flex-1 justify-center min-w-0">
+                                                    <div className="w-px h-3 bg-surface-border shrink-0"></div>
+                                                    <div className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400/60 flex-1 justify-center min-w-0 transition-colors">
                                                         <Play className="w-3 h-3 shrink-0" />
                                                         <span className="truncate">{displayGuias} <span className="hidden sm:inline">GUÍAS</span><span className="sm:hidden">GUÍA</span></span>
                                                     </div>
                                                     {tema.videos?.[0]?.url_video && (
                                                         <>
-                                                            <div className="w-px h-3 bg-white/10 shrink-0"></div>
+                                                            <div className="w-px h-3 bg-surface-border shrink-0"></div>
                                                             <div className="flex items-center gap-1 text-red-500/80 flex-1 justify-center min-w-0">
                                                                 <Video className="w-3 h-3 shrink-0" />
                                                                 <span className="truncate">VIDEO</span>
@@ -401,10 +403,10 @@ export default function BibliotecaList() {
                                             if (canManage) {
                                                 const totalResources = (tema.partituras_count || 0) + (tema.guias_count || 0);
                                                 return (
-                                                    <div className="flex gap-2 pt-3 border-t border-white/5 mt-auto">
+                                                    <div className="flex gap-2 pt-3 border-t border-surface-border mt-auto transition-colors">
                                                         <button 
                                                             onClick={(e) => { e.stopPropagation(); setEditTemaInitialData(tema); setIsTemaModalOpen(true); }}
-                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black text-white hover:bg-white/10 uppercase tracking-widest transition-all"
+                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-black/5 dark:bg-white/5 border border-surface-border text-[10px] font-black text-gray-700 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 uppercase tracking-widest transition-all"
                                                         >
                                                             <Edit className="w-3.5 h-3.5" /> Editar
                                                         </button>
@@ -417,7 +419,7 @@ export default function BibliotecaList() {
                                                                 }
                                                                 setDeleteConfirmation({ isOpen: true, id: tema.id_tema, type: 'tema' }); 
                                                             }}
-                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl border border-red-500/10 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl border border-red-500/10 text-red-600 dark:text-red-500/50 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-500/10 text-[10px] font-black uppercase tracking-widest transition-all"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" /> Eliminar
                                                         </button>
@@ -428,13 +430,13 @@ export default function BibliotecaList() {
                                             if (visualFiles.length === 0 && allAudios.length === 0 && !videoLink) return null;
 
                                             return (
-                                                <div className="flex gap-2 pt-3 border-t border-white/5 mt-auto">
+                                                <div className="flex gap-2 pt-3 border-t border-surface-border mt-auto transition-colors">
                                                     {visualFiles.length > 0 && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setViewerData({ files: visualFiles, initialIndex: 0 }); }}
-                                                            className="flex-[2] flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
+                                                            className="flex-[2] flex items-center justify-center gap-3 py-4 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/30 active:scale-95"
                                                         >
-                                                            <FileText className="w-4 h-4" /> ESTUDIAR
+                                                            <FileText className="w-5 h-5" /> ESTUDIAR
                                                         </button>
                                                     )}
                                                     <div className="flex gap-2 flex-1">
@@ -473,10 +475,10 @@ export default function BibliotecaList() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-32 bg-white/2 border border-dashed border-white/5 rounded-[40px] text-center px-6">
-                                <Search className="w-12 h-12 text-gray-700 mb-6" />
-                                <h3 className="text-xl font-bold text-white mb-2">Sin resultados</h3>
-                                <p className="text-gray-500 text-sm">No hay temas en este género aún.</p>
+                            <div className="flex flex-col items-center justify-center py-32 bg-black/[0.02] dark:bg-white/2 border border-dashed border-surface-border rounded-[40px] text-center px-6 transition-colors">
+                                <Search className="w-12 h-12 text-gray-300 dark:text-gray-700 mb-6 transition-colors" />
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Sin resultados</h3>
+                                <p className="text-gray-500 text-sm transition-colors">No hay temas en este género aún.</p>
                             </div>
                         )}
                     </div>

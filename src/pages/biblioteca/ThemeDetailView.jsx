@@ -8,23 +8,21 @@ import {
     FileText, 
     Play, 
     Download, 
+    ZoomIn, 
+    ZoomOut, 
+    RotateCw, 
+    Maximize2, 
+    ChevronLeft, 
+    ChevronRight, 
+    Video, 
     Layers,
-    Mic,
-    ExternalLink,
-    Video,
     Image as ImageIcon,
-    Plus,
     Edit2,
     Trash2,
+    Plus,
     ArrowLeft,
-    Lock,
     Unlock,
-    Maximize2,
-    ZoomIn,
-    ZoomOut,
-    RotateCw,
-    ChevronLeft,
-    ChevronRight
+    Lock
 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
@@ -32,6 +30,11 @@ import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RecursoModal from '../../components/modals/RecursoModal';
 import TemaModal from '../../components/modals/TemaModal';
 import { useAuth } from '../../context/AuthContext';
+
+const getCleanUrl = (url) => {
+    if (!url) return '';
+    return url.replace(/^https?:\/\/[^/]+/, '');
+};
 
 export default function ThemeDetailView() {
     const { id } = useParams();
@@ -102,7 +105,7 @@ export default function ThemeDetailView() {
 
     const handleMouseUp = () => setIsViewDragging(false);
 
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || user?.role?.includes('JEFE');
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || !!user?.is_super_admin;
     const canManage = isAdmin && editMode; // Solo pueden gestionar si son admin Y tienen editMode activo
     const userInstrumentId = user?.miembro?.id_instrumento;
 
@@ -182,7 +185,7 @@ export default function ThemeDetailView() {
     // Si está en modo lectura (y tiene instrumento): Ve solo lo suyo.
     const userVozId = user?.miembro?.id_voz;
 
-    const filteredRecursos = canManage
+    const filteredRecursos = (canManage || (isAdmin && !userInstrumentId))
         ? recursos 
         : recursos.filter(r => 
             r.id_instrumento == userInstrumentId && 
@@ -255,7 +258,7 @@ export default function ThemeDetailView() {
                             <X className="w-6 h-6" />
                         </button>
                         <div className="flex flex-col min-w-0">
-                            <h3 className="text-xs lg:text-sm font-black text-white uppercase tracking-tight truncate max-w-[200px] lg:max-w-2xl">
+                            <h3 className="text-xs lg:text-sm font-black text-white uppercase tracking-tight truncate max-w-[150px] lg:max-w-2xl">
                                 {tema.nombre_tema} • <span className="text-brand-primary">{currentFile.title}</span>
                             </h3>
                             {memberFiles.length > 1 && (
@@ -267,6 +270,20 @@ export default function ThemeDetailView() {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {isAdmin && (
+                            <button
+                                onClick={() => handleEditModeChange(!editMode)}
+                                title={editMode ? "Desactivar Gestión" : "Activar Gestión"}
+                                className={clsx(
+                                    "p-3 rounded-2xl flex items-center justify-center transition-all duration-300 border mr-2",
+                                    editMode 
+                                        ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                        : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                )}
+                            >
+                                {editMode ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                            </button>
+                        )}
                         {isImage && (
                             <div className="hidden lg:flex items-center bg-white/5 rounded-2xl p-1 gap-1 border border-white/10 mr-2">
                                 <button onClick={() => setZoom(prev => Math.max(25, prev - 25))} className="p-2 hover:bg-white/10 rounded-xl text-white/50 hover:text-white"><ZoomOut className="w-4 h-4" /></button>
@@ -286,7 +303,7 @@ export default function ThemeDetailView() {
                             </button>
                         )}
                         <a 
-                            href={currentFile.url_archivo}
+                            href={getCleanUrl(currentFile.url_archivo)}
                             download
                             className="h-10 rounded-2xl px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-brand-primary hover:bg-brand-primary/80 text-white transition-all shadow-lg"
                         >
@@ -330,7 +347,7 @@ export default function ThemeDetailView() {
                                 }}
                             >
                                 <img 
-                                    src={currentFile.url_archivo} 
+                                    src={getCleanUrl(currentFile.url_archivo)} 
                                     alt={currentFile.title}
                                     className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
                                 />
@@ -339,7 +356,7 @@ export default function ThemeDetailView() {
                             <div className="w-full h-full p-4 lg:p-10 flex items-center justify-center">
                                 <div className="w-full h-full max-w-6xl bg-white rounded-lg shadow-2xl overflow-hidden">
                                      <iframe 
-                                        src={`${currentFile.url_archivo}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                                        src={`${getCleanUrl(currentFile.url_archivo)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
                                         className="w-full h-full border-none"
                                         title={currentFile.title}
                                     />
@@ -363,16 +380,16 @@ export default function ThemeDetailView() {
                             <div className="space-y-3 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
                                 {tema.audio && (
                                     <div className="flex flex-col gap-1.5 p-2 bg-indigo-600/5 rounded-xl border border-indigo-500/10">
-                                        <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tight truncate">Audio Principal (Tema)</span>
-                                        <audio controls className="w-full h-8 block custom-audio-player-xs" src={tema.audio.url_audio.replace('monster-back:8000', 'localhost:8000')}></audio>
+                                         <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tight truncate">Audio Principal (Tema)</span>
+                                        <audio controls className="w-full h-8 block custom-audio-player-xs" src={getCleanUrl(tema.audio.url_audio)}></audio>
                                     </div>
                                 )}
                                 {allAudioResources
                                     .flatMap(r => (r.archivos || []).filter(f => f.tipo === 'audio').map(f => ({ ...f, inst: r.instrumento })))
                                     .map((file) => (
                                         <div key={file.id_archivo} className="flex flex-col gap-1.5 p-2 bg-white/5 rounded-xl border border-white/5">
-                                            <span className="text-[9px] font-bold text-gray-400 truncate w-full">{file.nombre_original} ({file.inst})</span>
-                                            <audio controls className="w-full h-8 block custom-audio-player-xs" src={file.url_archivo.replace('monster-back:8000', 'localhost:8000')}></audio>
+                                            <span className="text-[9px] font-bold text-gray-500 truncate w-full">{file.nombre_original} ({file.inst})</span>
+                                            <audio controls className="w-full h-8 block custom-audio-player-xs" src={getCleanUrl(file.url_archivo)}></audio>
                                         </div>
                                     ))
                                 }
@@ -390,21 +407,21 @@ export default function ThemeDetailView() {
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={() => navigate('/dashboard/biblioteca')}
-                        className="p-3 bg-[#161b2c] hover:bg-brand-primary rounded-xl text-white/50 hover:text-white transition-all group shrink-0 border border-white/5 shadow-lg"
+                        className="p-3 bg-surface-card hover:bg-brand-primary rounded-xl text-gray-500 dark:text-white/50 hover:text-white transition-all group shrink-0 border border-surface-border shadow-lg"
                         title="Volver a Biblioteca"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
 
                     <div className="min-w-0">
-                        <h1 className="text-3xl font-black text-white uppercase tracking-tight truncate">
+                        <h1 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight truncate transition-colors">
                             {isEditingName ? (
                                 <div className="flex items-center gap-2">
                                     <input 
                                         type="text"
                                         value={editName}
                                         onChange={(e) => setEditName(e.target.value)}
-                                        className="bg-[#161b2c] border border-brand-primary/50 rounded-xl px-4 py-1 text-2xl font-black text-white uppercase focus:outline-none focus:ring-2 focus:ring-brand-primary w-full max-w-sm"
+                                        className="bg-surface-input border border-brand-primary/50 rounded-xl px-4 py-1 text-2xl font-black text-gray-900 dark:text-white uppercase focus:outline-none focus:ring-2 focus:ring-brand-primary w-full max-w-sm transition-colors"
                                         autoFocus
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') handleUpdateName();
@@ -441,7 +458,7 @@ export default function ThemeDetailView() {
                             <div className="flex gap-2">
                                 <Button 
                                     variant="secondary" 
-                                    className="h-12 px-4 bg-[#161b2c] border-white/5 hover:bg-white/5"
+                                    className="h-12 px-4 bg-surface-card border-surface-border hover:bg-black/5 dark:hover:bg-white/5"
                                     onClick={() => setIsEditingName(true)}
                                     title="Editar nombre"
                                 >
@@ -449,7 +466,7 @@ export default function ThemeDetailView() {
                                 </Button>
                                 <Button 
                                     variant="secondary"
-                                    className="h-12 px-4 bg-[#161b2c] border-white/5 hover:bg-white/5"
+                                    className="h-12 px-4 bg-surface-card border-surface-border hover:bg-black/5 dark:hover:bg-white/5"
                                     onClick={() => setIsTemaModalOpen(true)}
                                     title="Ajustes del tema"
                                 >
@@ -464,14 +481,14 @@ export default function ThemeDetailView() {
                 {canManage ? (
                     <div className="px-2 lg:px-0">
                         {/* Desktop Table View */}
-                        <div className="hidden lg:block bg-surface-card border border-white/5 rounded-[40px] overflow-x-auto shadow-2xl">
+                        <div className="hidden lg:block bg-surface-card border border-surface-border rounded-[40px] overflow-x-auto shadow-2xl transition-colors">
                             <div className="min-w-[800px]">
                                 <table className="w-full border-separate border-spacing-y-2 px-6 py-4">
                                     <thead>
                                         <tr>
-                                            <th className="text-left px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Instrumento</th>
+                                            <th className="text-left px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-colors">Instrumento</th>
                                             {activeVoices.map(voz => (
-                                                <th key={voz.id_voz} className="text-center px-4 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                <th key={voz.id_voz} className="text-center px-4 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-colors">
                                                     {voz.nombre_voz}
                                                 </th>
                                             ))}
@@ -479,26 +496,26 @@ export default function ThemeDetailView() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {(activeInstruments.length > 0 ? activeInstruments : sections.flatMap(s => s.instrumentos || [])).slice(0, activeInstruments.length > 0 ? undefined : 0).map((inst) => (
+                                        {(activeInstruments.length > 0 ? activeInstruments : sections.flatMap(s => s.instrumentos || [])).map((inst) => (
                                             <tr key={inst.id_instrumento} className="group">
-                                                <td className="px-6 py-4 bg-white/2 rounded-l-[24px] border-l border-t border-b border-white/5">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                                            <Layers className="w-5 h-5" />
-                                                        </div>
-                                                        <div className="flex flex-col">
-                                                            <span className="text-sm font-black text-white uppercase tracking-tight">{inst.instrumento}</span>
-                                                            <span className="text-[8px] font-bold text-gray-500 uppercase tracking-[0.1em]">{inst.seccion?.seccion}</span>
-                                                        </div>
+                                            <td className="px-6 py-4 bg-black/[0.02] dark:bg-white/2 rounded-l-[24px] border-l border-t border-b border-surface-border transition-colors">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                        <Layers className="w-5 h-5" />
                                                     </div>
-                                                </td>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{inst.instrumento}</span>
+                                                        <span className="text-[8px] font-bold text-gray-500 uppercase tracking-[0.1em] transition-colors">{inst.seccion?.seccion}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
 
                                                 {activeVoices.map(voz => {
                                                     const matchingResources = recursos.filter(r => r.id_instrumento === inst.id_instrumento && r.id_voz === voz.id_voz);
                                                     const validFiles = matchingResources.flatMap(r => r.archivos || []).filter(f => f.tipo !== 'audio');
 
                                                     return (
-                                                        <td key={voz.id_voz} className="px-4 py-4 bg-white/2 border-t border-b border-white/5 text-center">
+                                                        <td key={voz.id_voz} className="px-4 py-4 bg-black/[0.02] dark:bg-white/2 border-t border-b border-surface-border text-center transition-colors">
                                                             {validFiles.length > 0 ? (
                                                                 <div className="flex flex-wrap items-center justify-center gap-3">
                                                                     {validFiles.map((file, index) => (
@@ -512,13 +529,13 @@ export default function ThemeDetailView() {
                                                                                     })),
                                                                                     initialIndex: index
                                                                                 })}
-                                                                                className="w-10 h-10 flex items-center justify-center bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white rounded-xl transition-all border border-indigo-500/20 shadow-lg"
+                                                                                className="w-10 h-10 flex items-center justify-center bg-indigo-600/10 hover:bg-indigo-600 text-indigo-600 dark:text-indigo-400 hover:text-white rounded-xl transition-all border border-indigo-500/20 shadow-lg"
                                                                                 title={`Ver archivo ${index + 1}`}
                                                                             >
                                                                                 {file.tipo === 'pdf' ? <FileText className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
                                                                             </button>
                                                                             {validFiles.length > 1 && (
-                                                                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-surface-dark text-white text-[9px] font-black flex items-center justify-center rounded-full border border-white/10 shadow-md pointer-events-none select-none">
+                                                                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-surface-dark text-white text-[9px] font-black flex items-center justify-center rounded-full border border-surface-border shadow-md pointer-events-none select-none">
                                                                                     {index + 1}
                                                                                 </span>
                                                                             )}
@@ -526,19 +543,19 @@ export default function ThemeDetailView() {
                                                                     ))}
                                                                 </div>
                                                             ) : (
-                                                                <div className="h-[1px] w-4 bg-white/10 mx-auto"></div>
+                                                                <div className="h-[1px] w-4 bg-surface-border mx-auto"></div>
                                                             )}
                                                         </td>
                                                     );
                                                 })}
 
-                                                <td className="px-4 py-4 bg-white/5 border-r border-t border-b border-white/10 rounded-r-[24px]">
-                                                    <div className="flex flex-col gap-3 p-2 min-w-[200px]">
-                                                        {recursos.filter(r => r.id_instrumento === inst.id_instrumento).length > 0 ? (
-                                                            <div className="space-y-1">
-                                                                {recursos.filter(r => r.id_instrumento === inst.id_instrumento).map((res) => (
-                                                                    <div key={res.id_recurso} className="flex items-center justify-between p-2 bg-black/20 rounded-lg border border-white/5 hover:border-indigo-500/30 transition-all">
-                                                                        <span className="text-[10px] font-bold text-indigo-400 uppercase truncate">
+                                                <td className="px-4 py-4 bg-black/5 dark:bg-white/5 border-r border-t border-b border-surface-border rounded-r-[24px] transition-colors">
+                                                <div className="flex flex-col gap-3 p-2 min-w-[200px]">
+                                                    {recursos.filter(r => r.id_instrumento === inst.id_instrumento).length > 0 ? (
+                                                        <div className="space-y-1">
+                                                            {recursos.filter(r => r.id_instrumento === inst.id_instrumento).map((res) => (
+                                                                <div key={res.id_recurso} className="flex items-center justify-between p-2 bg-black/10 dark:bg-black/20 rounded-lg border border-surface-border hover:border-indigo-500/30 transition-all">
+                                                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase truncate transition-colors">
                                                                             {res.id_voz ? voces.find(v => v.id_voz === res.id_voz)?.nombre_voz : 'GRAL / PERCUSIÓN'}
                                                                         </span>
                                                                         <div className="flex gap-1">
@@ -603,16 +620,16 @@ export default function ThemeDetailView() {
                             {(activeInstruments.length > 0 ? activeInstruments : sections.flatMap(s => s.instrumentos || [])).map((inst) => {
                                 const instResources = recursos.filter(r => r.id_instrumento === inst.id_instrumento);
                                 return (
-                                    <div key={`mob-adm-${inst.id_instrumento}`} className="bg-surface-card border border-white/5 rounded-3xl p-5 shadow-xl">
-                                        <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
+                                    <div key={`mob-adm-${inst.id_instrumento}`} className="bg-surface-card border border-surface-border rounded-3xl p-5 shadow-xl transition-colors">
+                                    <div className="flex items-center justify-between mb-4 border-b border-surface-border pb-3 transition-colors">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-400">
-                                                    <Layers className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-sm font-black text-white uppercase tracking-tight">{inst.instrumento}</h4>
-                                                    <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{inst.seccion?.seccion}</p>
-                                                </div>
+                                                <div className="w-10 h-10 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-colors">
+                                                <Layers className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{inst.instrumento}</h4>
+                                                <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest transition-colors">{inst.seccion?.seccion}</p>
+                                            </div>
                                             </div>
                                             <button 
                                                 onClick={() => {
@@ -636,9 +653,9 @@ export default function ThemeDetailView() {
                                                 const vozName = voces.find(v => v.id_voz === res.id_voz)?.nombre_voz;
 
                                                 return (
-                                                    <div key={`res-mob-${res.id_recurso}`} className="bg-white/2 rounded-xl p-3 border border-white/5">
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{vozName}</span>
+                                                    <div key={`res-mob-${res.id_recurso}`} className="bg-black/[0.02] dark:bg-white/2 rounded-xl p-3 border border-surface-border transition-colors">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest transition-colors">{vozName}</span>
                                                             <div className="flex gap-1">
                                                                 <button onClick={() => { setRecursoInitialData({...res, id_genero: tema.id_genero}); setIsRecursoModalOpen(true); }} className="p-1.5 text-gray-500 hover:text-white"><Edit2 className="w-3.5 h-3.5" /></button>
                                                                 <button onClick={() => setDeleteConfirm({ isOpen: true, id: res.id_recurso })} className="p-1.5 text-gray-600 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -666,8 +683,8 @@ export default function ThemeDetailView() {
                                                     </div>
                                                 );
                                             }) : (
-                                                <p className="text-center text-[9px] font-black text-gray-700 uppercase py-2">Sin recursos</p>
-                                            )}
+                                            <p className="text-center text-[9px] font-black text-gray-400 dark:text-gray-700 uppercase py-2 transition-colors">Sin recursos</p>
+                                        )}
                                         </div>
                                     </div>
                                 );

@@ -17,11 +17,11 @@ export const AuthProvider = ({ children }) => {
                 platform: 'web' 
             });
             
-            const { token: newToken, user: userData, role, permissions, password_changed } = response.data;
+            const { token: newToken, user: userData, role, permissions, password_changed, profile_completed, is_super_admin } = response.data;
             
             localStorage.setItem('token', newToken);
             setToken(newToken);
-            setUser({ ...userData, role, permissions, password_changed });
+            setUser({ ...userData, role, permissions, password_changed, profile_completed, is_super_admin });
             setLoading(false); // Success
             return { success: true };
         } catch (error) {
@@ -52,8 +52,8 @@ export const AuthProvider = ({ children }) => {
             api.get('/profile') 
                 .then(res => {
                     if (isMounted) {
-                        const { user: userData, role, permissions, password_changed } = res.data;
-                        setUser({ ...userData, role, permissions, password_changed });
+                        const { user: userData, role, permissions, password_changed, profile_completed } = res.data;
+                        setUser({ ...userData, role, permissions, password_changed, profile_completed });
                     }
                 })
                 .catch(() => {
@@ -78,6 +78,19 @@ export const AuthProvider = ({ children }) => {
 
         return () => { isMounted = false; };
     }, [token, user, loading]);
+
+    // Aplicar branding de la banda dinámicamente
+    useEffect(() => {
+        if (user?.banda) {
+            const root = document.documentElement;
+            const { color_primario, color_secundario } = user.banda;
+            
+            if (color_primario) root.style.setProperty('--brand-primary', color_primario);
+            if (color_secundario) root.style.setProperty('--brand-secondary', color_secundario);
+            
+            document.title = `${user.banda.nombre} - MB APP`;
+        }
+    }, [user]);
 
     const updateUser = (data) => {
         setUser(prev => prev ? { ...prev, ...data } : null);

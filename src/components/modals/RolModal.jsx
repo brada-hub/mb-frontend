@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { X, Shield, Save, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
     const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm();
@@ -43,7 +44,30 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
         }
     };
 
+    const permissionMap = {
+        'GESTION_MIEMBROS': { label: '¿Puede gestionar músicos?', category: 'Operación' },
+        'GESTION_EVENTOS': { label: '¿Puede crear eventos y agenda?', category: 'Operación' },
+        'GESTION_ASISTENCIA': { label: '¿Puede marcar asistencia?', category: 'Operación' },
+        'GESTION_SECCIONES': { label: '¿Puede gestionar secciones instrumentales?', category: 'Operación' },
+        'GESTION_RECURSOS': { label: '¿Puede subir partituras y guías?', category: 'Música' },
+        'GESTION_BIBLIOTECA': { label: '¿Puede crear repertorios?', category: 'Música' },
+        'GESTION_FINANZAS': { label: '¿Puede gestionar pagos?', category: 'Finanzas' },
+        'GESTION_ROLES': { label: '¿Puede gestionar roles?', category: 'Sistema' },
+        'VER_DASHBOARD': { label: '¿Puede ver estadísticas?', category: 'Sistema' }
+    };
+
+    const categories = ['Operación', 'Música', 'Finanzas', 'Sistema', 'Otros'];
+
+    const getPermissionConfig = (permName) => {
+        const normalized = permName?.trim().toUpperCase();
+        return permissionMap[normalized] || { label: permName, category: 'Otros' };
+    };
+
     const onSubmit = async (data) => {
+        if (rol?.es_protegido) {
+            onClose();
+            return;
+        }
         setLoading(true);
         try {
             const payload = {
@@ -61,7 +85,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
             onClose();
         } catch (error) {
             console.error('Error saving role:', error);
-            alert("Error al guardar el rol.");
+            alert(error.response?.data?.message || "Error al guardar el rol.");
         } finally {
             setLoading(false);
         }
@@ -69,50 +93,60 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
 
     if (!isOpen) return null;
 
-    /**
-     * Filtra la entrada para permitir solo letras, espacios y caracteres del español.
-     * Convierte a MAYÚSCULAS automáticamente.
-     */
+    const isProtected = rol?.es_protegido;
+
     const filterLettersOnly = (e) => {
+        if (isProtected) return;
         let value = e.target.value.toUpperCase();
-        // Solo permitir letras (incluyendo ñ y acentos) y espacios
         const cleaned = value.replace(/[^A-ZÁÉÍÓÚÜÑ\s]/g, '');
-        // Evitar múltiples espacios consecutivos
         e.target.value = cleaned.replace(/\s{2,}/g, ' ');
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-2xl bg-surface-card md:border md:border-white/10 md:rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh]">
-                
-                <div className="flex items-center justify-between p-6 bg-brand-primary text-white shadow-xl">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+            <motion.div 
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                className="relative w-full max-w-3xl bg-surface-card sm:border sm:border-surface-border sm:rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] text-gray-900 dark:text-gray-100"
+            >
+                <div className="sticky top-0 z-10 flex items-center justify-between p-5 sm:p-6 bg-indigo-600 text-white shadow-xl">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-white/20 rounded-xl">
+                        <div className="p-2.5 bg-white/20 rounded-xl">
                             <Shield className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold tracking-tight">{rol ? 'Editar Rol' : 'Nuevo Rol'}</h2>
-                            <p className="text-xs text-white/60 font-medium tracking-widest uppercase">Definición de privilegios</p>
+                            <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight">{rol ? (isProtected ? 'Ver Perfil' : 'Editar Rol') : 'Nuevo Rol'}</h2>
+                            <p className="text-[10px] text-white/60 font-black tracking-widest uppercase">
+                                {isProtected ? 'Rol de Sistema Protegido' : 'Configuración de Privilegios'}
+                            </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2.5 hover:bg-white/20 rounded-2xl transition-all">
-                        <X className="w-7 h-7" />
+                    <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full transition-all">
+                        <X className="w-8 h-8" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8 overflow-y-auto">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar flex-1">
                     
-                    <div className="space-y-6">
+                    {isProtected && (
+                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-center gap-4 text-amber-600 dark:text-amber-500">
+                            <AlertCircle className="w-5 h-5 shrink-0" />
+                            <p className="text-[10px] font-black uppercase leading-relaxed tracking-wider transition-colors">Perfil Protegido: Los permisos de este rol vienen preconfigurados por el sistema.</p>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input 
-                            label="Nombre del Rol" 
+                            label="Nombre del Perfil" 
                             placeholder="EJ. ADMINISTRADOR, COORDINADOR" 
                             icon={Shield}
-                            helperText="Solo letras"
+                            readOnly={isProtected}
                             onInput={filterLettersOnly}
+                            className="bg-black/5 dark:bg-black/20 border-surface-border text-gray-900 dark:text-white"
                             {...register('rol', { 
                                 required: "El nombre es obligatorio",
                                 pattern: {
-                                    value: /^[A-ZÁÉÍÓÚÜÑ\s]+$/,
+                                    value: /^[A-ZÁÉÍÓÜÑ\s]+$/,
                                     message: "Solo se permiten letras"
                                 }
                             })}
@@ -120,15 +154,16 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                         />
 
                         <Input 
-                            label="Descripción" 
+                            label="Propósito / Funciones" 
                             type="textarea"
-                            placeholder="DESCRIPCIÓN DE LAS FUNCIONES DE ESTE ROL..."
+                            placeholder="DESCRIBA QUÉ PUEDE HACER ESTE ROL..."
                             icon={AlertCircle}
-                            helperText="Solo letras"
+                            readOnly={isProtected}
                             onInput={filterLettersOnly}
+                            className="bg-black/5 dark:bg-black/20 border-surface-border text-gray-900 dark:text-white"
                             {...register('descripcion', {
                                 pattern: {
-                                    value: /^[A-ZÁÉÍÓÚÜÑ\s]*$/,
+                                    value: /^[A-ZÁÉÍÓÜÑ\s]*$/,
                                     message: "Solo se permiten letras"
                                 }
                             })}
@@ -136,51 +171,75 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                         />
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Asignar Permisos</h3>
-                            <span className="text-[10px] bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full font-bold">
-                                {selectedPermisos.length} SELECCIONADOS
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between border-b border-surface-border pb-3">
+                            <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] transition-colors">Asignación de Permisos</h3>
+                            <span className="text-[10px] bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-indigo-500/20 transition-colors">
+                                {selectedPermisos.length} Seleccionados
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                            {allPermisos.map((p) => {
-                                const isSelected = selectedPermisos.includes(p.id_permiso);
+                        <div className="space-y-10">
+                            {categories.map(cat => {
+                                const permissionsInCat = Array.isArray(allPermisos) ? allPermisos.filter(p => getPermissionConfig(p.permiso).category === cat) : [];
+                                
+                                if (permissionsInCat.length === 0) return null;
+
                                 return (
-                                    <button
-                                        key={p.id_permiso}
-                                        type="button"
-                                        onClick={() => togglePermiso(p.id_permiso)}
-                                        className={clsx(
-                                            "flex items-center justify-between p-4 rounded-2xl border transition-all text-left group",
-                                            isSelected 
-                                                ? "bg-brand-primary/10 border-brand-primary/30 text-white" 
-                                                : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
-                                        )}
-                                    >
-                                        <span className={clsx("text-xs font-bold uppercase tracking-tight", isSelected ? "text-brand-primary" : "")}>
-                                            {p.permiso}
-                                        </span>
-                                        {isSelected ? (
-                                            <CheckCircle2 className="w-5 h-5 text-brand-primary" />
-                                        ) : (
-                                            <Circle className="w-5 h-5 text-gray-600 group-hover:text-gray-400" />
-                                        )}
-                                    </button>
+                                    <div key={cat} className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-4 w-1 bg-indigo-600 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.5)]"></div>
+                                            <h4 className="text-[10px] font-black text-indigo-300 uppercase tracking-widest opacity-80">{cat}</h4>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+                                             {permissionsInCat.map((p) => {
+                                                const isSelected = selectedPermisos.includes(p.id_permiso);
+                                                const config = getPermissionConfig(p.permiso);
+                                                return (
+                                                    <button
+                                                        key={p.id_permiso}
+                                                        type="button"
+                                                        disabled={isProtected}
+                                                        onClick={() => togglePermiso(p.id_permiso)}
+                                                        className={clsx(
+                                                            "flex items-center justify-between p-4.5 rounded-2xl border transition-all text-left group active:scale-[0.98]",
+                                                            isSelected 
+                                                                ? "bg-indigo-600/10 border-indigo-500/30 ring-1 ring-indigo-500/10" 
+                                                                : "bg-black/5 dark:bg-[#1a2035]/50 border-surface-border text-gray-500 dark:text-gray-400 hover:border-brand-primary/30",
+                                                            isProtected && "cursor-default opacity-80"
+                                                        )}
+                                                    >
+                                                        <span className={clsx("text-xs font-black uppercase tracking-tight leading-tight flex-1 pr-4 transition-colors", isSelected ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400")}>
+                                                            {config.label}
+                                                        </span>
+                                                        <div className={clsx(
+                                                            "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                                                            isSelected ? "bg-indigo-600 text-white" : "border-2 border-surface-border text-transparent"
+                                                        )}>
+                                                            <CheckCircle2 className="w-4 h-4" />
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
                                 );
                             })}
                         </div>
                     </div>
-
-                    <div className="flex flex-col-reverse md:flex-row justify-end gap-3 pt-4">
-                        <Button type="button" variant="ghost" onClick={onClose} className="w-full md:w-auto">Cancelar</Button>
-                        <Button type="submit" loading={loading} className="w-full md:w-auto md:px-12" variant="monster">
-                            <Save className="w-5 h-5 mr-3" /> {rol ? 'Guardar Cambios' : 'Crear Rol'}
-                        </Button>
-                    </div>
                 </form>
-            </div>
+
+                <div className="sticky bottom-0 bg-surface-card border-t border-surface-border p-6 sm:p-8 flex flex-col sm:flex-row justify-end gap-3 transition-colors">
+                    <Button type="button" variant="ghost" onClick={onClose} className="w-full sm:w-auto font-black uppercase tracking-widest text-[10px] h-12">
+                        {isProtected ? 'Cerrar Vista' : 'Cancelar'}
+                    </Button>
+                    {!isProtected && (
+                        <Button type="submit" loading={loading} className="w-full sm:w-auto sm:px-12 font-black uppercase tracking-widest text-[10px] h-12 shadow-xl shadow-indigo-600/20" variant="monster">
+                            <Save className="w-4 h-4 mr-3" /> {rol ? 'Guardar Cambios' : 'Crear Perfil'}
+                        </Button>
+                    )}
+                </div>
+            </motion.div>
         </div>
     );
 }

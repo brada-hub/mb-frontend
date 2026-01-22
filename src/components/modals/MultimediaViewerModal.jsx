@@ -6,8 +6,8 @@ import { Button } from '../ui/Button';
 
 const getCleanUrl = (url) => {
     if (!url) return '';
-    // Fix for local development: Replace internal docker hostname with localhost
-    return url.replace('monster-back:8000', 'localhost:8000');
+    // Convert full URLs to relative paths so they work through the Vite proxy (dev) or same-origin (prod)
+    return url.replace(/^https?:\/\/[^/]+/, '');
 };
 
 export default function MultimediaViewerModal({ 

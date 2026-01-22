@@ -99,7 +99,7 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                                     "h-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center",
                                     isSelected ? "bg-brand-primary text-white shadow-lg" : 
                                     isToday ? "border border-brand-primary text-brand-primary" : 
-                                    "text-gray-300 hover:bg-white/10",
+                                    "text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10",
                                     (isFuture || isPastLimit) && "opacity-20 cursor-not-allowed"
                                 )}
                             >
@@ -126,7 +126,7 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                         }}
                         className={clsx(
                             "py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all",
-                            getMonth(viewDate) === idx ? "bg-brand-primary text-white" : "text-gray-400 hover:bg-white/5"
+                            getMonth(viewDate) === idx ? "bg-brand-primary text-white" : "text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5"
                         )}
                     >
                         {format(m, 'MMM', { locale: es })}
@@ -153,7 +153,7 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                         }}
                         className={clsx(
                             "py-3 rounded-xl text-xs font-black transition-all",
-                            getYear(viewDate) === y ? "bg-brand-primary text-white" : "text-gray-400 hover:bg-white/5"
+                            getYear(viewDate) === y ? "bg-brand-primary text-white" : "text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5"
                         )}
                     >
                         {y}
@@ -167,8 +167,8 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
         <div className="w-full space-y-2.5" ref={containerRef}>
             {label && (
                 <div className="flex items-center gap-2.5 mb-2.5 px-1">
-                    <Calendar className={clsx("w-5 h-5 transition-colors", error ? "text-red-400" : "text-gray-400")} />
-                    <label className={clsx("text-sm font-bold tracking-tight", error ? "text-red-400" : "text-gray-300")}>
+                    <Calendar className={clsx("w-5 h-5 transition-colors", error ? "text-red-400" : "text-gray-500 dark:text-gray-400")} />
+                    <label className={clsx("text-sm font-bold tracking-tight transition-colors", error ? "text-red-400" : "text-gray-700 dark:text-gray-300")}>
                         {label}
                     </label>
                 </div>
@@ -183,23 +183,23 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                     onFocus={() => setShowPicker(true)}
                     placeholder="DD/MM/AAAA"
                     className={clsx(
-                        'flex h-14 w-full rounded-2xl bg-surface-input px-5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none font-mono',
-                        error ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-white/5 focus:ring-brand-primary/30 focus:border-brand-primary/50'
+                        'flex h-14 w-full rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none font-mono',
+                        error ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-surface-border focus:ring-brand-primary/30 focus:border-brand-primary/50'
                     )}
                 />
                 
                 <button
                     type="button"
                     onClick={() => setShowPicker(!showPicker)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                     <Calendar className="w-5 h-5" />
                 </button>
 
                 {showPicker && (
-                    <div className="absolute top-[calc(100%+10px)] left-0 w-80 bg-[#1e2538] border border-white/10 rounded-3xl shadow-2xl z-[100] overflow-hidden backdrop-blur-xl animate-in slide-in-from-top-2 duration-300">
+                    <div className="absolute top-[calc(100%+10px)] left-0 w-80 bg-surface-card border border-surface-border rounded-3xl shadow-2xl z-[100] overflow-hidden backdrop-blur-xl animate-in slide-in-from-top-2 duration-300">
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/5">
+                        <div className="flex items-center justify-between p-4 border-b border-surface-border bg-black/5 dark:bg-white/5 transition-colors">
                             <button 
                                 type="button" 
                                 onClick={() => setViewDate(subMonths(viewDate, 1))}
@@ -212,14 +212,14 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                                 <button 
                                     type="button"
                                     onClick={() => setSelectionMode(selectionMode === 'months' ? 'days' : 'months')}
-                                    className="text-[10px] font-black uppercase text-white hover:text-brand-primary transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+                                    className="text-[10px] font-black uppercase text-gray-900 dark:text-white hover:text-brand-primary transition-colors px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
                                 >
                                     {format(viewDate, 'MMMM', { locale: es })}
                                 </button>
                                 <button 
                                     type="button"
                                     onClick={() => setSelectionMode(selectionMode === 'years' ? 'days' : 'years')}
-                                    className="text-[10px] font-black uppercase text-white hover:text-brand-primary transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+                                    className="text-[10px] font-black uppercase text-gray-900 dark:text-white hover:text-brand-primary transition-colors px-2 py-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5"
                                 >
                                     {format(viewDate, 'yyyy')}
                                 </button>
@@ -240,7 +240,7 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                         {selectionMode === 'years' && renderYears()}
 
                         {/* Footer / Shortcuts */}
-                        <div className="p-3 bg-black/20 border-t border-white/5 flex justify-between items-center">
+                        <div className="p-3 bg-black/5 dark:bg-black/20 border-t border-surface-border flex justify-between items-center transition-colors">
                             <button 
                                 type="button" 
                                 onClick={() => {

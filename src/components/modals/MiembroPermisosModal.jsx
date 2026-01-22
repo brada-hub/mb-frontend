@@ -15,7 +15,10 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
         if (isOpen && miembro) {
             // Cargar todos los permisos
             api.post('/sync/master-data')
-                .then(res => setAllPermisos(res.data.permisos || []))
+                .then(res => {
+                    const sorted = (res.data.permisos || []).sort((a, b) => a.permiso.localeCompare(b.permiso));
+                    setAllPermisos(sorted);
+                })
                 .catch(console.error);
 
             // Obtener IDs de permisos del rol
@@ -59,7 +62,7 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
 
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-xl bg-surface-card border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-xl bg-surface-card border border-surface-border rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] text-gray-900 dark:text-gray-100">
                 
                 <div className="flex items-center justify-between p-6 bg-brand-primary text-white">
                     <div className="flex items-center gap-3">
@@ -76,8 +79,8 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
                     </button>
                 </div>
 
-                <div className="p-8 space-y-6 overflow-y-auto">
-                    <p className="text-gray-400 text-sm italic">
+                <div className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm italic transition-colors">
                         Selecciona los permisos adicionales que tendrá este músico por encima de los de su rol ({miembro.rol?.rol}).
                     </p>
 
@@ -92,25 +95,25 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
                                     className={clsx(
                                         "flex items-center justify-between p-4 rounded-2xl border transition-all text-left",
                                         isSelected 
-                                            ? "bg-brand-primary/10 border-brand-primary/30 text-white" 
-                                            : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
+                                            ? "bg-brand-primary/10 border-brand-primary/30 text-gray-900 dark:text-white" 
+                                            : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-400 hover:border-brand-primary/30"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className={clsx(
                                             "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                                            isSelected ? "bg-brand-primary text-white" : "bg-white/5 text-gray-500"
+                                            isSelected ? "bg-brand-primary text-white" : "bg-black/10 dark:bg-white/5 text-gray-400 dark:text-gray-500"
                                         )}>
                                             <ShieldCheck className="w-5 h-5" />
                                         </div>
-                                        <span className={clsx("text-sm font-bold uppercase tracking-tight", isSelected ? "text-white" : "text-gray-400")}>
+                                        <span className={clsx("text-sm font-bold uppercase tracking-tight transition-colors", isSelected ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400")}>
                                             {p.permiso.replace(/_/g, ' ')}
                                         </span>
                                     </div>
                                     {isSelected ? (
                                         <CheckCircle2 className="w-6 h-6 text-brand-primary" />
                                     ) : (
-                                        <Circle className="w-6 h-6 text-gray-700" />
+                                        <Circle className="w-6 h-6 text-gray-300 dark:text-gray-700" />
                                     )}
                                 </button>
                             );
@@ -118,7 +121,7 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
                     </div>
                 </div>
 
-                <div className="p-6 border-t border-white/5 bg-white/5 flex gap-3">
+                <div className="p-6 border-t border-surface-border bg-black/5 dark:bg-white/5 flex gap-3">
                     <Button variant="ghost" onClick={onClose} className="flex-1">Cancelar</Button>
                     <Button onClick={handleSave} loading={loading} className="flex-1" variant="monster">
                         <Save className="w-5 h-5 mr-3" /> Guardar Permisos

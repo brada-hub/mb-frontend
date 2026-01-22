@@ -70,7 +70,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="relative w-full max-w-2xl bg-surface-card md:border md:border-white/10 md:rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-2xl bg-surface-card md:border md:border-surface-border md:rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] text-gray-900 dark:text-gray-100">
                 
                 {/* Header Premium */}
                 <div className="sticky top-0 z-50 flex items-center justify-between p-6 bg-brand-primary text-white shadow-xl shadow-brand-primary/10">
@@ -90,7 +90,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
 
                 <div className="p-6 md:p-8 flex flex-col gap-8 overflow-hidden">
                     {/* Formulario Integrado */}
-                    <form onSubmit={handleSubmit(onSubmit)} className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-4">
+                    <form onSubmit={handleSubmit(onSubmit)} className="bg-black/5 dark:bg-white/5 p-6 rounded-[32px] border border-surface-border space-y-4">
                         <div className="flex flex-col gap-4">
                             <Input 
                                 label={editingId ? "Editar Instrumento" : "Nuevo Instrumento"}
@@ -102,7 +102,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                                     pattern: { value: /^[A-ZÁÉÍÓÚÜÑ\s]+$/, message: "Solo letras permitidas" }
                                 })}
                                 error={errors.instrumento?.message}
-                                className="bg-black/20"
+                                className="bg-black/10 dark:bg-black/20 border-surface-border text-gray-900 dark:text-white"
                             />
                             
                             <div className="flex gap-2">
@@ -119,7 +119,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                                         type="button" 
                                         variant="secondary"
                                         onClick={() => { setEditingId(null); reset({ instrumento: '' }); }}
-                                        className="h-12 rounded-2xl font-black uppercase tracking-widest text-xs border-white/10"
+                                        className="h-12 rounded-2xl font-black uppercase tracking-widest text-xs border-surface-border"
                                     >
                                         Cancelar
                                     </Button>
@@ -132,23 +132,23 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                     <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 scroll-smooth">
                         <div className="flex items-center gap-2 mb-4 px-1">
                             <div className="w-1 h-4 bg-brand-primary rounded-full"></div>
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Registrados ({instruments.length})</h3>
+                            <h3 className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Registrados ({instruments.length})</h3>
                         </div>
 
                         {instruments.length === 0 ? (
-                            <div className="py-16 text-center text-gray-500 border border-dashed border-white/10 rounded-[40px] bg-white/5">
+                            <div className="py-16 text-center text-gray-500 dark:text-gray-500 border border-dashed border-surface-border rounded-[40px] bg-black/5 dark:bg-white/5 transition-colors">
                                 <Music className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                 <p className="font-bold uppercase tracking-widest text-xs">Sin instrumentos registrados</p>
                             </div>
                         ) : (
                             <div className="grid gap-3 pb-4">
                                 {instruments.map(inst => (
-                                    <div key={inst.id_instrumento} className="group flex items-center justify-between p-4 bg-white/5 rounded-[24px] border border-white/5 hover:border-brand-primary/30 hover:bg-brand-primary/5 transition-all duration-300">
+                                    <div key={inst.id_instrumento} className="group flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-[24px] border border-surface-border hover:border-brand-primary/30 hover:bg-brand-primary/5 transition-all duration-300">
                                         <div className="flex items-center gap-4">
                                             <div className="w-11 h-11 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform">
                                                 <Music className="w-5 h-5" />
                                             </div>
-                                            <span className="font-bold text-white uppercase tracking-tight">{inst.instrumento}</span>
+                                            <span className="font-bold text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{inst.instrumento}</span>
                                         </div>
                                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                             <button 
@@ -156,7 +156,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                                                     setEditingId(inst.id_instrumento);
                                                     reset({ instrumento: inst.instrumento });
                                                 }}
-                                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
+                                                className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/10 dark:bg-white/5 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/20 dark:hover:bg-white/10 transition-all active:scale-90"
                                                 title="Editar"
                                             >
                                                 <Edit2 className="w-4 h-4" />

@@ -109,8 +109,8 @@ export default function SeccionesList() {
             {/* Header con Título y Descripción */}
             <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-white uppercase tracking-tight">Secciones</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1">Gestión de instrumentos</p>
+                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Secciones</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Gestión de instrumentos</p>
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
@@ -118,7 +118,7 @@ export default function SeccionesList() {
                         <Input 
                             icon={Search}
                             placeholder="Buscar sección..." 
-                            className="h-12 w-full text-sm bg-[#161b2c] border-white/5 rounded-xl focus:ring-brand-primary/50"
+                            className="h-12 w-full text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -133,22 +133,22 @@ export default function SeccionesList() {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Sincronizando Secciones...</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-xs transition-colors">Sincronizando Secciones...</p>
                 </div>
             ) : filtered.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
                         {filtered.map((s) => (
                             <div 
                                 key={s.id_seccion} 
-                                className="group bg-surface-card border border-white/5 rounded-[40px] p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
+                                className="group bg-surface-card border border-surface-border rounded-[40px] p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
                             >
                                 {/* Top Info */}
                                 <div className="flex items-center gap-5 mb-8">
-                                    <div className="w-16 h-16 bg-[#1e2330] rounded-3xl flex items-center justify-center text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                    <div className="w-16 h-16 bg-black/5 dark:bg-[#1e2330] rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
                                         <Layers className="w-8 h-8" />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tight leading-none mb-2">
+                                        <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight leading-none mb-2 transition-colors">
                                             {s.seccion}
                                         </h3>
                                         <div className="flex items-center gap-2">
@@ -163,14 +163,14 @@ export default function SeccionesList() {
                                             setSelectedSeccion(s);
                                             setIsInstrumentModalOpen(true);
                                         }}
-                                        className="w-12 h-12 rounded-2xl bg-[#1e2330] flex items-center justify-center text-indigo-400 hover:bg-brand-primary hover:text-white transition-all shadow-lg active:scale-95"
+                                        className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-[#1e2330] flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-brand-primary hover:text-white transition-all shadow-lg active:scale-95"
                                     >
                                         <Music className="w-5 h-5" />
                                     </button>
                                 </div>
 
                                 <div className="mb-10 flex-grow">
-                                    <p className="text-sm text-gray-400 font-medium uppercase tracking-tight leading-relaxed line-clamp-3">
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-tight leading-relaxed line-clamp-3 transition-colors">
                                         {s.descripcion || 'Sin descripción detallada de la sección.'}
                                     </p>
                                 </div>
@@ -180,7 +180,7 @@ export default function SeccionesList() {
                                     <div className="grid grid-cols-2 gap-3">
                                         <button 
                                             onClick={() => handleEdit(s)}
-                                            className="h-12 rounded-2xl bg-white/5 text-white text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 active:scale-95"
+                                            className="h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-gray-700 dark:text-white text-[11px] font-black uppercase tracking-widest hover:bg-black/10 dark:hover:bg-white/10 transition-all border border-surface-border active:scale-95"
                                         >
                                             Editar
                                         </button>
@@ -190,8 +190,8 @@ export default function SeccionesList() {
                                             className={clsx(
                                                 "h-12 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border active:scale-95",
                                                 s.instrumentos?.length > 0
-                                                    ? "bg-white/2 border-white/5 text-gray-700 cursor-not-allowed opacity-20"
-                                                    : "bg-red-500/5 text-red-500/60 hover:bg-red-500/10 hover:text-red-500 border-red-500/10"
+                                                    ? "bg-black/5 dark:bg-white/2 border-surface-border text-gray-400 dark:text-gray-700 cursor-not-allowed opacity-20"
+                                                    : "bg-red-500/5 text-red-600 dark:text-red-500/60 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-500 border-red-500/10"
                                             )}
                                             title={s.instrumentos?.length > 0 ? "No puedes eliminar una sección con instrumentos activos" : "Eliminar Sección"}
                                         >
@@ -212,10 +212,10 @@ export default function SeccionesList() {
                         ))}
                     </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-white/10 rounded-[32px] text-center">
-                    <AlertCircle className="w-16 h-16 text-white/5 mb-4" />
-                    <p className="text-white font-extrabold uppercase tracking-widest">No hay secciones registradas</p>
-                    <p className="text-gray-500 text-sm mt-1">Crea una nueva sección para organizar tus instrumentos.</p>
+                <div className="flex flex-col items-center justify-center py-20 bg-surface-card border border-dashed border-surface-border rounded-[32px] text-center transition-colors">
+                    <AlertCircle className="w-16 h-16 text-gray-200 dark:text-white/5 mb-4 transition-colors" />
+                    <p className="text-gray-900 dark:text-white font-extrabold uppercase tracking-widest transition-colors">No hay secciones registradas</p>
+                    <p className="text-gray-500 text-sm mt-1 transition-colors">Crea una nueva sección para organizar tus instrumentos.</p>
                 </div>
             )}
         </div>

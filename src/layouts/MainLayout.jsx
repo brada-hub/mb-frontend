@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet, Navigate, useLocation, Link } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
     LayoutDashboard, 
@@ -15,26 +15,43 @@ import {
     Music,
     ListMusic,
     Grid,
-    DollarSign
+    DollarSign,
+    Crown,
+    Sun,
+    Moon,
+    Monitor
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { motion } from 'framer-motion';
+import { useToast } from '../context/ToastContext';
+import { useTheme } from '../context/ThemeContext';
 import ForcePasswordChangeModal from '../components/modals/ForcePasswordChangeModal';
+import CompleteProfileModal from '../components/modals/CompleteProfileModal';
 
-const SidebarItem = ({ icon: Icon, label, to, active, onClick }) => {
+const SidebarItem = ({ icon: Icon, label, to, active, onClick, collapsed }) => {
     const LucideIcon = Icon;
     return (
         <Link 
             to={to} 
             onClick={onClick}
             className={clsx(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                "flex items-center gap-3 px-4 py-3 sm:py-3.5 rounded-2xl transition-all duration-300 group relative",
                 active 
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                    ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20" 
+                    : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-indigo-50 dark:hover:bg-white/5",
+                collapsed ? "justify-center px-0 w-12 h-12 mx-auto" : "px-4 w-full"
             )}
+            title={collapsed ? label : ""}
         >
-            <LucideIcon className={clsx("w-5 h-5 transition-colors", active ? "text-white" : "text-gray-400 group-hover:text-white")} />
-            <span className="font-medium">{label}</span>
+            <LucideIcon className={clsx("transition-transform duration-300", active ? "text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white", collapsed ? "w-6 h-6" : "w-5 h-5", !collapsed && "group-hover:scale-110")} />
+            {!collapsed && <span className="font-bold text-xs uppercase tracking-wide truncate">{label}</span>}
+            
+            {collapsed && active && (
+                <motion.div 
+                    layoutId="active-indicator"
+                    className="absolute -right-3 w-1.5 h-8 bg-white rounded-l-full shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                />
+            )}
         </Link>
     );
 };
@@ -44,10 +61,17 @@ import api from '../api';
 import NotificationBell from '../components/NotificationBell';
 
 export default function MainLayout() {
-    const { user, logout, loading, isAuthenticated } = useAuth();
+    const { user, logout, loading, isAuthenticated, updateUser } = useAuth();
+    const { theme, updateTheme } = useTheme();
+    const { notify } = useToast();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+        // En tablets (640-1024), colapsado por defecto. En desktop, extendido.
+        return window.innerWidth >= 640 && window.innerWidth < 1024;
+    });
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [checking, setChecking] = useState(true);
+    const [stopping, setStopping] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -58,6 +82,15 @@ export default function MainLayout() {
             setChecking(true);
         }
     }, [loading]);
+
+    const navigate = useNavigate();
+    const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
+    
+    // NIVELES DEFINITIVOS
+    const isSuperAdmin = !!user?.is_super_admin;
+    const isDirector = userRole === 'DIRECTOR';
+    const isMusico = !isSuperAdmin && !isDirector;
+    const isImpersonating = !!user?.original_banda_id;
 
     // Registro de Token para Notificaciones Push
     useEffect(() => {
@@ -77,85 +110,146 @@ export default function MainLayout() {
         }
     }, [isAuthenticated, loading]);
 
+    // REDIRECCIÓN DE SEGURIDAD (GUARDS)
+    useEffect(() => {
+        if (!loading && !checking && isAuthenticated) {
+            const path = location.pathname;
+            
+            // 1. SuperAdmin (No impostor) -> Rebotar al Panel Global si entra a rutas de banda
+            if (isSuperAdmin && !isImpersonating) {
+                const operationalRoutes = [
+                    '/dashboard/eventos', 
+                    '/dashboard/asistencia', 
+                    '/dashboard/miembros', 
+                    '/dashboard/secciones',
+                    '/dashboard/repertorio',
+                    '/dashboard/biblioteca',
+                    '/dashboard/pagos'
+                ];
+                if (operationalRoutes.some(r => path.startsWith(r)) || path === '/dashboard') {
+                    navigate('/dashboard/superadmin', { replace: true });
+                }
+            }
+
+            // 2. Músico -> Rebotar si intenta entrar a gestión de pagos o personal
+            if (isMusico) {
+                const forbiddenForMusico = [
+                    '/dashboard/pagos',
+                    '/dashboard/miembros',
+                    '/dashboard/roles',
+                    '/dashboard/asistencia'
+                ];
+                if (forbiddenForMusico.some(r => path.startsWith(r))) {
+                    navigate('/dashboard', { replace: true });
+                }
+            }
+        }
+    }, [location.pathname, loading, checking, isAuthenticated, isSuperAdmin, isImpersonating, isMusico]);
+
     if (loading || checking) return <div className="h-screen w-full bg-[#0f111a] flex items-center justify-center text-white font-black tracking-widest animate-pulse uppercase">Cargando Accesos...</div>;
     if (!isAuthenticated) return <Navigate to="/login" />;
 
-    const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
-    const isJefe = userRole.includes('JEFE');
-    const isAdminOrDirector = ['ADMIN', 'DIRECTOR'].includes(userRole);
-    const isPowerUser = isAdminOrDirector || isJefe;
-
     const hasPermission = (perm) => {
+        // REGLA DE ORO: Si es SuperAdmin y NO está impersonando, solo tiene permisos de SaaS
+        if (isSuperAdmin && !isImpersonating) {
+            return perm === 'CREAR_BANDAS' || perm === 'VER_INGRESOS_SAAS' || perm === 'CONFIG_SAAS';
+        }
+
+        // Si está impersonando, el SuperAdmin actúa como Director (Acceso Total a la banda)
+        if (isSuperAdmin && isImpersonating) return true;
+
         if (!perm) return true;
         
-        // Bloqueo total de finanzas para Jefes/Miembros
-        if (perm === 'GESTION_FINANZAS') return isAdminOrDirector;
-        
-        // Bloqueo total de ROLES para todos menos el ADMIN
-        if (perm === 'GESTION_ROLES') return userRole === 'ADMIN';
+        // RESTRICCIONES SEGÚN LA TABLA DEL USUARIO (MÚSICO / DIRECTOR)
+        if (perm === 'VER_INGRESOS_SAAS') return isSuperAdmin;
+        if (perm === 'VER_DASHBOARD_OPERATIVO') return isDirector || isSuperAdmin;
+        if (perm === 'GESTION_PAGOS_GLOBAL') return isDirector;
+        if (perm === 'CREAR_BANDAS') return isSuperAdmin;
 
-        if (user?.permissions?.includes(perm)) return true;
+        if (perm === 'GESTION_BIBLIOTECA') {
+            if (isDirector) return true;
+            return Array.isArray(user?.permissions) && user.permissions.includes('GESTION_BIBLIOTECA');
+        }
+
+        if (perm === 'CONFIG_SAAS') return isSuperAdmin;
+
+        if (Array.isArray(user?.permissions) && user.permissions.includes(perm)) return true;
         
-        if (isPowerUser) {
-            if (perm === 'VER_DASHBOARD') return true;
+        if (isDirector) {
+            if (perm === 'GESTION_MIEMBROS') return true;
+            if (perm === 'GESTION_SECCIONES') return true;
+            if (perm === 'GESTION_ROLES') return true;
             if (perm === 'GESTION_ASISTENCIA') return true;
+        }
+
+        if (isMusico) {
+            // Músicos solo ven lo básico (Agenda, Repertorio, Sus Pagos)
+            const basicPerms = [null, 'VER_DASHBOARD'];
+            if (basicPerms.includes(perm)) return true;
         }
 
         return false;
     };
 
-    const menuGroups = [
-        {
-            title: 'Centro de Control',
-            items: [
-                { icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard', permission: 'VER_DASHBOARD' },
-                { icon: Calendar, label: 'Agenda', to: '/dashboard/eventos', permission: null },
-                { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
-            ]
-        },
-        {
-            title: 'Gestión de Personal',
-            items: [
-                { icon: Users, label: 'Miembros', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
-                { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
-            ]
-        },
-        {
-            title: 'Contenido Musical',
-            items: [
-                { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: null },
-                { icon: Music, label: 'Biblioteca', to: '/dashboard/biblioteca', permission: null },
-            ]
-        },
-        {
-            title: 'Administración y Finanzas',
-            items: [
-                { icon: DollarSign, label: 'Gestión Pagos', to: '/dashboard/pagos', permission: 'GESTION_FINANZAS' },
-                { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null },
-                { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
-            ]
-        }
-    ];
+    const menuGroups = [];
 
-    const filteredGroups = menuGroups.map(group => ({
-        ...group,
-        items: group.items.filter(item => hasPermission(item.permission))
-    })).filter(group => group.items.length > 0);
+    // GRUPO 1: SaaS (NEGOCIO)
+    menuGroups.push({
+        title: 'Administración SaaS',
+        items: [
+            { icon: Crown, label: 'Panel Global', to: '/dashboard/superadmin', permission: 'CREAR_BANDAS' },
+        ],
+        showFor: isSuperAdmin // Solo para SuperAdmin (incluso si impersona, para poder volver)
+    });
+
+    // GRUPO 2: OPERACIÓN (BANDA)
+    menuGroups.push({
+        title: 'Operación de Banda',
+        items: [
+            { icon: LayoutDashboard, label: 'Centro de Comando', to: '/dashboard', permission: 'VER_DASHBOARD' },
+            { icon: Calendar, label: 'Mi Agenda', to: '/dashboard/eventos', permission: null },
+            { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
+            { icon: Users, label: 'Personal', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
+            { icon: FileText, label: 'Reportes', to: '/dashboard/reportes', permission: 'GESTION_ASISTENCIA' },
+            { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+        ],
+        hideForSuperAdmin: !isImpersonating // Ocultar si SuperAdmin no está impersonando
+    });
+
+    // GRUPO 3: CONTENIDO
+    menuGroups.push({
+        title: 'Repertorio y Biblioteca',
+        items: [
+            { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: null },
+            { icon: Music, label: 'Partituras', to: '/dashboard/biblioteca', permission: null },
+        ],
+        hideForSuperAdmin: !isImpersonating
+    });
+
+    // GRUPO 4: FINANZAS
+    menuGroups.push({
+        title: 'Finanzas',
+        items: [
+            { icon: DollarSign, label: 'Gestión de Pagos', to: '/dashboard/pagos', permission: 'GESTION_PAGOS_GLOBAL' },
+            { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null },
+            { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
+        ],
+        hideForSuperAdmin: !isImpersonating
+    });
+
+    const filteredGroups = menuGroups
+        .filter(group => {
+            if (group.showFor !== undefined) return group.showFor;
+            if (group.hideForSuperAdmin && isSuperAdmin) return false;
+            return true;
+        })
+        .map(group => ({
+            ...group,
+            items: group.items.filter(item => hasPermission(item.permission))
+        }))
+        .filter(group => group.items.length > 0);
 
     const flattenedItems = filteredGroups.flatMap(g => g.items);
-
-    const onDashboardRoot = location.pathname === '/dashboard' || location.pathname === '/dashboard/';
-    
-    if (onDashboardRoot && !hasPermission('VER_DASHBOARD')) {
-        if (flattenedItems.length > 0) {
-            return <Navigate to={flattenedItems[0].to} replace />;
-        }
-    }
-
-    const currentItem = flattenedItems.find(i => i.to !== '/dashboard' && location.pathname.startsWith(i.to));
-    if (currentItem && !hasPermission(currentItem.permission)) {
-        return <Navigate to="/dashboard" replace />;
-    }
 
     if (!loading && !checking && flattenedItems.length === 0) {
         return (
@@ -176,118 +270,230 @@ export default function MainLayout() {
         );
     }
 
+    const handleStopImpersonating = async () => {
+        setStopping(true);
+        try {
+            const res = await api.post('/superadmin/stop-impersonate');
+            updateUser(res.data.user);
+            notify('Has vuelto al modo Administrador Monster', 'success');
+        } catch (error) {
+            console.error(error);
+            notify('Error al volver al modo Administrador', 'error');
+        } finally {
+            setStopping(false);
+        }
+    };
+
+
+
     return (
-        <div className="h-screen w-full bg-[#0f111a] flex text-gray-100 font-sans overflow-hidden">
-            {isMobileMenuOpen && (
-                <div 
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                />
+        <div className="h-screen w-full bg-gray-50 dark:bg-[#0f111a] flex flex-col text-gray-900 dark:text-gray-100 font-sans overflow-hidden transition-colors duration-300">
+            {/* Impersonation Banner */}
+            {isImpersonating && (
+                <div className="w-full bg-amber-500 py-2 px-4 shadow-xl z-[60] flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-2 text-white">
+                        <Shield className="w-4 h-4" />
+                        <p className="text-[11px] font-black uppercase tracking-wider">
+                            MODO SOPORTE TÉCNICO: Estás viendo {user?.banda?.nombre}
+                        </p>
+                    </div>
+                    <button 
+                        onClick={handleStopImpersonating}
+                        disabled={stopping}
+                        className="flex items-center gap-2 px-4 py-1 bg-black/20 hover:bg-black/30 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border border-white/10 active:scale-95 disabled:opacity-50"
+                    >
+                        {stopping ? 'Restaurando...' : 'Salir del soporte'}
+                    </button>
+                </div>
             )}
 
-            <aside className={clsx(
-                "fixed top-0 left-0 z-50 h-screen w-72 bg-[#161b2c]/80 backdrop-blur-xl border-r border-white/5 transition-transform duration-300 flex flex-col",
-                isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
-                isSidebarOpen ? "lg:translate-x-0" : "lg:-translate-x-full"
-            )}>
-                <div className="p-6 flex items-center justify-between border-b border-white/5 shrink-0">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                            <span className="font-bold text-white text-xl">M</span>
-                        </div>
-                        <div>
-                            <h1 className="font-bold text-lg text-white leading-tight">Monster Band</h1>
-                            <p className="text-xs text-indigo-400 font-medium tracking-wider">PANEL ADMIN</p>
-                        </div>
-                    </div>
-                    <button 
+            <div className="flex-1 flex overflow-hidden relative">
+                {isMobileMenuOpen && (
+                    <div 
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="lg:hidden p-2 text-gray-400 hover:text-white bg-white/5 rounded-lg"
-                    >
-                        <LogOut className="w-5 h-5 rotate-180" />
-                    </button>
-                </div>
+                    />
+                )}
 
-                <div className="p-4 flex-1 overflow-y-auto custom-scrollbar">
-                    {filteredGroups.map((group, gIdx) => (
-                        <div key={group.title} className={clsx(gIdx !== 0 && "mt-6")}>
-                            <h3 className="px-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">
-                                {group.title}
-                            </h3>
-                            <div className="space-y-1">
-                                {group.items.map((item) => (
-                                    <SidebarItem 
-                                        key={item.to} 
-                                        {...item} 
-                                        active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
-                                        onClick={() => setIsMobileMenuOpen(false)}
+                <aside className={clsx(
+                    "fixed top-0 left-0 z-50 h-screen bg-white/95 dark:bg-[#161b2c]/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/5 transition-all duration-500 ease-in-out flex flex-col shadow-2xl overflow-hidden",
+                    // Mobile state
+                    isMobileMenuOpen ? "translate-x-0 w-72" : "-translate-x-full lg:translate-x-0",
+                    // Desktop/Tablet states
+                    !isMobileMenuOpen && (isSidebarCollapsed ? "w-24" : "w-72"),
+                    !isSidebarOpen && "lg:-translate-x-full"
+                )}>
+                    <div className={clsx(
+                        "p-6 flex items-center border-b border-gray-200 dark:border-white/5 shrink-0 transition-all duration-500",
+                        isSidebarCollapsed && !isMobileMenuOpen ? "justify-center" : "justify-between"
+                    )}>
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10 overflow-hidden shrink-0 transform transition-transform duration-500 hover:rotate-6">
+                                {user?.banda?.logo ? (
+                                    <img 
+                                        src={`/storage/${user.banda.logo}`} 
+                                        alt={user?.banda?.nombre}
+                                        className="w-full h-full object-cover"
                                     />
-                                ))}
+                                ) : (
+                                    <span className="font-black text-white text-xl">
+                                        {user?.banda?.nombre?.charAt(0) || 'M'}
+                                    </span>
+                                )}
                             </div>
-                            {gIdx !== filteredGroups.length - 1 && (
-                                <div className="mx-4 mt-6 border-b border-white/[0.03]" />
+                            {(!isSidebarCollapsed || isMobileMenuOpen) && (
+                                <motion.div 
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="min-w-0"
+                                >
+                                    <h1 className="font-black text-sm text-gray-900 dark:text-white leading-tight uppercase tracking-tighter truncate md:text-wrap transition-colors">
+                                        {user?.banda?.nombre || 'Monster Band'}
+                                    </h1>
+                                    <p className="text-[10px] text-indigo-400 font-black tracking-[0.2em] uppercase opacity-70">Admin Panel</p>
+                                </motion.div>
                             )}
                         </div>
-                    ))}
-                </div>
-
-                <div className="w-full p-4 border-t border-white/5 shrink-0">
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold border border-indigo-500/20">
-                            {user?.user?.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">{user?.user}</p>
-                            <p className="text-xs text-indigo-400 font-bold tracking-wider truncate">
-                                {userRole}
-                            </p>
-                        </div>
+                        {isMobileMenuOpen && (
+                            <button 
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="p-3 text-gray-400 hover:text-white bg-white/5 rounded-2xl active:scale-90 transition-all"
+                            >
+                                <LogOut className="w-5 h-5 rotate-180" />
+                            </button>
+                        )}
                     </div>
-                    <button 
-                        onClick={logout} 
-                        className="w-full flex items-center justify-center gap-2 p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </aside>
 
-            <main className={clsx(
-                "flex-1 h-screen flex flex-col relative transition-all duration-300",
-                isSidebarOpen ? "lg:ml-72" : "lg:ml-0"
-            )}>
-                <header className="h-10 sm:h-16 lg:h-20 px-2 sm:px-8 flex items-center justify-between border-b border-white/5 bg-[#0f111a]/50 backdrop-blur-md shrink-0 sticky top-0 z-30">
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="p-3 sm:p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] space-y-8">
+                        {filteredGroups.map((group, gIdx) => (
+                            <div key={group.title} className="animate-in fade-in slide-in-from-left-2 duration-500">
+                                {(!isSidebarCollapsed || isMobileMenuOpen) && (
+                                    <h3 className="px-4 text-[9px] font-black text-gray-500 dark:text-gray-500 text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] mb-4 opacity-50">
+                                        {group.title}
+                                    </h3>
+                                )}
+                                <div className="space-y-1.5">
+                                    {group.items.map((item) => (
+                                        <SidebarItem 
+                                            key={item.to} 
+                                            {...item} 
+                                            collapsed={isSidebarCollapsed && !isMobileMenuOpen}
+                                            active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
+                                            onClick={() => {
+                                                if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="w-full p-4 border-t border-gray-200 dark:border-white/5 shrink-0 bg-gray-50 dark:bg-black/20">
+                        <div className={clsx(
+                            "flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-white/5 mb-4 border border-gray-200 dark:border-white/5 transition-all duration-500 shadow-sm dark:shadow-none",
+                            isSidebarCollapsed && !isMobileMenuOpen ? "justify-center px-0" : "px-3"
+                        )}>
+                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-black border border-indigo-500/20 shrink-0">
+                                {user?.user?.charAt(0).toUpperCase()}
+                            </div>
+                            {(!isSidebarCollapsed || isMobileMenuOpen) && (
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-black text-gray-900 dark:text-white truncate uppercase tracking-tight transition-colors">{user?.user}</p>
+                                    <p className="text-[10px] text-indigo-400 font-bold tracking-widest truncate uppercase opacity-70">
+                                        {userRole}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                         <button 
-                            className="p-1 sm:p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                            onClick={() => {
-                                if (window.innerWidth >= 1024) {
-                                    setIsSidebarOpen(!isSidebarOpen);
-                                } else {
-                                    setIsMobileMenuOpen(!isMobileMenuOpen);
-                                }
-                            }}
+                            onClick={logout} 
+                            className={clsx(
+                                "w-full flex items-center justify-center gap-2 p-3.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-2xl transition-all text-[10px] font-black uppercase tracking-widest border border-transparent hover:border-red-500/20 active:scale-95",
+                                isSidebarCollapsed && !isMobileMenuOpen ? "px-0" : "px-4"
+                            )}
                         >
-                            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+                            <LogOut className="w-4 h-4" />
+                            {(!isSidebarCollapsed || isMobileMenuOpen) && "Cerrar Sesión"}
                         </button>
-
-                        <h2 className="text-sm sm:text-xl font-bold text-white hidden sm:block uppercase tracking-tighter">
-                            {[...flattenedItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
-                        </h2>
                     </div>
+                </aside>
 
-                    <div className="flex items-center gap-1 sm:gap-4">
-                        <NotificationBell />
+                <main className={clsx(
+                    "flex-1 h-full flex flex-col relative transition-all duration-500 overflow-hidden ml-0",
+                    isMobileMenuOpen ? "ml-0" : (isSidebarCollapsed ? "lg:ml-20" : "lg:ml-72")
+                )}>
+                    <header className="h-16 sm:h-20 lg:h-24 px-4 sm:px-8 flex items-center justify-between border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-[#0f111a]/80 backdrop-blur-2xl shrink-0 sticky top-0 z-30 transition-colors duration-300">
+                        <div className="flex items-center gap-4 sm:gap-6">
+                            <button 
+                                className="p-3 sm:p-4 text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-2xl transition-all active:scale-90"
+                                onClick={() => {
+                                    if (window.innerWidth >= 1024) {
+                                        setIsSidebarCollapsed(!isSidebarCollapsed);
+                                    } else {
+                                        setIsMobileMenuOpen(!isMobileMenuOpen);
+                                    }
+                                }}
+                            >
+                                <Menu className="w-6 h-6 sm:w-7 sm:h-7" />
+                            </button>
+
+                            <h2 className="text-sm sm:text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter opacity-90 transition-colors">
+                                {[...flattenedItems].reverse().find(i => location.pathname.startsWith(i.to))?.label || 'Dashboard'}
+                            </h2>
+                        </div>
+
+                        <div className="flex items-center gap-3 sm:gap-6">
+                            <NotificationBell />
+                            
+                            {/* Theme Toggle */}
+                            <div className="flex items-center bg-white/5 rounded-xl p-1 border border-white/5">
+                                <button 
+                                    onClick={() => updateTheme('light')}
+                                    className={clsx(
+                                        "p-2 rounded-lg transition-all", 
+                                        theme === 'light' ? "bg-white text-black shadow-lg" : "text-gray-500 hover:text-white"
+                                    )}
+                                >
+                                    <Sun className="w-4 h-4" />
+                                </button>
+                                <button 
+                                    onClick={() => updateTheme('system')}
+                                    className={clsx(
+                                        "p-2 rounded-lg transition-all hidden sm:block", 
+                                        theme === 'system' ? "bg-white/10 text-white shadow-lg" : "text-gray-500 hover:text-white"
+                                    )}
+                                    title="Sistema"
+                                >
+                                    <Monitor className="w-4 h-4" />
+                                </button>
+                                <button 
+                                    onClick={() => updateTheme('dark')}
+                                    className={clsx(
+                                        "p-2 rounded-lg transition-all", 
+                                        theme === 'dark' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30" : "text-gray-500 hover:text-white"
+                                    )}
+                                >
+                                    <Moon className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            <div className="hidden sm:block h-10 w-px bg-white/5 mx-2" />
+                            <button className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors">
+                                <Settings className="w-4 h-4" />
+                                Config
+                            </button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 w-full max-w-screen-2xl mx-auto pt-6 px-4 sm:px-8 pb-10 overflow-y-auto custom-scrollbar scroll-smooth">
+                        <Outlet />
                     </div>
-                </header>
-
-                <div className="flex-1 pt-0 px-2 sm:px-6 lg:px-8 pb-4 sm:pb-6 overflow-y-auto w-full max-w-full mx-auto flex flex-col">
-                    <Outlet />
-                </div>
-            </main>
+                </main>
+            </div>
             
             <ForcePasswordChangeModal />
+            <CompleteProfileModal isOpen={user && !user.is_super_admin && !user.profile_completed} user={user} />
         </div>
     );
 }

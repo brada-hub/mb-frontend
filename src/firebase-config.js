@@ -19,19 +19,35 @@ export const messaging = getMessaging(app);
 export const VAPID_KEY = "BCGv8FDOgIzcZAwgOhB3sFOm21vlo3IfXMPXXb63nhHoNIA1K9kImFJqf80v5TRznqAmv3iQswu14RFTAVx2TnE";
 
 export const requestForToken = async () => {
+  if (!('serviceWorker' in navigator)) {
+    console.log('El navegador no soporta Service Workers.');
+    return null;
+  }
+
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+      // Registrar el service worker explícitamente para mayor estabilidad en localhost
+      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      
+      const currentToken = await getToken(messaging, { 
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration
+      });
+
       if (currentToken) {
         console.log('Token FCM:', currentToken);
         return currentToken;
       } else {
-        console.log('No se pudo obtener el token. Asegúrate de que el Service Worker esté configurado.');
+        console.log('No se pudo obtener el token. Revisa la configuración de Firebase.');
       }
     }
   } catch (err) {
-    console.error('Error al obtener el token Push:', err);
+    if (err.name === 'AbortError') {
+      console.warn('FCM: El servicio de push del navegador no respondió. Esto es común en localhost o redes restringidas.');
+    } else {
+      console.error('Error al obtener el token Push:', err);
+    }
   }
   return null;
 };

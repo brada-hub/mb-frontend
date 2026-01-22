@@ -56,8 +56,8 @@ function SortableTema({ id, tema, onRemove }) {
             ref={setNodeRef} 
             style={style} 
             className={clsx(
-                "flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-2xl mb-2 transition-all group",
-                isDragging ? "shadow-2xl scale-[1.02] bg-indigo-600/20 border-indigo-500/50" : "hover:border-white/20"
+                "flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 border border-surface-border rounded-2xl mb-2 transition-all group",
+                isDragging ? "shadow-2xl scale-[1.02] bg-indigo-600/20 border-indigo-500/50" : "hover:border-brand-primary/30 dark:hover:border-surface-border"
             )}
         >
             <button 
@@ -69,8 +69,8 @@ function SortableTema({ id, tema, onRemove }) {
                 <GripVertical className="w-5 h-5" />
             </button>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-white uppercase tracking-tight truncate">{tema.nombre_tema}</p>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{tema.genero?.nombre_genero}</p>
+                <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight truncate transition-colors">{tema.nombre_tema}</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-500 font-bold uppercase tracking-widest transition-colors">{tema.genero?.nombre_genero}</p>
             </div>
             <button 
                 onClick={() => onRemove(id)}
@@ -220,23 +220,23 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
 
     return createPortal(
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-[#0f111a]/95 backdrop-blur-xl animate-in fade-in duration-300" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300" onClick={onClose} />
             
-            <div className="relative w-full max-w-2xl bg-surface-card border border-white/10 rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-2xl bg-surface-card border border-surface-border rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] text-gray-900 dark:text-gray-100 transition-colors">
                 {/* Header */}
-                <div className="flex items-center justify-between p-8 border-b border-white/5">
+                <div className="flex items-center justify-between p-8 border-b border-surface-border bg-surface-card transition-colors">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400">
+                        <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                             <Layers className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tight">
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">
                                 {initialData ? 'Editar Mix' : 'Nuevo Mix / Repertorio'}
                             </h2>
-                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Organización de temas</p>
+                            <p className="text-gray-500 dark:text-gray-500 text-xs font-bold uppercase tracking-widest mt-1 transition-colors">Organización de temas</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 hover:bg-white/5 rounded-2xl text-gray-500 hover:text-white transition-all">
+                    <button onClick={onClose} className="p-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -246,24 +246,24 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                     {/* Nombre y Visibilidad */}
                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
                         <div className="flex-1 w-full space-y-3">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Nombre del Mix</label>
+                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1 transition-colors">Nombre del Mix</label>
                             <Input 
                                 placeholder="EJ: MIX MORENADAS 2024"
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
-                                className="h-14 bg-white/5 border-white/5 rounded-2xl text-lg font-bold uppercase focus:ring-indigo-500/50"
+                                className="h-14 bg-surface-input border-surface-border rounded-2xl text-lg font-bold uppercase focus:ring-indigo-500/50 text-gray-900 dark:text-white transition-all"
                             />
                         </div>
                         <div className="w-full sm:w-auto space-y-3">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Visibilidad</label>
+                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1 transition-colors">Visibilidad</label>
                             <button
                                 type="button"
                                 onClick={() => setActivo(!activo)}
                                 className={clsx(
                                     "h-14 px-6 rounded-2xl border transition-all flex items-center gap-3 font-black text-[10px] uppercase tracking-widest min-w-[140px] justify-center",
                                     activo 
-                                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                                        : "bg-red-500/10 border-red-500/30 text-red-400"
+                                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                                        : "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400"
                                 )}
                             >
                                 {activo ? (
@@ -277,7 +277,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
 
                     {/* Audio del Mix */}
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Audio del Mix (Opcional)</label>
+                        <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1 transition-colors">Audio del Mix (Opcional)</label>
                         <div className="relative group">
                             <input 
                                 id="mix-audio-upload"
@@ -287,8 +287,8 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                 className="hidden"
                             />
                             <div className={clsx(
-                                "flex items-center gap-4 w-full bg-white/5 border rounded-2xl p-2 transition-all",
-                                audioFile || initialData?.audio ? "border-indigo-500/50 bg-indigo-500/5" : "border-white/10"
+                                "flex items-center gap-4 w-full bg-surface-input border rounded-2xl p-2 transition-all",
+                                audioFile || initialData?.audio ? "border-indigo-500/50 bg-indigo-500/5" : "border-surface-border"
                             )}>
                                 <label 
                                     htmlFor="mix-audio-upload"
@@ -297,7 +297,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                     Seleccionar Archivo
                                 </label>
                                 <div className="flex-1 min-w-0 pr-2">
-                                    <p className="text-[10px] font-bold text-white uppercase truncate">
+                                    <p className="text-[10px] font-bold text-gray-900 dark:text-white uppercase truncate transition-colors">
                                         {audioFile 
                                             ? audioFile.name 
                                             : initialData?.audio 
@@ -305,7 +305,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                                 : 'Sin archivo seleccionado'}
                                     </p>
                                     {(audioFile || initialData?.audio) && (
-                                        <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">
+                                        <p className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-0.5 transition-colors">
                                             {audioFile ? 'Archivo listo para subir' : 'Audio actual guardado'}
                                         </p>
                                     )}
@@ -314,7 +314,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                     <button 
                                         type="button"
                                         onClick={() => setAudioFile(null)}
-                                        className="p-1.5 hover:bg-red-500/20 text-red-500 rounded-lg transition-all"
+                                        className="p-1.5 hover:bg-red-500/20 text-red-600 dark:text-red-500 rounded-lg transition-all"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
@@ -330,13 +330,13 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                         <div className="flex flex-col gap-3">
                             {/* Filtro de Géneros */}
                             <div className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
-                                <button
+                                 <button
                                     onClick={() => setSelectedGenreId('all')}
                                     className={clsx(
                                         "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border",
                                         selectedGenreId === 'all' 
                                             ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
-                                            : "bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10"
+                                            : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10"
                                     )}
                                 >
                                     Todos
@@ -349,7 +349,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                             "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border",
                                             parseInt(selectedGenreId) === genre.id_genero 
                                                 ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
-                                                : "bg-white/5 border-white/5 text-gray-500 hover:text-white hover:bg-white/10"
+                                                : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10"
                                         )}
                                     >
                                         {genre.nombre_genero}
@@ -357,29 +357,29 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                 ))}
                             </div>
 
-                            <div className="relative">
+                             <div className="relative">
                                 <Input 
                                     icon={Search}
                                     placeholder="Escribe el nombre de una canción..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="h-12 bg-white/5 border-white/5 rounded-2xl"
+                                    className="h-12 bg-surface-input border-surface-border rounded-2xl text-gray-900 dark:text-white transition-all"
                                 />
                                 
                                 {filteredAvailableTemas.length > 0 && (searchQuery || selectedGenreId !== 'all') && (
-                                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#1c233a] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-scrollbar">
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-surface-card border border-surface-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200 max-h-60 overflow-y-auto custom-scrollbar">
                                         {filteredAvailableTemas.map(tema => (
                                             <button
                                                 key={tema.id_tema}
                                                 onClick={() => handleAddTema(tema)}
-                                                className="w-full flex items-center gap-4 p-4 hover:bg-white/5 text-left border-b border-white/5 last:border-none transition-colors"
+                                                className="w-full flex items-center gap-4 p-4 hover:bg-black/5 dark:hover:bg-white/5 text-left border-b border-surface-border last:border-none transition-colors"
                                             >
-                                                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-400">
+                                                <div className="w-10 h-10 bg-black/5 dark:bg-white/5 rounded-xl flex items-center justify-center text-gray-400">
                                                     <Music className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-black text-white uppercase tracking-tight">{tema.nombre_tema}</p>
-                                                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{tema.genero?.nombre_genero}</p>
+                                                    <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{tema.nombre_tema}</p>
+                                                    <p className="text-[9px] text-gray-500 dark:text-gray-500 font-bold uppercase tracking-widest transition-colors">{tema.genero?.nombre_genero}</p>
                                                 </div>
                                                 <Plus className="ml-auto w-5 h-5 text-indigo-400" />
                                             </button>
@@ -397,7 +397,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                             <span className="text-[9px] text-gray-600 font-bold uppercase tracking-widest italic">Arrastra para reordenar</span>
                         </div>
                         
-                        {selectedTemas.length > 0 ? (
+                         {selectedTemas.length > 0 ? (
                             <DndContext 
                                 sensors={sensors}
                                 collisionDetection={closestCenter}
@@ -420,7 +420,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                 </SortableContext>
                             </DndContext>
                         ) : (
-                            <div className="py-12 flex flex-col items-center justify-center bg-white/2 border-2 border-dashed border-white/5 rounded-[32px] text-gray-600 text-center px-6">
+                            <div className="py-12 flex flex-col items-center justify-center bg-black/5 dark:bg-white/[0.02] border-2 border-dashed border-surface-border rounded-[32px] text-gray-500 dark:text-gray-600 text-center px-6 transition-colors">
                                 <Music className="w-12 h-12 mb-4 opacity-20" />
                                 <p className="text-sm font-bold uppercase tracking-widest opacity-40">No hay temas en este mix</p>
                             </div>
@@ -428,12 +428,12 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div className="p-8 border-t border-white/5 bg-black/20 flex gap-4">
+                 {/* Footer */}
+                <div className="p-8 border-t border-surface-border bg-black/5 dark:bg-black/20 flex gap-4 transition-colors">
                     <Button 
                         variant="secondary"
                         onClick={onClose}
-                        className="flex-1 h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-white/5 bg-transparent border border-white/10"
+                        className="flex-1 h-16 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black/5 dark:hover:bg-white/5 bg-transparent border border-surface-border text-gray-900 dark:text-white transition-colors"
                     >
                         Cancelar
                     </Button>
