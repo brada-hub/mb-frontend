@@ -64,7 +64,7 @@ export default function NotificationBell() {
     const loadPreferences = async () => {
         try {
             const res = await api.get('/profile');
-            if (res.data.user.preferencias_notificaciones) {
+            if (res.data?.user?.preferencias_notificaciones) {
                 setPreferences(prev => ({ ...prev, ...res.data.user.preferencias_notificaciones }));
             }
         } catch (error) {

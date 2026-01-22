@@ -150,42 +150,48 @@ export default function CompleteProfileModal({ isOpen, user }) {
                                 />
                             </div>
 
-                            <div className="space-y-6">
-                                <h3 className="text-sm font-black text-amber-500 uppercase tracking-widest flex items-center gap-3">
-                                    <Lock className="w-4 h-4" /> Seguridad (Nueva Contraseña)
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div className="relative">
+                            {/* Solo pedir contraseña si NO se ha cambiado aún */}
+                            {!user?.password_changed && (
+                                <div className="space-y-6">
+                                    <h3 className="text-sm font-black text-amber-500 uppercase tracking-widest flex items-center gap-3">
+                                        <Lock className="w-4 h-4" /> Seguridad (Cambio Obligatorio)
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="relative">
+                                            <Input 
+                                                label="Nueva Contraseña" 
+                                                type={showPass ? "text" : "password"}
+                                                placeholder="********" 
+                                                error={errors.password?.message}
+                                                {...register('password', { 
+                                                    required: "Obligatorio", 
+                                                    minLength: { value: 8, message: "Mínimo 8 caracteres" } 
+                                                })} 
+                                                className="text-gray-900 dark:text-white"
+                                            />
+                                            <button 
+                                                type="button" 
+                                                onClick={() => setShowPass(!showPass)}
+                                                className="absolute right-4 top-[42px] text-gray-500 dark:text-gray-400 transition-colors"
+                                            >
+                                                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                         <Input 
-                                            label="Nueva Contraseña" 
+                                            label="Confirmar" 
                                             type={showPass ? "text" : "password"}
                                             placeholder="********" 
-                                            error={errors.password?.message}
-                                            {...register('password', { required: "Obligatorio", minLength: { value: 8, message: "Mínimo 8 caracteres" } })} 
+                                            error={errors.password_confirmation?.message}
+                                            {...register('password_confirmation', { 
+                                                required: "Obligatorio",
+                                                validate: (val) => val === watch('password') || "No coinciden"
+                                            })} 
                                             className="text-gray-900 dark:text-white"
                                         />
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setShowPass(!showPass)}
-                                            className="absolute right-4 top-[42px] text-gray-500 dark:text-gray-400 transition-colors"
-                                        >
-                                            {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
                                     </div>
-                                    <Input 
-                                        label="Confirmar" 
-                                        type={showPass ? "text" : "password"}
-                                        placeholder="********" 
-                                        error={errors.password_confirmation?.message}
-                                        {...register('password_confirmation', { 
-                                            required: "Obligatorio",
-                                            validate: (val) => val === watch('password') || "No coinciden"
-                                        })} 
-                                        className="text-gray-900 dark:text-white"
-                                    />
+                                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest italic transition-colors">Por seguridad, debes establecer una contraseña personal.</p>
                                 </div>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest italic transition-colors">Por seguridad, debes establecer una contraseña personal.</p>
-                            </div>
+                            )}
                         </div>
 
                         {/* Right Column: Location & Emergency */}
