@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { Lock, User, Music4 } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
+import logoSimba from '../../assets/logo_simba.png';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -37,11 +38,9 @@ export default function LoginPage() {
             <div className="relative z-10 w-full max-w-md p-8 md:p-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl animate-fade-in-up">
                 
                 <div className="text-center mb-10">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-6">
-                        <Music4 className="w-8 h-8 text-white" />
-                    </div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Monster Band</h1>
-                    <p className="text-gray-400">Acceso al Panel Directivo</p>
+                    <img src={logoSimba} alt="SIMBA" className="mx-auto w-24 h-24 object-contain mb-6 drop-shadow-2xl" />
+                    <h1 className="text-3xl font-bold text-white tracking-tight mb-2">SIMBA OS</h1>
+                    <p className="text-gray-400">Sistema de Gestión para Bandas</p>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -80,7 +79,7 @@ export default function LoginPage() {
 
                 <div className="mt-8 text-center">
                     <p className="text-xs text-gray-500">
-                        © 2025 Monster Band. Solo personal autorizado.
+                        © 2025 SIMBA OS. Gestión Operativa Musical.
                     </p>
                 </div>
             </div>

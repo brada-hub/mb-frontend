@@ -19,7 +19,10 @@ import {
     Crown,
     Sun,
     Moon,
-    Monitor
+    Monitor,
+    Building2,
+    HardDrive,
+    Activity
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
@@ -27,6 +30,8 @@ import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import ForcePasswordChangeModal from '../components/modals/ForcePasswordChangeModal';
 import CompleteProfileModal from '../components/modals/CompleteProfileModal';
+import logoMb from '../assets/logo_mb.png';
+import logoSimba from '../assets/logo_simba.png';
 
 const SidebarItem = ({ icon: Icon, label, to, active, onClick, collapsed }) => {
     const LucideIcon = Icon;
@@ -90,7 +95,9 @@ export default function MainLayout() {
     const isSuperAdmin = !!user?.is_super_admin;
     const isDirector = userRole === 'DIRECTOR';
     const isMusico = !isSuperAdmin && !isDirector;
-    const isImpersonating = !!user?.original_banda_id;
+    const isImpersonating = user?.original_banda_id !== undefined && user?.original_banda_id !== null;
+
+    const displayRole = isSuperAdmin ? 'Admin de App' : (user?.miembro?.rol?.rol || 'Miembro');
 
     // Registro de Token para Notificaciones Push
     useEffect(() => {
@@ -178,7 +185,7 @@ export default function MainLayout() {
         if (isDirector) {
             if (perm === 'GESTION_MIEMBROS') return true;
             if (perm === 'GESTION_SECCIONES') return true;
-            if (perm === 'GESTION_ROLES') return true;
+        if (perm === 'GESTION_ROLES') return isSuperAdmin;
             if (perm === 'GESTION_ASISTENCIA') return true;
         }
 
@@ -195,11 +202,16 @@ export default function MainLayout() {
 
     // GRUPO 1: SaaS (NEGOCIO)
     menuGroups.push({
-        title: 'Administración SaaS',
+        title: 'App Owner (SaaS)',
         items: [
-            { icon: Crown, label: 'Panel Global', to: '/dashboard/superadmin', permission: 'CREAR_BANDAS' },
+            { icon: Crown, label: 'Resumen Global', to: '/dashboard/superadmin?tab=resumen', permission: 'CREAR_BANDAS' },
+            { icon: Building2, label: 'Organizaciones', to: '/dashboard/superadmin?tab=bandas', permission: 'CREAR_BANDAS' },
+            { icon: HardDrive, label: 'Almacenamiento', to: '/dashboard/superadmin?tab=storage', permission: 'CREAR_BANDAS' },
+            { icon: Activity, label: 'Monitor Actividad', to: '/dashboard/superadmin?tab=logs', permission: 'CREAR_BANDAS' },
+            { icon: Settings, label: 'Config. Planes', to: '/dashboard/superadmin?tab=config', permission: 'CREAR_BANDAS' },
+            { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
         ],
-        showFor: isSuperAdmin // Solo para SuperAdmin (incluso si impersona, para poder volver)
+        showFor: isSuperAdmin // Solo para SuperAdmin
     });
 
     // GRUPO 2: OPERACIÓN (BANDA)
@@ -232,7 +244,6 @@ export default function MainLayout() {
         items: [
             { icon: DollarSign, label: 'Gestión de Pagos', to: '/dashboard/pagos', permission: 'GESTION_PAGOS_GLOBAL' },
             { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null },
-            { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
         ],
         hideForSuperAdmin: !isImpersonating
     });
@@ -324,33 +335,46 @@ export default function MainLayout() {
                     !isSidebarOpen && "lg:-translate-x-full"
                 )}>
                     <div className={clsx(
-                        "p-6 flex items-center border-b border-gray-200 dark:border-white/5 shrink-0 transition-all duration-500",
-                        isSidebarCollapsed && !isMobileMenuOpen ? "justify-center" : "justify-between"
+                        "p-6 border-b border-gray-200 dark:border-white/5 shrink-0 transition-all duration-500",
+                        isSidebarCollapsed && !isMobileMenuOpen ? "flex justify-center" : "flex flex-col items-center"
                     )}>
-                        <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10 overflow-hidden shrink-0 transform transition-transform duration-500 hover:rotate-6">
-                                {user?.banda?.logo ? (
+                        <div className="flex flex-col items-center gap-3">
+                            <div className={clsx(
+                                "bg-transparent rounded-2xl flex items-center justify-center overflow-hidden shrink-0 transform transition-all duration-500 hover:scale-105",
+                                isSidebarCollapsed && !isMobileMenuOpen ? "w-12 h-12" : "w-20 h-20"
+                            )}>
+                                {user?.is_super_admin ? (
                                     <img 
-                                        src={`/storage/${user.banda.logo}`} 
+                                        src={logoSimba} 
+                                        alt="SIMBA"
+                                        className="w-full h-full object-contain p-1"
+                                    />
+                                ) : user?.banda?.logo ? (
+                                    <img 
+                                        src={`${import.meta.env.VITE_API_URL.replace('/api', '')}/storage/${user.banda.logo}`} 
                                         alt={user?.banda?.nombre}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-contain"
                                     />
                                 ) : (
-                                    <span className="font-black text-white text-xl">
-                                        {user?.banda?.nombre?.charAt(0) || 'M'}
-                                    </span>
+                                    <img 
+                                        src={logoMb} 
+                                        alt="Monster Band"
+                                        className="w-full h-full object-contain"
+                                    />
                                 )}
                             </div>
                             {(!isSidebarCollapsed || isMobileMenuOpen) && (
                                 <motion.div 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="min-w-0"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-center"
                                 >
-                                    <h1 className="font-black text-sm text-gray-900 dark:text-white leading-tight uppercase tracking-tighter truncate md:text-wrap transition-colors">
-                                        {user?.banda?.nombre || 'Monster Band'}
+                                    <h1 className="font-black text-base text-gray-900 dark:text-white leading-tight uppercase tracking-tight transition-colors">
+                                        {user?.is_super_admin ? 'SIMBA ADMIN' : (user?.banda?.nombre || 'Monster Band')}
                                     </h1>
-                                    <p className="text-[10px] text-indigo-400 font-black tracking-[0.2em] uppercase opacity-70">Admin Panel</p>
+                                    <p className="text-[10px] text-indigo-500 dark:text-indigo-400 font-black tracking-[0.2em] uppercase mt-1">
+                                        {user?.is_super_admin ? 'Dueño de App' : 'Admin Panel'}
+                                    </p>
                                 </motion.div>
                             )}
                         </div>
@@ -378,7 +402,12 @@ export default function MainLayout() {
                                             key={item.to} 
                                             {...item} 
                                             collapsed={isSidebarCollapsed && !isMobileMenuOpen}
-                                            active={item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to)}
+                                            active={(() => {
+                                                const [path, query] = item.to.split('?');
+                                                const isSamePath = item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname === path;
+                                                if (!query) return isSamePath && !location.search;
+                                                return isSamePath && location.search === `?${query}`;
+                                            })()}
                                             onClick={() => {
                                                 if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
                                             }}
@@ -401,7 +430,7 @@ export default function MainLayout() {
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-black text-gray-900 dark:text-white truncate uppercase tracking-tight transition-colors">{user?.user}</p>
                                     <p className="text-[10px] text-indigo-400 font-bold tracking-widest truncate uppercase opacity-70">
-                                        {userRole}
+                                        {displayRole}
                                     </p>
                                 </div>
                             )}

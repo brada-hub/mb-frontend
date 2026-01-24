@@ -25,6 +25,11 @@ export const requestForToken = async () => {
   }
 
   try {
+    if (Notification.permission === 'denied') {
+      console.warn('FCM: Las notificaciones están bloqueadas por el usuario.');
+      return null;
+    }
+
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       // Registrar el service worker explícitamente para mayor estabilidad en localhost

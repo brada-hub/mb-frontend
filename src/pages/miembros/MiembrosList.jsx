@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import MiembroModal from '../../components/modals/MiembroModal';
 import MiembroDetalleModal from '../../components/modals/MiembroDetalleModal';
 import MiembroPermisosModal from '../../components/modals/MiembroPermisosModal';
@@ -38,6 +39,8 @@ export default function MiembrosList() {
     const [selectedMiembro, setSelectedMiembro] = useState(null);
     const [confirmState, setConfirmState] = useState({ isOpen: false, member: null, loading: false });
     const { notify } = useToast();
+    const { user } = useAuth();
+    const isSuperAdmin = user?.is_super_admin;
 
 
     useEffect(() => {
@@ -296,9 +299,12 @@ export default function MiembrosList() {
                             <button onClick={() => handleEdit(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
                                 <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Editar Información
                             </button>
-                            <button onClick={() => handleOpenPermissions(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
-                                <Shield className="w-4 h-4 text-monster-purple" /> Gestionar Permisos
-                            </button>
+                            {/* Solo SuperAdmin puede gestionar permisos */}
+                            {isSuperAdmin && (
+                                <button onClick={() => handleOpenPermissions(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
+                                    <Shield className="w-4 h-4 text-monster-purple" /> Gestionar Permisos
+                                </button>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>

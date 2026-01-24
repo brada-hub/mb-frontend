@@ -53,44 +53,44 @@ export default function MisPagos() {
     return (
         <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto px-2 sm:px-6 pb-20">
             {/* Header / Resumen */}
-            <div className="bg-gradient-to-br from-indigo-900/40 via-[#161b2c] to-[#0f111a] rounded-[2.5rem] sm:rounded-[4rem] p-6 sm:p-12 border border-white/10 relative overflow-hidden shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]">
+            <div className="bg-gradient-to-br from-indigo-100 via-white to-gray-50 dark:from-indigo-900/40 dark:via-[#161b2c] dark:to-[#0f111a] rounded-[2.5rem] sm:rounded-[4rem] p-6 sm:p-12 border border-gray-200 dark:border-white/10 relative overflow-hidden shadow-xl dark:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] transition-colors">
                 <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
-                    <PiggyBank className="w-64 h-64 sm:w-96 sm:h-96 text-white -rotate-12 translate-x-20 -translate-y-10" />
+                    <PiggyBank className="w-64 h-64 sm:w-96 sm:h-96 text-gray-900 dark:text-white -rotate-12 translate-x-20 -translate-y-10" />
                 </div>
                 
                 <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                     <div className="flex flex-col">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit mb-4">
                             <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Estado Financiero</span>
+                            <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Estado Financiero</span>
                         </div>
-                        <h1 className="text-3xl sm:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-2">Mi Actividad</h1>
-                        <p className="text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg">Seguimiento de tus participaciones y eventos por cobrar.</p>
+                        <h1 className="text-3xl sm:text-6xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none mb-2 transition-colors">Mi Actividad</h1>
+                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg transition-colors">Seguimiento de tus participaciones y eventos por cobrar.</p>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0 lg:min-w-[500px]">
-                        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
+                        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-3xl border border-gray-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-emerald-500/20 rounded-2xl group-hover:scale-110 transition-transform">
-                                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-400" />
+                                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500 dark:text-emerald-400" />
                                 </div>
-                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Pendiente</span>
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest">Pendiente</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                                <p className="text-4xl sm:text-6xl font-black text-white tracking-tighter">{totalPorCobrar}</p>
+                                <p className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white tracking-tighter transition-colors">{totalPorCobrar}</p>
                                 <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
                             </div>
                         </div>
 
-                        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
+                        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-3xl border border-gray-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-3 bg-blue-500/20 rounded-2xl group-hover:scale-110 transition-transform">
-                                    <History className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+                                    <History className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 dark:text-blue-400" />
                                 </div>
-                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Completado</span>
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest">Completado</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                                <p className="text-4xl sm:text-6xl font-black text-white tracking-tighter">{data.historial_cobrado.length}</p>
+                                <p className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white tracking-tighter transition-colors">{data.historial_cobrado.length}</p>
                                 <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
                             </div>
                         </div>

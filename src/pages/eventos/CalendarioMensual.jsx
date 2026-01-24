@@ -1,12 +1,19 @@
-import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Printer, Download, Plus } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { clsx } from 'clsx';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import logoMb from '../../assets/logo_mb.png';
+
+const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export default function CalendarioMensual({ eventos, onBack, onEventClick, onDateClick }) {
     const { user } = useAuth();
+    const { notify } = useToast();
     const [currentDate, setCurrentDate] = useState(new Date());
+    const calendarRef = useRef(null);
 
     const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay(); // 0 = Domingo
@@ -44,22 +51,43 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
             const fechaStr = e.fecha ? e.fecha.split(' ')[0] : '';
             const d = new Date(fechaStr + 'T12:00:00');
             return d.getDate() === dia;
-            // return parseInt(fechaStr.split('-')[2]) === dia; // Alternative direct mapping
         });
     };
 
-    const handlePrint = () => {
-        window.print();
-    };
+    const [downloading, setDownloading] = useState(false);
 
-    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const handleDownloadImage = async () => {
+        if (!calendarRef.current) return;
+        setDownloading(true);
+        try {
+            const htmlToImage = await import('html-to-image');
+            const dataUrl = await htmlToImage.toPng(calendarRef.current, {
+                quality: 1,
+                pixelRatio: 3,
+                backgroundColor: '#1e2330',
+                cacheBust: true,
+            });
+            const link = document.createElement('a');
+            link.download = `Agenda-${MESES[currentDate.getMonth()]}-${currentDate.getFullYear()}.png`;
+            link.href = dataUrl;
+            link.click();
+            notify("¡Imagen descargada!", "success");
+        } catch (err) {
+            console.error('Error exportando imagen:', err);
+            notify("Error al exportar. Intenta de nuevo.", "error");
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     const changeMonth = (offset) => {
         const newDate = new Date(currentDate);
         newDate.setMonth(newDate.getMonth() + offset);
         setCurrentDate(newDate);
     };
+
+    // Obtener URL de API limpia para imágenes
+    const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace('/api', '');
 
     return (
         <div className="animate-in fade-in duration-500 w-full mb-10">
@@ -70,21 +98,29 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
                         <ChevronLeft />
                     </button>
                     <span className="text-xl font-bold uppercase tracking-widest text-gray-900 dark:text-white w-48 text-center transition-colors">
-                        {meses[currentDate.getMonth()]} {currentDate.getFullYear()}
+                        {MESES[currentDate.getMonth()]} {currentDate.getFullYear()}
                     </span>
                     <button onClick={() => changeMonth(1)} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl text-gray-900 dark:text-white transition-colors">
                         <ChevronRight />
                     </button>
                 </div>
 
-                <Button onClick={handlePrint} className="bg-brand-primary text-white hover:bg-brand-primary/90 px-6 shadow-xl shadow-brand-primary/20">
-                    <Printer className="w-5 h-5 mr-2" />
-                    Imprimir / PDF
+                <Button 
+                    onClick={handleDownloadImage} 
+                    loading={downloading}
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 px-8 shadow-xl shadow-purple-500/30 font-bold"
+                >
+                    <Download className="w-5 h-5 mr-2" />
+                    {downloading ? 'Generando...' : 'Descargar Imagen'}
                 </Button>
             </div>
 
             {/* ÁREA IMPRIMIBLE: Estilo Sistema Dark */}
-            <div id="printable-area" className="w-full bg-white dark:bg-[#1e2330] p-4 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden ring-1 ring-gray-200 dark:ring-white/5 transition-colors duration-500 print:m-0 print:p-4 print:rounded-none print:shadow-none print:w-full print:bg-white print:text-black print:ring-0">
+            <div 
+                ref={calendarRef}
+                id="printable-area" 
+                className="w-full bg-white dark:bg-[#1e2330] p-4 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden ring-1 ring-gray-200 dark:ring-white/5 transition-colors duration-500 print:m-0 print:p-4 print:rounded-none print:shadow-none print:w-full print:bg-white print:text-black print:ring-0"
+            >
                 {/* Logo Marca de Agua */}
                 <div className="absolute top-10 right-10 opacity-5 pointer-events-none print:opacity-10">
                     <div className="w-40 h-40 bg-indigo-500 rounded-full blur-3xl"></div>
@@ -94,17 +130,20 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
                     {/* Header Calendario */}
                     <div className="flex flex-col md:flex-row justify-between items-end mb-4 md:mb-8 border-b border-gray-200 dark:border-white/10 pb-4 print:mb-4 print:border-black/20 gap-4 transition-colors">
                         <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
-                            {/* Logo Banda */}
-                            {user?.banda?.logo ? (
-                                <img src={`/storage/${user.banda.logo}`} alt="Logo" className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg" />
-                            ) : (
-                                <div className="w-12 h-12 md:w-20 md:h-20 bg-indigo-600 rounded-xl flex items-center justify-center text-2xl md:text-4xl font-black text-white shadow-lg shadow-indigo-500/20 shrink-0">
-                                    {user?.banda?.nombre?.charAt(0) || 'MB'}
-                                </div>
-                            )}
+                            {/* Logo Banda - con fallback a Monster Band */}
+                            <img 
+                                src={user?.banda?.logo ? `${apiBaseUrl}/storage/${user.banda.logo}` : logoMb} 
+                                alt="Logo" 
+                                crossOrigin="anonymous"
+                                className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg transition-transform hover:scale-110" 
+                                onError={(e) => {
+                                    console.error("Error logo calendar:", e.target.src);
+                                    e.target.src = logoMb; // Fallback a MB si falla
+                                }}
+                            />
                             <div className="text-right md:text-left">
                                 <h1 className="text-4xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tighter print:text-black leading-none transition-colors">
-                                    {meses[currentDate.getMonth()]}
+                                    {MESES[currentDate.getMonth()]}
                                 </h1>
                                 <p className="text-[10px] md:text-base text-indigo-500 dark:text-indigo-400 font-bold uppercase tracking-[0.2em] md:tracking-[0.4em] ml-1 opacity-80 print:text-gray-600">
                                     Rol de Actividades
@@ -120,7 +159,7 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
 
                     {/* Grilla Días Header */}
                     <div className="grid grid-cols-7 mb-2 text-center">
-                        {diasSemana.map(d => (
+                        {DIAS_SEMANA.map(d => (
                             <div key={d} className="py-2 md:py-3 font-black uppercase tracking-widest text-indigo-600/70 dark:text-indigo-300/70 text-[10px] md:text-xs mx-[1px] transition-colors">
                                 <span className="hidden md:inline">{d}</span>
                                 <span className="md:hidden">{d.charAt(0)}</span>

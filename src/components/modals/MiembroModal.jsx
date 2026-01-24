@@ -26,7 +26,6 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
     const [loading, setLoading] = useState(false);
     const [catalogsLoading, setCatalogsLoading] = useState(true);
     const [catalogs, setCatalogs] = useState({ roles: [], secciones: [], categorias: [], permisos: [], voces: [] });
-    const [createdCredentials, setCreatedCredentials] = useState(null);
     const { notify } = useToast();
 
     const hasEmergencyContact = watch('has_emergency_contact');
@@ -75,8 +74,6 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                     notify("No se pudieron cargar los datos del sistema", "error");
                     setCatalogsLoading(false);
                 });
-            
-            setCreatedCredentials(null);
         }
     }, [isOpen, reset, miembro]);
 
@@ -179,12 +176,9 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                 // CREAR
                 res = await api.post('/miembros', data);
                 notify("Miembro registrado con éxito", "success");
-                setCreatedCredentials(res.data.credentials);
                 
-                if (res.data.credentials?.whatsapp_url) {
-                    window.open(res.data.credentials.whatsapp_url, '_blank');
-                }
                 if (onSuccess) onSuccess(res.data.miembro);
+                onClose(); // Cerrar directamente según solicitud de usuario (CI = Credenciales)
             }
         } catch (error) {
             console.error('Error al guardar miembro:', error);
@@ -234,8 +228,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                     </button>
                 </div>
 
-                {!createdCredentials ? (
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-10 space-y-12">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-10 space-y-12">
                         
                         <section className="space-y-8 animate-in slide-up duration-500">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-4">
@@ -474,7 +467,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         )}
                                     >
                                         <option value="" className="bg-surface-card">Rol...</option>
-                                        {catalogs.roles?.map(r => <option key={r.id_rol} value={r.id_rol.toString()} className="bg-surface-card">{r.rol}</option>)}
+                                        {catalogs.roles?.filter(r => r.rol.toUpperCase() !== 'DIRECTOR').map(r => <option key={r.id_rol} value={r.id_rol.toString()} className="bg-surface-card">{r.rol}</option>)}
                                     </select>
                                     {errors.id_rol && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_rol.message}</p>}
                                 </div>
@@ -555,47 +548,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             </Button>
                         </div>
                     </form>
-                ) : (
-                    <div className="p-8 md:p-16 text-center space-y-10 animate-in zoom-in-95">
-                        <div className="w-24 h-24 bg-green-500/20 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto ring-8 ring-green-500/5">
-                            <ShieldCheck className="w-12 h-12" />
-                        </div>
-                        <div className="space-y-2">
-                            <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">¡Bienvenido a la Banda!</h2>
-                            <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">Credenciales de acceso generadas correctamente</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
-                            <div className="p-6 bg-surface-input rounded-[24px] border border-surface-border text-left group hover:border-brand-primary/30 transition-all">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Usuario</p>
-                                <p className="text-brand-primary font-mono text-2xl truncate">{createdCredentials.username}</p>
-                            </div>
-                            <div className="p-6 bg-surface-input rounded-[24px] border border-surface-border text-left group hover:border-brand-primary/30 transition-all">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Contraseña</p>
-                                <p className="text-brand-primary font-mono text-2xl">{createdCredentials.password}</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col items-center gap-5 pt-4">
-                            <a 
-                                href={createdCredentials.whatsapp_url} 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="w-full max-w-sm flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20bd5c] text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-green-500/20 active:scale-95 text-lg"
-                            >
-                                <MessageCircle className="w-7 h-7" />
-                                Compartir por WhatsApp
-                            </a>
-                            <button 
-                                onClick={onClose}
-                                className="text-gray-500 hover:text-gray-900 dark:hover:text-white font-bold transition-colors text-sm uppercase tracking-widest"
-                            >
-                                Finalizar Registro
-                            </button>
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
-        </div>
     );
 }

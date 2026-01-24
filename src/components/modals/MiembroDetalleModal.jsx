@@ -5,6 +5,7 @@ import ConfirmModal from '../ui/ConfirmModal';
 
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
     const [activeTab, setActiveTab] = useState('profile');
@@ -13,6 +14,8 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
     const [loadingDevices, setLoadingDevices] = useState(false);
     const [confirmState, setConfirmState] = useState({ isOpen: false, type: null, data: null }); // type: 'deleteDevice' | 'resetPass'
     const { notify } = useToast();
+    const { user } = useAuth();
+    const isSuperAdmin = user?.is_super_admin;
 
     useEffect(() => {
         if (isOpen && activeTab === 'scurity' && miembro) {
@@ -147,13 +150,16 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                 <User className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                 Perfil
                              </button>
-                             <button
-                                onClick={() => setActiveTab('scurity')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'scurity' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-                             >
-                                <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
-                                Seguridad
-                             </button>
+                             {/* Solo SuperAdmin puede ver Seguridad */}
+                             {isSuperAdmin && (
+                                 <button
+                                    onClick={() => setActiveTab('scurity')}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'scurity' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                                 >
+                                    <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
+                                    Seguridad
+                                 </button>
+                             )}
                         </div>
                     </div>
                 </div>
