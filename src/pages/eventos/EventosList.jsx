@@ -110,6 +110,7 @@ export default function EventosList() {
                     eventos={eventos} 
                     onEventClick={handleEdit}
                     onDateClick={canManage ? handleCreate : undefined}
+                    canManage={canManage}
                 />
             )}
 

@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, MapPin, Navigation, Radio, AlignLeft, Hash, Home, Users, Plus, Minus, ChevronDown, Activity, Shield, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Calendar, Clock, MapPin, Navigation, AlignLeft, Hash, Home, Plus, ChevronDown, Activity, Shield, DollarSign, LayoutList } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
 import SmartDateInput from '../ui/SmartDateInput';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
+import { clsx } from 'clsx';
 
 export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null, defaultType = null, defaultDate = null }) {
+    const { user } = useAuth();
+    const navigate = useNavigate();
     const { notify } = useToast();
     const [loading, setLoading] = useState(false);
     const [tipos, setTipos] = useState([]);
@@ -84,7 +89,6 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
     // ✅ Cargar datos automáticamente cuando el modal se abre
     useEffect(() => {
         if (isOpen && eventoToEdit) {
-            console.log("✏️ Editando evento:", eventoToEdit);
             setFormData({
                 id_tipo_evento: eventoToEdit.id_tipo_evento || '',
                 evento: eventoToEdit.evento || '',
@@ -98,14 +102,12 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 minutos_cierre: eventoToEdit.minutos_cierre ?? (eventoToEdit.tipo?.minutos_cierre || 60),
                 remunerado: !!eventoToEdit.remunerado,
                 monto_sugerido: eventoToEdit.monto_sugerido || 0,
-                // Mapear solo los campos necesarios para evitar basura en el state
                 requerimientos: eventoToEdit.requerimientos?.map(r => ({
                     id_instrumento: r.id_instrumento,
                     cantidad_necesaria: r.cantidad_necesaria
                 })) || []
             });
         } else if (isOpen) {
-            // Reset para nuevo evento
             setFormData({
                 id_tipo_evento: '',
                 evento: '',
@@ -132,91 +134,49 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
 
     const loadData = async () => {
         setLoading(true);
-        // Cargar Tipos
         try {
             const res = await api.get('/eventos/tipos');
             setTipos(res.data);
-            
-            // Si es un evento nuevo y tenemos un defaultType, lo pre-seleccionamos
             if (!eventoToEdit && defaultType && res.data.length > 0) {
                 const target = res.data.find(t => t.evento.toUpperCase() === defaultType.toUpperCase());
                 if (target) {
                     setFormData(prev => {
                         let next = { ...prev, id_tipo_evento: target.id_tipo_evento };
-                        
-                        // Si es ensayo, disparar lógica de auto-relleno inmediatamente
                         if (target.evento === 'ENSAYO') {
                             next.evento = generateEnsayoTitle(prev.fecha);
                             const sala = LUGARES_FRECUENTES[0];
                             if (sala) {
-                                next.latitud = sala.lat;
-                                next.longitud = sala.lng;
-                                next.direccion = sala.direccion;
-                                next.radio = sala.radio;
+                                next.latitud = sala.lat; next.longitud = sala.lng; next.direccion = sala.direccion; next.radio = sala.radio;
                             }
                         }
                         return next;
                     });
                 }
             }
-        } catch (error) {
-            console.error(error);
-            notify('Error al cargar tipos de evento', 'error');
-        }
+        } catch (error) { console.error(error); }
 
-        // Cargar Instrumentos
         try {
             const res = await api.get('/instrumentos');
-            
-            // Orden personalizado
             const orden = ['PLATILLO', 'TAMBOR', 'BOMBO', 'TROMBÓN', 'CLARINETE', 'BARÍTONO', 'TROMPETA', 'HELICÓN'];
-            
             const ordenados = res.data.sort((a, b) => {
                 const indexA = orden.indexOf(a.instrumento.toUpperCase());
                 const indexB = orden.indexOf(b.instrumento.toUpperCase());
-                
-                // Si no está en la lista, lo manda al final
-                const valA = indexA === -1 ? 999 : indexA;
-                const valB = indexB === -1 ? 999 : indexB;
-                
-                return valA - valB;
+                return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
             });
-
             setInstrumentos(ordenados);
-        } catch (error) {
-            console.error(error);
-            // Fallback
-            try {
-                const res = await api.get('/catalogos/instrumentos');
-                setInstrumentos(res.data);
-            } catch (e) {
-                // ignore
-            }
-        }
+        } catch (error) { console.error(error); }
 
-        // Cargar Miembros
         try {
             const res = await api.get('/miembros');
-            console.log("✅ Miembros cargados:", res.data.length);
             const counts = {};
-            res.data.forEach(m => {
-                if (m.id_instrumento) {
-                    counts[m.id_instrumento] = (counts[m.id_instrumento] || 0) + 1;
-                }
-            });
+            res.data.forEach(m => { if (m.id_instrumento) counts[m.id_instrumento] = (counts[m.id_instrumento] || 0) + 1; });
             setMiembrosPorInstrumento(counts);
-        } catch (error) {
-            console.error(error);
-        }
+        } catch (error) { console.error(error); }
         setLoading(false);
     };
 
-    // 🧠 Lógica inteligente para títulos de ENSAYO
     const generateEnsayoTitle = (dateString) => {
-        // Asegurar que la fecha se interprete correctamente en la zona local, evitando el desfase UTC
-        // Creamos la fecha a las 12 del mediodía para evitar cualquier borde de cambio de día
         const dt = new Date(dateString + 'T12:00:00');
-        
         const dayName = dt.toLocaleDateString('es-BO', { weekday: 'long' }).toUpperCase();
         const dayNum = dt.getDate().toString().padStart(2, '0');
         const monthName = dt.toLocaleDateString('es-BO', { month: 'long' }).toUpperCase();
@@ -226,73 +186,29 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
     const handleTipoChange = (e) => {
         const typeId = e.target.value;
         const selectedTypeObj = tipos.find(t => t.id_tipo_evento == typeId);
-        
         let newFormData = { ...formData, id_tipo_evento: typeId };
-        
-        // AUTO-RELLENO MAGICO PARA ENSAYOS
         if (selectedTypeObj) {
             newFormData.minutos_tolerancia = selectedTypeObj.minutos_tolerancia || 15;
             newFormData.minutos_cierre = selectedTypeObj.minutos_cierre || 60;
-
             if (selectedTypeObj.evento === 'ENSAYO') {
-                // 1. Título automático
                 newFormData.evento = generateEnsayoTitle(formData.fecha);
-                
-                // 2. Ubicación automática (Sala Principal)
                 const sala = LUGARES_FRECUENTES[0];
                 if (sala) {
-                    newFormData.latitud = sala.lat;
-                    newFormData.longitud = sala.lng;
-                    newFormData.direccion = sala.direccion;
-                    newFormData.radio = sala.radio;
+                    newFormData.latitud = sala.lat; newFormData.longitud = sala.lng; newFormData.direccion = sala.direccion; newFormData.radio = sala.radio;
                 }
-                notify('Configuración de ensayo autocompletada 🪄', 'success');
             }
-
-            // Defaults de remuneración por tipo
             const typeName = selectedTypeObj.evento.toUpperCase();
-            if (typeName === 'ENSAYO') {
-                newFormData.remunerado = false;
-            } else if (typeName === 'CONTRATO' || typeName === 'SHOW') {
-                newFormData.remunerado = true;
-            }
+            newFormData.remunerado = (typeName === 'CONTRATO' || typeName === 'SHOW');
         }
-
         setFormData(newFormData);
-        if (errors.id_tipo_evento) setErrors({...errors, id_tipo_evento: null});
-    };
-
-    // Actualizar título si cambia la fecha Y es un ensayo
-    const handleFechaChange = (e) => {
-        const newDate = e.target.value;
-        const currentType = tipos.find(t => t.id_tipo_evento == formData.id_tipo_evento);
-        
-        setFormData(prev => {
-            let nextData = { ...prev, fecha: newDate };
-            // Si es ensayo, regenerar título con la nueva fecha
-            if (currentType && currentType.evento === 'ENSAYO') {
-                nextData.evento = generateEnsayoTitle(newDate);
-            }
-            return nextData;
-        });
-        
-        if (errors.fecha) setErrors({...errors, fecha: null});
     };
 
     const handleToggleInstrumento = (id_instrumento) => {
         setFormData(prev => {
             const reqs = [...prev.requerimientos];
             const idx = reqs.findIndex(r => r.id_instrumento === id_instrumento);
-            
-            if (idx >= 0) {
-                // Remove
-                reqs.splice(idx, 1);
-            } else {
-                // Add with 0 or 1? User asked to enable input. Let's start with 1 or 0? 
-                // "si le das un check... habilite un campo para poner que cantidad" -> start with 0 or empty?
-                // Let's start with 0 to force user input, or 1 as default.
-                reqs.push({ id_instrumento, cantidad_necesaria: 1 });
-            }
+            if (idx >= 0) reqs.splice(idx, 1);
+            else reqs.push({ id_instrumento, cantidad_necesaria: 1 });
             return { ...prev, requerimientos: reqs };
         });
     };
@@ -300,18 +216,11 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
     const handleQuantityChange = (id_instrumento, value) => {
         let cant = parseInt(value) || 0;
         const maxAvailable = miembrosPorInstrumento[id_instrumento] || 0;
-
-        if (cant > maxAvailable) {
-            cant = maxAvailable;
-            notify(`Máximo disponible para este instrumento: ${maxAvailable}`, 'warning');
-        }
-
+        if (cant > maxAvailable) { cant = maxAvailable; notify(`Máximo: ${maxAvailable}`, 'warning'); }
         setFormData(prev => {
             const reqs = [...prev.requerimientos];
             const idx = reqs.findIndex(r => r.id_instrumento === id_instrumento);
-            if (idx >= 0) {
-                reqs[idx].cantidad_necesaria = cant;
-            }
+            if (idx >= 0) reqs[idx].cantidad_necesaria = cant;
             return { ...prev, requerimientos: reqs };
         });
     };
@@ -321,512 +230,185 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         setCreatingType(true);
         try {
             const res = await api.post('/eventos/tipos', { 
-                evento: newTypeName,
-                minutos_antes_marcar: newTypeMinAntes,
-                horas_despues_sellar: newTypeHrsSellar,
-                minutos_tolerancia: newTypeMinTolerancia,
-                minutos_cierre: newTypeMinCierre
+                evento: newTypeName, minutos_antes_marcar: newTypeMinAntes, horas_despues_sellar: newTypeHrsSellar, minutos_tolerancia: newTypeMinTolerancia, minutos_cierre: newTypeMinCierre
             });
             setTipos(prev => [...prev, res.data]);
             setFormData(prev => ({ ...prev, id_tipo_evento: res.data.id_tipo_evento }));
-            setNewTypeName('');
-            setShowNewTypeForm(false);
-            notify('¡Nuevo tipo de evento creado!', 'success');
-        } catch (error) {
-            console.error(error);
-            notify(error.response?.data?.message || 'Error al crear tipo', 'error');
-        } finally {
-            setCreatingType(false);
-        }
+            setNewTypeName(''); setShowNewTypeForm(false);
+            notify('¡Nuevo tipo creado!', 'success');
+        } catch (error) { console.error(error); } finally { setCreatingType(false); }
     };
 
     const handleSelectAll = (checked) => {
         if (checked) {
-            // Seleccionar SOLO los instrumentos que tengan miembros disponibles
             const allReqs = instrumentos.map(inst => {
                 const available = miembrosPorInstrumento[inst.id_instrumento] || 0;
-                if (available > 0) {
-                    return {
-                        id_instrumento: inst.id_instrumento,
-                        cantidad_necesaria: available
-                    };
-                }
-                return null;
-            }).filter(Boolean); // Eliminar nulos (los que tienen 0 disponibles)
-            
+                return available > 0 ? { id_instrumento: inst.id_instrumento, cantidad_necesaria: available } : null;
+            }).filter(Boolean);
             setFormData(prev => ({ ...prev, requerimientos: allReqs }));
-        } else {
-            setFormData(prev => ({ ...prev, requerimientos: [] }));
-        }
+        } else setFormData(prev => ({ ...prev, requerimientos: [] }));
     };
 
-    const getRequerimiento = (id_instrumento) => {
-        return formData.requerimientos?.find(r => r.id_instrumento === id_instrumento);
-    };
-
+    const getRequerimiento = (id_instrumento) => formData.requerimientos?.find(r => r.id_instrumento === id_instrumento);
     const selectedTipo = tipos.find(t => t.id_tipo_evento == formData.id_tipo_evento);
     const showRequerimientos = selectedTipo && selectedTipo.evento !== 'ENSAYO';
-
     const [errors, setErrors] = useState({});
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.id_tipo_evento) newErrors.id_tipo_evento = 'El tipo de evento es requerido';
-        if (!formData.evento.trim()) newErrors.evento = 'El título del evento es requerido';
-        if (!formData.fecha) newErrors.fecha = 'La fecha es requerida';
-        if (!formData.hora) newErrors.hora = 'La hora es requerida';
-        if (!formData.latitud || !formData.longitud) newErrors.ubicacion = 'Debes seleccionar una ubicación en el mapa';
-
+        if (!formData.id_tipo_evento) newErrors.id_tipo_evento = 'Requerido';
+        if (!formData.evento.trim()) newErrors.evento = 'Requerido';
+        if (!formData.fecha) newErrors.fecha = 'Requerido';
+        if (!formData.hora) newErrors.hora = 'Requerido';
+        if (!formData.latitud || !formData.longitud) newErrors.ubicacion = 'Requerido';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const scrollToError = () => {
-        const firstError = document.querySelector('.has-error');
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstError.focus();
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (!validateForm()) {
-            notify('Por favor completa los campos obligatorios', 'error');
-            setTimeout(scrollToError, 100);
-            return;
-        }
-
+        if (!validateForm()) { notify('Completar campos', 'error'); return; }
         setLoading(true);
-
         try {
-            if (eventoToEdit) {
-                await api.put(`/eventos/${eventoToEdit.id_evento}`, formData);
-                notify('Evento actualizado exitosamente', 'success');
-            } else {
-                await api.post('/eventos', formData);
-                notify('Evento creado exitosamente', 'success');
-            }
-            onSuccess();
-            onClose();
-        } catch (error) {
-            console.error(error);
-            const msg = error.response?.data?.message || 'Error al guardar el evento';
-            notify(msg, 'error');
-        } finally {
-            setLoading(false);
-        }
+            if (eventoToEdit) await api.put(`/eventos/${eventoToEdit.id_evento}`, formData);
+            else await api.post('/eventos', formData);
+            onSuccess(); onClose();
+            notify('Guardado exitosamente', 'success');
+        } catch (error) { console.error(error); } finally { setLoading(false); }
     };
+
+    const canEdit = user?.role === 'ADMIN' || user?.role === 'DIRECTOR' || !!user?.is_super_admin;
+    const isEditing = !!eventoToEdit;
 
     if (!isOpen) return null;
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
             <div className="relative w-full max-w-2xl max-h-[90vh] bg-surface-card border border-surface-border rounded-3xl shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
-                
-                {/* Header */}
-                <div className="flex-none px-6 py-4 border-b border-surface-border flex justify-between items-center transition-colors">
+                <div className="flex-none px-6 py-4 border-b border-surface-border flex justify-between items-center">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">
-                            {eventoToEdit ? 'EDITAR EVENTO' : 'NUEVO EVENTO'}
+                            {!canEdit ? 'DETALLES DEL EVENTO' : isEditing ? 'EDITAR EVENTO' : 'NUEVO EVENTO'}
                         </h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Programación de actividades</p>
+                        <p className="text-sm text-gray-500 font-medium">{!canEdit ? 'Información de programación' : 'Programación de actividades'}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                        <X className="w-6 h-6" />
-                    </button>
+                    <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full text-gray-400 transition-colors"><X className="w-6 h-6" /></button>
                 </div>
 
-                {/* Formulario con Scroll */}
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-                    <div className="space-y-8">
-                        
-                        {/* 1. DATOS PRINCIPALES */}
-                        <div className="space-y-6">
-                            {/* Tipo de Evento */}
-                            <div className={`space-y-2 ${errors.id_tipo_evento ? 'has-error' : ''}`}>
-                                <div className="flex items-center justify-between ml-1">
-                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                                        Tipo de Evento <span className="text-red-500">*</span>
-                                    </label>
-                                    <button 
-                                        type="button"
-                                        onClick={() => setShowNewTypeForm(!showNewTypeForm)}
-                                        className="text-[10px] font-black text-brand-primary hover:text-brand-dark dark:hover:text-white transition-colors uppercase tracking-widest flex items-center gap-1"
-                                    >
-                                        {showNewTypeForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
-                                        {showNewTypeForm ? 'CANCELAR' : 'AÑADIR OTRO TIPO'}
-                                    </button>
+                <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                    {!canEdit ? (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            {/* INFO CARD MINIMALISTA */}
+                            <div className={clsx("p-4 rounded-2xl border-l-4 flex items-center justify-between", selectedTipo?.evento === 'CONTRATO' ? "bg-purple-500/10 border-purple-500" : selectedTipo?.evento === 'BANDIN' ? "bg-orange-500/10 border-orange-500" : "bg-indigo-500/10 border-indigo-500")}>
+                                <div className="flex items-center gap-3">
+                                    <Hash className="w-5 h-5 text-indigo-500" />
+                                    <span className="font-black uppercase tracking-widest text-xs">{selectedTipo?.evento || 'EVENTO'}</span>
                                 </div>
-
-                                {showNewTypeForm ? (
-                                    <div className="space-y-3 p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-2xl animate-in slide-in-from-top-2 duration-300">
-                                        <div className="relative">
-                                            <Hash className="absolute left-4 top-3.5 w-5 h-5 text-brand-primary" />
-                                            <input 
-                                                autoFocus
-                                                value={newTypeName}
-                                                onChange={(e) => setNewTypeName(e.target.value.toUpperCase())}
-                                                placeholder="NOMBRE DEL TIPO (EJ: BAUTIZO)"
-                                                className="w-full pl-12 pr-4 py-3 bg-black/5 dark:bg-black/20 border border-brand-primary/30 rounded-xl text-gray-900 dark:text-white font-bold outline-none placeholder:text-brand-primary/30 text-sm transition-colors"
-                                            />
-                                        </div>
-                                        
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div className="space-y-1">
-                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Abrir (Min previos)</label>
-                                                <div className="relative">
-                                                    <Clock className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
-                                                    <input 
-                                                        type="number"
-                                                        value={newTypeMinAntes}
-                                                        onChange={(e) => setNewTypeMinAntes(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Cierre Automático (Min)</label>
-                                                <div className="relative">
-                                                    <X className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
-                                                    <input 
-                                                        type="number"
-                                                        value={newTypeMinCierre}
-                                                        onChange={(e) => setNewTypeMinCierre(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Tolerancia (Min)</label>
-                                                <div className="relative">
-                                                    <Shield className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
-                                                    <input 
-                                                        type="number"
-                                                        value={newTypeMinTolerancia}
-                                                        onChange={(e) => setNewTypeMinTolerancia(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <label className="text-[9px] font-black text-brand-primary uppercase ml-1">Sellar Auditoría (Hrs)</label>
-                                                <div className="relative">
-                                                    <Activity className="absolute left-3 top-2.5 w-3.5 h-3.5 text-brand-primary/50" />
-                                                    <input 
-                                                        type="number"
-                                                        value={newTypeHrsSellar}
-                                                        onChange={(e) => setNewTypeHrsSellar(parseInt(e.target.value) || 0)}
-                                                        className="w-full pl-9 pr-3 py-2 bg-black/5 dark:bg-black/20 border border-brand-primary/20 rounded-lg text-gray-900 dark:text-white font-bold outline-none text-xs transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex gap-2">
-                                            <Button 
-                                                type="button"
-                                                variant="ghost"
-                                                onClick={() => setShowNewTypeForm(false)}
-                                                className="flex-1 h-10 text-[10px] font-black"
-                                            >
-                                                CANCELAR
-                                            </Button>
-                                            <Button 
-                                                type="button"
-                                                onClick={handleCreateNewType}
-                                                loading={creatingType}
-                                                className="flex-[2] h-10 bg-brand-primary text-[10px] font-black"
-                                            >
-                                                GUARDAR TIPO 🪄
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="relative group">
-                                        <Hash className={`absolute left-4 top-3.5 w-5 h-5 z-10 transition-colors ${errors.id_tipo_evento ? 'text-red-500' : 'text-gray-400 group-focus-within:text-brand-primary'}`} />
-                                        <select 
-                                            value={formData.id_tipo_evento}
-                                            onChange={handleTipoChange}
-                                            className={`w-full pl-12 pr-10 py-3 bg-surface-input border rounded-xl text-gray-900 dark:text-white font-bold outline-none appearance-none cursor-pointer transition-all ${
-                                                errors.id_tipo_evento ? 'border-red-500/50 bg-red-500/5' : 'border-surface-border focus:border-brand-primary hover:border-gray-300 dark:hover:border-white/20'
-                                            }`}
-                                        >
-                                            <option value="" disabled className="bg-surface-card">SELECCIONE UN TIPO...</option>
-                                            {tipos.map(t => (
-                                                <option key={t.id_tipo_evento} value={t.id_tipo_evento} className="bg-surface-card">{t.evento}</option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute right-4 top-4 pointer-events-none text-gray-400 group-hover:text-gray-600 dark:group-hover:text-white transition-colors">
-                                            <ChevronDown className="w-4 h-4" />
-                                        </div>
-                                    </div>
-                                )}
-                                {errors.id_tipo_evento && <p className="text-xs text-red-500 font-bold ml-1">{errors.id_tipo_evento}</p>}
+                                {formData.remunerado && <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-black text-emerald-500 uppercase">Remunerado</div>}
                             </div>
-
-                            {/* Título */}
-                            <div className={`space-y-2 ${errors.evento ? 'has-error' : ''}`}>
-                                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">
-                                    Título <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative group">
-                                    <AlignLeft className={`absolute left-4 top-3.5 w-5 h-5 z-10 transition-colors ${errors.evento ? 'text-red-500' : 'text-gray-400 group-focus-within:text-brand-primary'}`} />
-                                    <input 
-                                        value={formData.evento}
-                                        onChange={(e) => {
-                                            setFormData({...formData, evento: e.target.value.toUpperCase()});
-                                            if (errors.evento) setErrors({...errors, evento: null});
-                                        }}
-                                        className={`w-full pl-12 pr-4 py-3 bg-surface-input border rounded-xl text-gray-900 dark:text-white font-bold outline-none uppercase transition-all ${
-                                            errors.evento ? 'border-red-500/50 bg-red-500/5' : 'border-surface-border focus:border-brand-primary'
-                                        }`}
-                                    />
-                                </div>
-                                {errors.evento && <p className="text-xs text-red-500 font-bold ml-1">{errors.evento}</p>}
-                            </div>
-
-                            {/* Fecha y Hora */}
+                            <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic px-2">{formData.evento}</h3>
                             <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-surface-input border border-surface-border p-4 rounded-2xl flex items-center gap-4">
+                                    <Calendar className="w-6 h-6 text-indigo-500" />
+                                    <div><span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Fecha</span><span className="font-black text-gray-900 dark:text-white">{formData.fecha}</span></div>
+                                </div>
+                                <div className="bg-surface-input border border-surface-border p-4 rounded-2xl flex items-center gap-4">
+                                    <Clock className="w-6 h-6 text-indigo-500" />
+                                    <div><span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Hora</span><span className="font-black text-gray-900 dark:text-white">{formData.hora} HS</span></div>
+                                </div>
+                            </div>
+                            <div className="bg-surface-input border border-surface-border p-5 rounded-2xl space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <MapPin className="w-5 h-5 text-emerald-500" />
+                                    <div><span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Punto de Encuentro</span><span className="font-bold text-gray-900 dark:text-white uppercase">{formData.direccion || 'Ubicación de la banda'}</span></div>
+                                </div>
+                                <div className="h-[200px] rounded-xl overflow-hidden border border-surface-border shadow-inner">
+                                    <MapPicker staticView label="Mapa" value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} radius={formData.radio} />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            {/* FORMULARIO COMPLETO PARA ADMIN */}
+                            <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <SmartDateInput 
-                                        label="Fecha"
-                                        value={formData.fecha}
-                                        onChange={(val) => {
-                                            const currentType = tipos.find(t => t.id_tipo_evento == formData.id_tipo_evento);
-                                            setFormData(prev => {
-                                                let nextData = { ...prev, fecha: val };
-                                                if (currentType && currentType.evento === 'ENSAYO') {
-                                                    nextData.evento = generateEnsayoTitle(val);
-                                                }
-                                                return nextData;
-                                            });
-                                            if (errors.fecha) setErrors({...errors, fecha: null});
-                                        }}
-                                        min={getLocalDateString()}
-                                        error={errors.fecha}
-                                    />
-                                </div>
-                                <div className={`space-y-2 ${errors.hora ? 'has-error' : ''}`}>
-                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-1">Hora</label>
-                                    <div className="relative group">
-                                        <Clock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
-                                        <input 
-                                            type="time"
-                                            value={formData.hora}
-                                            onChange={(e) => setFormData({...formData, hora: e.target.value})}
-                                            className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
-                                        />
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tipo de Evento</label>
+                                        <button type="button" onClick={() => setShowNewTypeForm(!showNewTypeForm)} className="text-[10px] font-black text-brand-primary uppercase tracking-widest">
+                                            {showNewTypeForm ? 'CANCELAR' : 'AÑADIR TIPO'}
+                                        </button>
                                     </div>
-                                    {errors.hora && <p className="text-xs text-red-500 font-bold ml-1">{errors.hora}</p>}
+                                    <select value={formData.id_tipo_evento} onChange={handleTipoChange} className="w-full p-3 bg-surface-input border border-surface-border rounded-xl font-bold">
+                                        <option value="" disabled>Seleccione...</option>
+                                        {tipos.map(t => <option key={t.id_tipo_evento} value={t.id_tipo_evento}>{t.evento}</option>)}
+                                    </select>
                                 </div>
-                            </div>
-
-                            {/* DETALLES FINANCIEROS */}
-                            <div className="p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-2xl space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="p-2 bg-emerald-500/20 rounded-lg">
-                                            <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-[11px] font-black text-gray-900 dark:text-white uppercase tracking-wider">¿Es actividad remunerada?</h4>
-                                            <p className="text-[9px] text-gray-500 dark:text-gray-400 font-medium">Define si el músico recibe un pago por asistir</p>
-                                        </div>
-                                    </div>
-                                    <button 
-                                        type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, remunerado: !prev.remunerado }))}
-                                        className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ${formData.remunerado ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-700'}`}
-                                    >
-                                        <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 ${formData.remunerado ? 'translate-x-6' : 'translate-x-0'}`} />
-                                    </button>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Título</label>
+                                    <input value={formData.evento} onChange={(e) => setFormData({...formData, evento: e.target.value.toUpperCase()})} className="w-full p-3 bg-surface-input border border-surface-border rounded-xl font-bold uppercase" />
                                 </div>
-                            </div>
-
-                            {/* Configuración de Asistencia */}
-                            <div className="pt-4 border-t border-surface-border space-y-4">
-                                <div className="flex items-center gap-2">
-                                    <Shield className="w-4 h-4 text-brand-primary" />
-                                    <h4 className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-widest">Reglas de Asistencia</h4>
-                                </div>
-
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center px-1">
-                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Tolerancia</label>
-                                            <span className="text-[10px] font-black text-brand-primary">+{formData.minutos_tolerancia} MIN</span>
-                                        </div>
-                                        <div className="relative group">
-                                            <Shield className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
-                                            <input 
-                                                type="number"
-                                                value={formData.minutos_tolerancia}
-                                                onChange={(e) => setFormData({...formData, minutos_tolerancia: parseInt(e.target.value) || 0})}
-                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
-                                                placeholder="Minutos"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center px-1">
-                                            <label className="text-[10px] font-bold text-gray-500 uppercase">Tiempo Límite</label>
-                                            <span className="text-[10px] font-black text-red-500">CIERRE: {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}</span>
-                                        </div>
-                                        <div className="relative group">
-                                            <X className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
-                                            <input 
-                                                type="number"
-                                                value={formData.minutos_cierre}
-                                                onChange={(e) => setFormData({...formData, minutos_cierre: parseInt(e.target.value) || 0})}
-                                                className="w-full pl-12 pr-4 py-3 bg-surface-input border border-surface-border rounded-xl text-gray-900 dark:text-white font-bold outline-none focus:border-brand-primary transition-all"
-                                                placeholder="Minutos"
-                                            />
-                                        </div>
+                                    <SmartDateInput label="Fecha" value={formData.fecha} onChange={(val) => {
+                                        const currentType = tipos.find(t => t.id_tipo_evento == formData.id_tipo_evento);
+                                        setFormData(prev => {
+                                            let next = { ...prev, fecha: val };
+                                            if (currentType?.evento === 'ENSAYO') next.evento = generateEnsayoTitle(val);
+                                            return next;
+                                        });
+                                    }} />
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Hora</label>
+                                        <input type="time" value={formData.hora} onChange={(e) => setFormData({...formData, hora: e.target.value})} className="w-full p-3 bg-surface-input border border-surface-border rounded-xl font-bold" />
                                     </div>
                                 </div>
-                                <p className="text-[9px] text-gray-500 dark:text-gray-400 font-medium italic px-1">
-                                    * Los músicos podran marcar asistencia hasta las {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}. Después de esa hora, se considerarán FALTA automáticamente.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* 2. REQUERIMIENTOS (Condicional) */}
-                        {showRequerimientos && (
-                            <div className="space-y-4 pt-4 border-t border-surface-border">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Requerimientos</label>
-                                    <div className="flex items-center gap-2">
-                                        <input 
-                                            type="checkbox" 
-                                            onChange={(e) => handleSelectAll(e.target.checked)}
-                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
-                                            id="selectAll"
-                                        />
-                                        <label htmlFor="selectAll" className="text-xs font-bold text-gray-900 dark:text-white cursor-pointer select-none">
-                                            Seleccionar Todo (Full Casa)
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {instrumentos.map(inst => {
-                                        const req = getRequerimiento(inst.id_instrumento);
-                                        const isChecked = !!req;
-                                        const cantidad = req ? req.cantidad_necesaria : '';
-                                        const maxAvailable = miembrosPorInstrumento[inst.id_instrumento] || 0;
-
-                                        return (
-                                            <div key={inst.id_instrumento} 
-                                                className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                                                    isChecked ? 'bg-brand-primary/10 border-brand-primary/30' : 'bg-surface-input border-surface-border'
-                                                }`}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <input 
-                                                        type="checkbox"
-                                                        checked={isChecked}
-                                                        onChange={() => handleToggleInstrumento(inst.id_instrumento)}
-                                                        className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-brand-primary bg-surface-input cursor-pointer"
-                                                    />
-                                                    <div>
-                                                        <span className={`text-sm font-bold block transition-colors ${isChecked ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
-                                                            {inst.instrumento}
-                                                        </span>
-                                                        <span className="text-[10px] text-gray-500">Disponible: {maxAvailable}</span>
-                                                    </div>
-                                                </div>
-                                                {isChecked && (
-                                                    <input 
-                                                        type="number"
-                                                        min="1"
-                                                        max={maxAvailable}
-                                                        value={cantidad}
-                                                        onChange={(e) => handleQuantityChange(inst.id_instrumento, e.target.value)}
-                                                        className="w-16 py-1 px-2 bg-gray-200 dark:bg-black/20 border border-surface-border rounded-lg text-center text-sm font-bold text-gray-900 dark:text-white outline-none"
-                                                    />
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* 3. UBICACIÓN (Mapa) */}
-                        <div className="space-y-4 pt-4 border-t border-surface-border">
-                            <div className="flex items-center justify-between">
-                                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Ubicación</label>
-                                {LUGARES_FRECUENTES.length > 0 && (
-                                    <button 
-                                        type="button"
-                                        onClick={() => handleSetLugar(LUGARES_FRECUENTES[0])}
-                                        className="text-xs flex items-center gap-1 text-brand-primary hover:text-brand-dark dark:hover:text-brand-light transition-colors font-bold px-3 py-1 bg-brand-primary/10 rounded-lg"
-                                    >
-                                        <Home className="w-3 h-3" />
-                                        {LUGARES_FRECUENTES[0].nombre}
+                                <div className="p-4 bg-brand-primary/5 border border-brand-primary/10 rounded-2xl flex justify-between items-center">
+                                    <div><span className="block text-xs font-black uppercase tracking-tight">Actividad Remunerada</span><span className="text-[10px] text-gray-500">Aplica pago a músicos</span></div>
+                                    <button type="button" onClick={() => setFormData(p => ({...p, remunerado: !p.remunerado}))} className={clsx("w-12 h-6 rounded-full p-1 transition-colors", formData.remunerado ? "bg-emerald-500" : "bg-gray-300")}>
+                                        <div className={clsx("w-4 h-4 bg-white rounded-full transition-transform", formData.remunerado ? "translate-x-6" : "translate-x-0")} />
                                     </button>
-                                )}
-                            </div>
-
-                            <div className={`h-[250px] w-full rounded-2xl overflow-hidden border relative transition-all ${errors.ubicacion ? 'border-red-500' : 'border-surface-border'}`}>
-                                <MapPicker 
-                                    label="Mapa"
-                                    value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null}
-                                    radius={formData.radio}
-                                    onChange={(coords) => {
-                                        setFormData(prev => ({ ...prev, latitud: coords.lat, longitud: coords.lng }));
-                                        if (errors.ubicacion) setErrors({...errors, ubicacion: null});
-                                    }}
-                                />
-                                {errors.ubicacion && (
-                                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-lg z-[1000]">
-                                        {errors.ubicacion}
+                                </div>
+                                <div className="space-y-4 pt-4 border-t border-surface-border">
+                                    <div className="h-[200px] rounded-2xl overflow-hidden border border-surface-border shadow-sm">
+                                        <MapPicker value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} radius={formData.radio} onChange={(c) => setFormData(p => ({...p, latitud: c.lat, longitud: c.lng}))} />
+                                    </div>
+                                    <Input placeholder="Dirección / Referencia" value={formData.direccion} onChange={(e) => setFormData({...formData, direccion: e.target.value.toUpperCase()})} className="uppercase" />
+                                </div>
+                                {showRequerimientos && (
+                                    <div className="pt-4 border-t border-surface-border space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Requerido</span>
+                                            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" onChange={(e) => handleSelectAll(e.target.checked)} className="w-4 h-4" /><span className="text-xs font-bold uppercase">Full Casa</span></label>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {instrumentos.map(inst => (
+                                                <div key={inst.id_instrumento} className={clsx("p-2 rounded-xl border flex items-center justify-between transition-colors", getRequerimiento(inst.id_instrumento) ? "bg-brand-primary/10 border-brand-primary/30" : "bg-surface-input border-surface-border")}>
+                                                    <div className="flex items-center gap-2">
+                                                        <input type="checkbox" checked={!!getRequerimiento(inst.id_instrumento)} onChange={() => handleToggleInstrumento(inst.id_instrumento)} className="w-4 h-4" />
+                                                        <span className="text-[10px] font-bold uppercase">{inst.instrumento}</span>
+                                                    </div>
+                                                    {getRequerimiento(inst.id_instrumento) && <input type="number" min="1" value={getRequerimiento(inst.id_instrumento).cantidad_necesaria} onChange={(e) => handleQuantityChange(inst.id_instrumento, e.target.value)} className="w-10 text-center text-xs font-bold bg-white dark:bg-black/20 rounded-md py-0.5" />}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
+                        </form>
+                    )}
+                </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="relative group">
-                                    <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-brand-primary transition-colors" />
-                                    <Input 
-                                        placeholder="Dirección / Referencia"
-                                        value={formData.direccion}
-                                        onChange={(e) => setFormData({...formData, direccion: e.target.value.toUpperCase()})}
-                                        className="pl-12 uppercase"
-                                    />
-                                </div>
-                                <div className="space-y-2 px-3 py-2 bg-surface-input rounded-xl border border-surface-border">
-                                    <div className="flex justify-between">
-                                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 transition-colors">RADIO</span>
-                                        <span className="text-xs font-bold text-brand-primary">{formData.radio}m</span>
-                                    </div>
-                                    <input 
-                                        type="range" 
-                                        min="10" 
-                                        max="500" 
-                                        step="10" 
-                                        value={formData.radio} 
-                                        onChange={(e) => setFormData({...formData, radio: parseInt(e.target.value)})}
-                                        className="w-full h-1.5 bg-gray-300 dark:bg-black/40 rounded-lg appearance-none cursor-pointer accent-brand-primary"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
+                <div className="flex-none p-4 border-t border-surface-border bg-surface-card flex justify-between gap-3 rounded-b-3xl">
+                    <div className="flex gap-2">
+                        {isEditing && (
+                            <Button variant="secondary" type="button" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest" onClick={() => navigate(`/dashboard/eventos/${eventoToEdit.id_evento}/convocatoria`)}>
+                                <LayoutList className="w-4 h-4 mr-2" />Ver Convocatoria
+                            </Button>
+                        )}
                     </div>
-                </form>
-
-                {/* Footer */}
-                <div className="flex-none p-4 border-t border-surface-border bg-surface-card flex justify-end gap-3 rounded-b-3xl">
-                    <Button variant="ghost" onClick={onClose} disabled={loading}>
-                        Cancelar
-                    </Button>
-                    <Button variant="monster" onClick={handleSubmit} loading={loading}>
-                        {eventoToEdit ? 'Guardar Cambios' : 'Agendar Evento'}
-                    </Button>
+                    <div className="flex gap-3">
+                        <Button variant="ghost" onClick={onClose} className="h-10 px-6 text-[10px] font-black">{!canEdit ? 'CERRAR' : 'CANCELAR'}</Button>
+                        {canEdit && <Button variant="monster" onClick={handleSubmit} loading={loading} className="h-10 px-6 text-[10px] font-black uppercase">{isEditing ? 'GUARDAR' : 'AGENDAR'}</Button>}
+                    </div>
                 </div>
             </div>
         </div>,

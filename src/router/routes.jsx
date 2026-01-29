@@ -14,6 +14,7 @@ import MainLayout from '../layouts/MainLayout';
 import PagosAdmin from '../pages/pagos/PagosAdmin';
 import MisPagos from '../pages/pagos/MisPagos';
 import ReportesHome from '../pages/reportes/ReportesHome';
+import FormacionesList from '../pages/miembros/FormacionesList';
 import { Navigate } from 'react-router-dom';
 
 import NotificationsList from '../pages/notificaciones/NotificationsList';
@@ -30,6 +31,7 @@ const routes = [
         children: [
             { index: true, element: <DashboardHome /> },
             { path: 'miembros', element: <MiembrosList /> },
+            { path: 'formaciones', element: <FormacionesList /> },
             { path: 'roles', element: <RolesList /> },
             { path: 'secciones', element: <SeccionesList /> },
             { path: 'pagos', element: <PagosAdmin /> },

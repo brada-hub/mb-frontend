@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, ArrowUpRight, Clock, MapPin } from 'lucide-react';
+import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, ArrowUpRight, Clock, MapPin, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { clsx } from 'clsx';
 import api from '../../api';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 // --- Componentes ---
-const StatCard = ({ title, value, label, icon: Icon, color, loading }) => {
+const StatCard = ({ title, value, label, icon: Icon, color, loading, onClick }) => {
     const colors = {
         indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
         emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
@@ -16,7 +16,14 @@ const StatCard = ({ title, value, label, icon: Icon, color, loading }) => {
     };
 
     return (
-        <motion.div whileHover={{ y: -4 }} className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-all hover:shadow-xl dark:hover:shadow-none">
+        <motion.div 
+            whileHover={{ y: -4 }} 
+            onClick={onClick}
+            className={clsx(
+                "bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-all hover:shadow-xl dark:hover:shadow-none",
+                onClick && "cursor-pointer active:scale-95 transition-transform"
+            )}
+        >
             <div className={clsx("p-3 rounded-xl border w-fit mb-4", colors[color])}>
                 <Icon className="w-5 h-5" />
             </div>
@@ -129,10 +136,10 @@ export default function DashboardDirector() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard title="Miembros" value={data?.stats?.miembros?.total || 0} icon={Users} color="indigo" loading={loading} label="Staff Activo" />
-                    <StatCard title="Asistencia" value={`${data?.stats?.asistencia?.promedio || 0}%`} icon={Activity} color="emerald" loading={loading} label="Promedio Global" />
-                    <StatCard title="Eventos Hoy" value={data?.stats?.eventos?.hoy || 0} icon={Calendar} color="amber" loading={loading} label={`${data?.stats?.eventos?.proximos || 0} Esta Semana`} />
-                    <StatCard title="Finanzas" value={`$${data?.stats?.finanzas?.mes || 0}`} icon={DollarSign} color="rose" loading={loading} label="Balance del Mes" />
+                    <StatCard title="Miembros" value={data?.stats?.miembros?.total || 0} icon={Users} color="indigo" loading={loading} label="Staff Activo" onClick={() => navigate('/dashboard/miembros')} />
+                    <StatCard title="Asistencia" value={`${data?.stats?.asistencia?.promedio || 0}%`} icon={Activity} color="emerald" loading={loading} label="Promedio Global" onClick={() => navigate('/dashboard/asistencia')} />
+                    <StatCard title="Eventos Hoy" value={data?.stats?.eventos?.hoy || 0} icon={Calendar} color="indigo" loading={loading} label={`${data?.stats?.eventos?.proximos || 0} Esta Semana`} onClick={() => navigate('/dashboard/eventos')} />
+                    <StatCard title="Listas Pendientes" value={data?.stats?.eventos?.pendientes_formacion || 0} icon={Layers} color="amber" loading={loading} label="Por armar o completar" onClick={() => navigate('/dashboard/formaciones')} />
                 </div>
 
                 {/* Main Grid */}

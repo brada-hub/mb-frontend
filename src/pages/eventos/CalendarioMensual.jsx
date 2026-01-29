@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, LayoutGrid } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { clsx } from 'clsx';
 import { useAuth } from '../../context/AuthContext';
@@ -9,9 +10,10 @@ import logoMb from '../../assets/logo_mb.png';
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-export default function CalendarioMensual({ eventos, onBack, onEventClick, onDateClick }) {
+export default function CalendarioMensual({ eventos, onBack, onEventClick, onDateClick, canManage }) {
     const { user } = useAuth();
     const { notify } = useToast();
+    const navigate = useNavigate();
     const [currentDate, setCurrentDate] = useState(new Date());
     const calendarRef = useRef(null);
 
@@ -105,14 +107,24 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
                     </button>
                 </div>
 
-                <Button 
-                    onClick={handleDownloadImage} 
-                    loading={downloading}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 px-8 shadow-xl shadow-purple-500/30 font-bold"
-                >
-                    <Download className="w-5 h-5 mr-2" />
-                    {downloading ? 'Generando...' : 'Descargar Imagen'}
-                </Button>
+                <div className="flex items-center gap-3">
+                    <button 
+                        onClick={() => navigate('/dashboard/reportes')} 
+                        className="px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-indigo-400 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95"
+                    >
+                        <LayoutGrid className="w-4 h-4" />
+                        Ver Matriz
+                    </button>
+
+                    <Button 
+                        onClick={handleDownloadImage} 
+                        loading={downloading}
+                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 px-8 py-6 rounded-2xl shadow-xl shadow-purple-500/30 text-[10px] font-black uppercase tracking-widest active:scale-95"
+                    >
+                        <Download className="w-4 h-4 mr-2" />
+                        {downloading ? 'Generando...' : 'Descargar Imagen'}
+                    </Button>
+                </div>
             </div>
 
             {/* ÁREA IMPRIMIBLE: Estilo Sistema Dark */}
@@ -196,11 +208,13 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
                                                 )}>
                                                     {dia}
                                                 </span>
-                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
-                                                    <div className="w-5 h-5 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                                        <Plus className="w-3 h-3" />
+                                                {canManage && (
+                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity print:hidden">
+                                                        <div className="w-5 h-5 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                                            <Plus className="w-3 h-3" />
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                )}
                                             </div>
                                             
                                             <div className="mt-4 space-y-1">

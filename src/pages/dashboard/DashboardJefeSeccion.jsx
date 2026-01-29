@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, Clock, MapPin, ChevronRight, Music, BookOpen, UserCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, Clock, MapPin, ChevronRight, Music, BookOpen, UserCheck, AlertCircle, CheckCircle2, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { clsx } from 'clsx';
 import api from '../../api';
@@ -146,9 +146,20 @@ export default function DashboardJefeSeccion() {
                     <div className="space-y-6">
                         
                         {/* Accesos Rápidos */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors">
-                            <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4">Acceso Rápido</h2>
+                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors shadow-sm">
+                            <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4 uppercase">Área de Gestión</h2>
                             <div className="space-y-3">
+                                <button onClick={() => navigate('/dashboard/formaciones')} className="w-full flex items-center gap-4 p-4 bg-amber-500/5 hover:bg-amber-500/10 rounded-xl transition-all group border border-amber-500/10 hover:border-amber-500/30">
+                                    <div className="p-2 bg-amber-500/20 rounded-lg text-amber-500">
+                                        <Layers className="w-5 h-5 shrink-0" />
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-sm font-black text-amber-500 block uppercase tracking-tight leading-none mb-1">Armar Mis Listas</span>
+                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{data?.stats?.eventos?.pendientes_formacion || 0} Pendientes</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-amber-500/40 ml-auto group-hover:translate-x-1 transition-transform" />
+                                </button>
+
                                 <button onClick={() => navigate('/dashboard/eventos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group">
                                     <Calendar className="w-5 h-5 text-indigo-500" />
                                     <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Mi Agenda</span>

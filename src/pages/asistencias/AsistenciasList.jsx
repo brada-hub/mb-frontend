@@ -310,6 +310,33 @@ export default function AsistenciasList() {
         loadListaAsistencia(evento.id_evento);
     };
 
+    const handleMarcarPropia = async () => {
+        if (!selectedEvento) return;
+        setSaving(true);
+        try {
+            // Get location
+            const pos = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+
+            const res = await api.post('/asistencia/marcar', {
+                id_evento: selectedEvento.id_evento,
+                latitud: pos.coords.latitude,
+                longitud: pos.coords.longitude
+            });
+
+            notify(res.data.message || 'Asistencia marcada correctamente', 'success');
+            // Reload list to show the new status
+            loadListaAsistencia(selectedEvento.id_evento);
+        } catch (error) {
+            console.error(error);
+            const msg = error.response?.data?.message || 'Error al marcar asistencia. Asegúrate de activar el GPS.';
+            notify(msg, 'error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleEnviarRecordatorios = async () => {
         if (!selectedEvento) return;
         setLoadingLista(true);
@@ -611,6 +638,11 @@ export default function AsistenciasList() {
         sinMarcar: filteredStatsList.filter(c => asistenciasTemp[c.id_convocatoria] === null).length
     };
 
+    // Lógica para detectar si el usuario (si es Jefe) ya marcó su propia asistencia
+    const miAsistenciaEnEvento = listaAsistencia.find(c => c.id_miembro === user?.miembro?.id_miembro);
+    const jefeYaMarco = miAsistenciaEnEvento?.asistencia && ['PUNTUAL', 'RETRASO', 'PRESENTE'].includes(miAsistenciaEnEvento.asistencia.estado);
+    const jefeBloqueado = isJefe && !hasFullAccess && !jefeYaMarco;
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -626,13 +658,15 @@ export default function AsistenciasList() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between pb-2">
                 <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter transition-colors">Control de Asistencia</h1>
-                <button 
-                    onClick={() => navigate('/dashboard/asistencia/reporte')}
-                    className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-surface-border"
-                >
-                    <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
-                    Reporte Grupal
-                </button>
+                {(isAdmin || isDirector) && (
+                    <button 
+                        onClick={() => navigate('/dashboard/asistencia/reporte')}
+                        className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-surface-border"
+                    >
+                        <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
+                        Reporte Grupal
+                    </button>
+                )}
             </div>
 
             {/* Layout Principal */}
@@ -924,314 +958,422 @@ export default function AsistenciasList() {
                                     </div>
                                 </div>
 
-                                <div className="mt-3 relative">
-                                    <input 
-                                        type="text"
-                                        placeholder="Buscar músico..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full bg-black/20 border border-white/10 rounded-xl py-2 pl-9 pr-4 text-xs font-bold text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 transition-colors uppercase tracking-wide"
-                                    />
-                                    <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                                </div>
+                                {(hasFullAccess || isJefe) && (
+                                    <div className="mt-3 relative">
+                                        <input 
+                                            type="text"
+                                            placeholder="Buscar músico..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full bg-black/20 border border-white/10 rounded-xl py-2 pl-9 pr-4 text-xs font-bold text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 transition-colors uppercase tracking-wide"
+                                        />
+                                        <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                                    </div>
+                                )}
 
-                                <div className="flex bg-white/5 p-1 rounded-xl mt-3">
-                                    <button 
-                                        onClick={() => setActiveTab('PENDIENTES')}
-                                        className={clsx(
-                                            "flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
-                                            activeTab === 'PENDIENTES' ? "bg-white text-black shadow-lg" : "text-gray-500 hover:text-gray-300"
-                                        )}
-                                    >
-                                        <span>Pendientes</span>
-                                        {stats.sinMarcar > 0 && (
-                                            <span className="w-4 h-4 sm:w-5 sm:h-5 bg-indigo-500 text-white rounded-full flex items-center justify-center text-[8px] sm:text-[10px] animate-pulse">
-                                                {stats.sinMarcar}
-                                            </span>
-                                        )}
-                                    </button>
-                                    <button 
-                                        onClick={() => setActiveTab('RESUMEN')}
-                                        className={clsx(
-                                            "flex-1 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
-                                            activeTab === 'RESUMEN' ? "bg-white text-black shadow-lg" : "text-gray-500 hover:text-gray-300"
-                                        )}
-                                    >
-                                        <span>Resumen</span>
-                                    </button>
-                                </div>
-
-                                <div className="grid grid-cols-5 gap-1.5 sm:gap-3 mt-3 sm:mt-5">
-                                    <div className="bg-white/5 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center border border-white/5 transition-all">
-                                        <p className="text-sm sm:text-xl font-black text-white leading-tight">{stats.total}</p>
-                                        <p className="text-[7px] sm:text-[9px] font-black text-gray-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Total</p>
-                                    </div>
-                                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
-                                        <p className="text-sm sm:text-xl font-black text-green-400 leading-tight">{stats.puntuales}</p>
-                                        <p className="text-[7px] sm:text-[9px] font-black text-green-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Pres.</p>
-                                    </div>
-                                    <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
-                                        <p className="text-sm sm:text-xl font-black text-indigo-400 leading-tight">{stats.permisos}</p>
-                                        <p className="text-[7px] sm:text-[9px] font-black text-indigo-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Perm.</p>
-                                    </div>
-                                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
-                                        <p className="text-sm sm:text-xl font-black text-red-400 leading-tight">{stats.faltas}</p>
-                                        <p className="text-[7px] sm:text-[9px] font-black text-red-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Faltas</p>
-                                    </div>
-                                    <div className="bg-white/5 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center border border-white/5 transition-all">
-                                        <p className="text-sm sm:text-xl font-black text-gray-400 leading-tight">{stats.sinMarcar}</p>
-                                        <p className="text-[7px] sm:text-[9px] font-black text-gray-600 uppercase tracking-tighter sm:tracking-widest mt-0.5">Rest.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Lista de Músicos */}
-                            <div className="max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar transition-all">
-                                {loadingLista ? (
-                                    <div className="p-12 text-center">
-                                        <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                                        <p className="text-gray-500 text-sm">Cargando lista...</p>
-                                    </div>
-                                ) : listaAsistencia.length === 0 ? (
-                                    <div className="p-12 text-center text-gray-500 font-medium uppercase text-xs tracking-widest">
-                                        No hay músicos convocados
-                                    </div>
-                                ) : (
-                                    <div className="divide-y divide-white/5">
-                                        <AnimatePresence mode="popLayout">
-                                            {listaAsistencia
-                                                .filter(c => {
-                                                    // 1. Filtro base de permisos (Hacer desaparecer al resto para Jefes)
-                                                    if (!isAdmin && isJefe && c.miembro?.id_instrumento !== miInstrumento) return false;
-
-                                                    // 2. Filtro de selector manual (Solo Admin)
-                                                    const matchInstrumento = selectedInstrumento === 'TODOS' || c.miembro?.instrumento?.id_instrumento === parseInt(selectedInstrumento);
-                                                    if (!matchInstrumento) return false;
-
-                                                    // 3. Filtro de búsqueda
-                                                    const matchSearch = searchTerm === '' || 
-                                                        (c.miembro?.nombres + ' ' + c.miembro?.apellidos).toLowerCase().includes(searchTerm.toLowerCase());
-                                                    if (!matchSearch) return false;
-
-                                                    const estado = asistenciasTemp[c.id_convocatoria];
-                                                    if (activeTab === 'PENDIENTES') {
-                                                        return estado === null;
-                                                    }
-                                                    return estado !== null;
-                                                })
-                                                .map(conv => (
-                                                    <SwipeableAsistenciaItem 
-                                                        key={conv.id_convocatoria}
-                                                        conv={conv}
-                                                        estadoActual={asistenciasTemp[conv.id_convocatoria]}
-                                                        handleMarcarEstado={handleMarcarEstado}
-                                                        puedeMarcar={
-                                                            puedeMarcar && 
-                                                            (isAdmin || (
-                                                                !conv.asistencia?.latitud_marcado && 
-                                                                (isDirector || (isJefe && conv.miembro?.id_instrumento === miInstrumento))
-                                                            ))
-                                                        }
-                                                        onReemplazar={handleOpenReemplazo}
-                                                        isAdmin={isAdmin}
-                                                        isDirector={isDirector}
-                                                    />
-                                                ))}
-                                        </AnimatePresence>
-                                        
-                                        {activeTab === 'PENDIENTES' && listaAsistencia.filter(c => asistenciasTemp[c.id_convocatoria] === null && (selectedInstrumento === 'TODOS' || c.miembro?.instrumento?.id_instrumento === parseInt(selectedInstrumento))).length === 0 && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                className="p-16 text-center"
+                                    {(hasFullAccess || isJefe) && (
+                                        <div className="flex bg-white/5 p-1 rounded-xl mt-3">
+                                            <button 
+                                                onClick={() => setActiveTab('PENDIENTES')}
+                                                className={clsx(
+                                                    "flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                                    activeTab === 'PENDIENTES' ? "bg-white text-black shadow-lg" : "text-gray-500 hover:text-gray-300"
+                                                )}
                                             >
-                                                <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-green-500/10">
-                                                    <CheckCircle2 className="w-10 h-10" />
+                                                <span>Pendientes</span>
+                                                {stats.sinMarcar > 0 && (
+                                                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-indigo-500 text-white rounded-full flex items-center justify-center text-[8px] sm:text-[10px] animate-pulse">
+                                                        {stats.sinMarcar}
+                                                    </span>
+                                                )}
+                                            </button>
+                                            <button 
+                                                onClick={() => setActiveTab('RESUMEN')}
+                                                className={clsx(
+                                                    "flex-1 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                                                    activeTab === 'RESUMEN' ? "bg-white text-black shadow-lg" : "text-gray-500 hover:text-gray-300"
+                                                )}
+                                            >
+                                                <span>Resumen</span>
+                                            </button>
+                                        </div>
+                                    )}
+
+                                {(hasFullAccess || isJefe) && (
+                                    <div className="grid grid-cols-5 gap-1.5 sm:gap-3 mt-3 sm:mt-5">
+                                        <div className="bg-white/5 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center border border-white/5 transition-all">
+                                            <p className="text-sm sm:text-xl font-black text-white leading-tight">{stats.total}</p>
+                                            <p className="text-[7px] sm:text-[9px] font-black text-gray-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Total</p>
+                                        </div>
+                                        <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
+                                            <p className="text-sm sm:text-xl font-black text-green-400 leading-tight">{stats.puntuales}</p>
+                                            <p className="text-[7px] sm:text-[9px] font-black text-green-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Pres.</p>
+                                        </div>
+                                        <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
+                                            <p className="text-sm sm:text-xl font-black text-indigo-400 leading-tight">{stats.permisos}</p>
+                                            <p className="text-[7px] sm:text-[9px] font-black text-indigo-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Perm.</p>
+                                        </div>
+                                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center transition-all">
+                                            <p className="text-sm sm:text-xl font-black text-red-400 leading-tight">{stats.faltas}</p>
+                                            <p className="text-[7px] sm:text-[9px] font-black text-red-500 uppercase tracking-tighter sm:tracking-widest mt-0.5">Faltas</p>
+                                        </div>
+                                        <div className="bg-white/5 rounded-xl px-2 py-1.5 sm:p-3 flex flex-col items-center justify-center border border-white/5 transition-all">
+                                            <p className="text-sm sm:text-xl font-black text-gray-400 leading-tight">{stats.sinMarcar}</p>
+                                            <p className="text-[7px] sm:text-[9px] font-black text-gray-600 uppercase tracking-tighter sm:tracking-widest mt-0.5">Rest.</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {jefeBloqueado && (
+                                    <div className="mx-6 mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-amber-500/20">
+                                            <AlertCircle className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest leading-tight">Acción Requerida</p>
+                                            <p className="text-[9px] font-bold text-amber-500/80 uppercase tracking-wide mt-0.5">Valida tu ubicación para habilitar el control de tu sección.</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* BOTÓN PARA MÚSICOS Y JEFES (MARCAR ASISTENCIA PROPIA) */}
+                                {!hasFullAccess && (!isJefe || !jefeYaMarco) && puedeMarcar && selectedEvento && (
+                                    <div className="mt-5 px-6 pb-2">
+                                        {(() => {
+                                            const miConv = listaAsistencia.find(c => c.id_miembro === user?.miembro?.id_miembro);
+                                            if (!miConv) return (
+                                                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl text-center">
+                                                    <p className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">No estás convocado a este evento</p>
                                                 </div>
-                                                <h3 className="text-lg font-black text-white uppercase tracking-tighter">¡Asistencia Completada!</h3>
-                                                <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">No quedan músicos pendientes en esta sección.</p>
-                                                <Button 
-                                                    onClick={() => setSelectedEvento(null)}
-                                                    className="mt-8 xl:hidden h-12 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest text-xs"
+                                            );
+
+                                            if (miConv.asistencia) {
+                                                const est = miConv.asistencia.estado;
+                                                const isPuntual = est === 'PUNTUAL' || est === 'RETRASO' || est === 'PRESENTE';
+                                                
+                                                return (
+                                                    <div className={clsx(
+                                                        "p-5 rounded-2xl text-center flex flex-col items-center gap-2 border",
+                                                        isPuntual ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20"
+                                                    )}>
+                                                        <div className={clsx(
+                                                            "w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg",
+                                                            isPuntual ? "bg-emerald-500 shadow-emerald-500/20" : "bg-red-500 shadow-red-500/20"
+                                                        )}>
+                                                            {isPuntual ? <Check className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+                                                        </div>
+                                                        <div>
+                                                            <p className={clsx("text-xs font-black uppercase tracking-widest", isPuntual ? "text-emerald-500" : "text-red-500")}>
+                                                                Asistencia: {est}
+                                                            </p>
+                                                            {miConv.asistencia.hora_llegada && (
+                                                                <p className="text-[10px] font-bold opacity-60 uppercase mt-0.5">Marcado a las {miConv.asistencia.hora_llegada.substring(0, 5)}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+
+                                            return (
+                                                <button 
+                                                    disabled={saving}
+                                                    onClick={handleMarcarPropia}
+                                                    className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-[2rem] shadow-2xl shadow-indigo-600/30 flex flex-col items-center gap-1 group transition-all active:scale-95 disabled:opacity-50 border border-white/10"
                                                 >
-                                                    Volver al Menú
-                                                </Button>
-                                            </motion.div>
-                                        )}
+                                                    {saving ? (
+                                                        <RefreshCw className="w-7 h-7 animate-spin" />
+                                                    ) : (
+                                                        <>
+                                                            <MapPin className="w-7 h-7 group-hover:scale-110 transition-transform mb-1" />
+                                                            <span className="text-[13px] font-black uppercase tracking-[0.2em]">Confirmar mi Presencia</span>
+                                                            <span className="text-[8px] font-bold opacity-60 uppercase tracking-widest">Se validará tu ubicación vía GPS</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            );
+                                        })()}
                                     </div>
                                 )}
                             </div>
+                            {/* Vista de Lista (Solo para Staff/Jefes) */}
+                            {(hasFullAccess || isJefe) && (
+                                <div className="max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar transition-all">
+                                    {loadingLista ? (
+                                        <div className="p-12 text-center">
+                                            <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                            <p className="text-gray-500 text-sm">Cargando lista...</p>
+                                        </div>
+                                    ) : listaAsistencia.length === 0 ? (
+                                        <div className="p-12 text-center text-gray-500 font-medium uppercase text-xs tracking-widest">
+                                            No hay músicos convocados
+                                        </div>
+                                    ) : (
+                                        <div className="divide-y divide-white/5">
+                                            <AnimatePresence mode="popLayout">
+                                                {listaAsistencia
+                                                    .filter(c => {
+                                                        // 1. Filtro base de permisos (Hacer desaparecer al resto para Jefes)
+                                                        if (!isAdmin && isJefe && c.miembro?.id_instrumento !== miInstrumento) return false;
 
-                            {/* Modal de Motivo de Permiso */}
-                            <AnimatePresence>
-                                {showPermisoModal && (
-                                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                                        <motion.div 
-                                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                            className="bg-[#1e2335] w-full max-w-sm rounded-[32px] overflow-hidden border border-white/10 shadow-2xl"
-                                        >
-                                            <div className="p-8">
-                                                <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-3xl flex items-center justify-center mb-6">
-                                                    <AlertCircle className="w-8 h-8" />
-                                                </div>
-                                                <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">Registrar Permiso</h3>
-                                                <p className="text-xs text-gray-500 uppercase tracking-widest font-black mb-6">Ingresa el motivo de la justificación</p>
-                                                
-                                                <textarea 
-                                                    value={motivoPermiso}
-                                                    onChange={(e) => setMotivoPermiso(e.target.value)}
-                                                    placeholder="Ej: Motivos de salud, viaje, etc..."
-                                                    className="w-full h-32 bg-black/20 border border-white/5 rounded-2xl p-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none mb-6"
-                                                />
+                                                        // 2. Filtro de selector manual (Solo Admin)
+                                                        const matchInstrumento = selectedInstrumento === 'TODOS' || c.miembro?.instrumento?.id_instrumento === parseInt(selectedInstrumento);
+                                                        if (!matchInstrumento) return false;
 
-                                                <div className="flex gap-3">
-                                                    <button 
-                                                        onClick={() => setShowPermisoModal(false)}
-                                                        className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
+                                                        // 3. Filtro de búsqueda
+                                                        const matchSearch = searchTerm === '' || 
+                                                            (c.miembro?.nombres + ' ' + c.miembro?.apellidos).toLowerCase().includes(searchTerm.toLowerCase());
+                                                        if (!matchSearch) return false;
+
+                                                        const estado = asistenciasTemp[c.id_convocatoria];
+                                                        if (activeTab === 'PENDIENTES') {
+                                                            return estado === null;
+                                                        }
+                                                        return estado !== null;
+                                                    })
+                                                    .map(conv => (
+                                                        <SwipeableAsistenciaItem 
+                                                            key={conv.id_convocatoria}
+                                                            conv={conv}
+                                                            estadoActual={asistenciasTemp[conv.id_convocatoria]}
+                                                            handleMarcarEstado={handleMarcarEstado}
+                                                            puedeMarcar={
+                                                                puedeMarcar && 
+                                                                (isAdmin || (
+                                                                    !conv.asistencia?.latitud_marcado && 
+                                                                    (isDirector || (isJefe && !jefeBloqueado && conv.miembro?.id_instrumento === miInstrumento))
+                                                                ))
+                                                            }
+                                                            onReemplazar={handleOpenReemplazo}
+                                                            isAdmin={isAdmin}
+                                                            isDirector={isDirector}
+                                                        />
+                                                    ))}
+                                            </AnimatePresence>
+                                            
+                                            {activeTab === 'PENDIENTES' && listaAsistencia.filter(c => asistenciasTemp[c.id_convocatoria] === null && (selectedInstrumento === 'TODOS' || c.miembro?.instrumento?.id_instrumento === parseInt(selectedInstrumento))).length === 0 && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    className="p-16 text-center"
+                                                >
+                                                    <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-green-500/10">
+                                                        <CheckCircle2 className="w-10 h-10" />
+                                                    </div>
+                                                    <h3 className="text-lg font-black text-white uppercase tracking-tighter">¡Asistencia Completada!</h3>
+                                                    <p className="text-sm text-gray-500 uppercase tracking-widest mt-2">No quedan músicos pendientes en esta sección.</p>
+                                                    <Button 
+                                                        onClick={() => setSelectedEvento(null)}
+                                                        className="mt-8 xl:hidden h-12 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest text-xs"
                                                     >
-                                                        Cancelar
-                                                    </button>
-                                                    <button 
-                                                        onClick={handleConfirmPermiso}
-                                                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-blue-600/20 transition-all"
-                                                    >
-                                                        Guardar
-                                                    </button>
-                                                </div>
+                                                        Volver al Menú
+                                                    </Button>
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Vista para el Músico (Simple: Solo el botón) */}
+                            {!hasFullAccess && !isJefe && (
+                                <div className="p-12 text-center bg-gray-50 dark:bg-black/20">
+                                    <div className="max-w-xs mx-auto space-y-8">
+                                        <div className="space-y-2">
+                                            <div className="w-16 h-16 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto text-brand-primary mb-4">
+                                                <MapPin className="w-8 h-8" />
                                             </div>
-                                        </motion.div>
-                                    </div>
-                                )}
-                            </AnimatePresence>
+                                            <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">Tu Registro de Hoy</h4>
+                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Asegúrate de estar en el sitio antes de marcar</p>
+                                        </div>
 
-                            {/* Modal de Reemplazo */}
-                            <AnimatePresence>
-                                {showReemplazoModal && (
-                                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                                        <motion.div 
-                                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                            className="bg-[#1e2335] w-full max-w-lg rounded-[32px] overflow-hidden border border-white/10 shadow-2xl flex flex-col max-h-[85vh]"
-                                        >
-                                            <div className="p-6 border-b border-white/5">
-                                                <div className="flex items-center gap-4 mb-6">
-                                                    <div className="w-12 h-12 bg-brand-primary/10 text-brand-primary rounded-2xl flex items-center justify-center">
-                                                        <RefreshCw className="w-6 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-lg font-black text-white uppercase tracking-tighter">Reemplazar Músico</h3>
-                                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Cambiar a {selectedConvReemplazo?.miembro?.nombres} por un suplente</p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="relative">
-                                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                                                    <input 
-                                                        type="text"
-                                                        value={searchReemplazo}
-                                                        onChange={(e) => setSearchReemplazo(e.target.value)}
-                                                        placeholder="Buscar por nombre o apellido..."
-                                                        className="w-full bg-black/20 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-white text-xs focus:outline-none focus:border-brand-primary/50 transition-all font-bold"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-[300px]">
-                                                {loadingReemplazo ? (
-                                                    <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                                        <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Buscando suplentes...</p>
-                                                    </div>
-                                                ) : miembrosDisponibles.filter(m => 
-                                                    `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchReemplazo.toLowerCase())
-                                                ).length === 0 ? (
-                                                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                                                        <UserX className="w-12 h-12 text-gray-800 mb-2" />
-                                                        <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">No hay músicos disponibles</p>
-                                                        <p className="text-[8px] text-gray-700 uppercase mt-1">Asegúrate de que no estén ya convocados</p>
-                                                    </div>
+                                        <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-3xl p-6 shadow-xl">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Estado del Evento</p>
+                                            <div className="flex items-center justify-center gap-2 mb-6">
+                                                {puedeMarcar ? (
+                                                    <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black border border-emerald-500/20">
+                                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                                        ABIERTO PARA MARCAR
+                                                    </span>
                                                 ) : (
-                                                    miembrosDisponibles.filter(m => 
-                                                        `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchReemplazo.toLowerCase())
-                                                    ).map(m => (
-                                                        <button
-                                                            key={m.id_miembro}
-                                                            onClick={() => handleConfirmReemplazo(m.id_miembro)}
-                                                            className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] hover:bg-brand-primary border border-white/5 hover:border-brand-primary/30 transition-all group"
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white font-bold text-xs group-hover:bg-white/20">
-                                                                    {m.nombres?.charAt(0)}
-                                                                </div>
-                                                                <div className="text-left">
-                                                                    <p className="text-sm font-bold text-white group-hover:text-white">{m.nombres} {m.apellidos}</p>
-                                                                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-white/70">{m.instrumento?.instrumento}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all">
-                                                                <UserPlus className="w-4 h-4" />
-                                                            </div>
-                                                        </button>
-                                                    ))
+                                                    <span className="flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-black border border-red-500/20">
+                                                        <Lock className="w-3 h-3" />
+                                                        MARCADO CERRADO
+                                                    </span>
                                                 )}
                                             </div>
-
-                                            <div className="p-6 border-t border-white/5">
-                                                <button 
-                                                    onClick={() => setShowReemplazoModal(false)}
-                                                    className="w-full py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
-                                                >
-                                                    Cerrar
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    </div>
-                                )}
-                            </AnimatePresence>
-
-                            {/* Undo Snackbar */}
-                            <AnimatePresence>
-                                {snackbar.show && (
-                                    <motion.div 
-                                        initial={{ y: 100, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        exit={{ y: 100, opacity: 0 }}
-                                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-48px)] max-w-md bg-indigo-600 rounded-3xl p-4 shadow-2xl flex items-center justify-between border border-white/20 backdrop-blur-xl"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
-                                                <RefreshCw className="w-5 h-5 text-white animate-spin-slow" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">Sincronizando...</span>
-                                                <span className="text-sm font-bold text-white">{snackbar.message}</span>
-                                            </div>
                                         </div>
-                                        <button 
-                                            onClick={handleUndo}
-                                            className="px-4 py-2 bg-white text-indigo-600 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-indigo-50 transition-colors"
-                                        >
-                                            Deshacer
-                                        </button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                            <ConfirmModal 
-                                isOpen={showCierreModal}
-                                onClose={() => setShowCierreModal(false)}
-                                onConfirm={handleConfirmCierre}
-                                title="Cerrar Asistencia"
-                                message={`¿Estás seguro de cerrar la asistencia para "${eventoACerrar?.evento}"? Ya no se podrán realizar cambios después.`}
-                                confirmText={loadingCierre ? "Cerrando..." : "Cerrar Asistencia"}
-                                variant="danger"
-                            />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
-                </div>
+
+                {/* MODALES */}
+                <AnimatePresence>
+                    {showPermisoModal && (
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-[#1e2335] w-full max-w-sm rounded-[32px] overflow-hidden border border-white/10 shadow-2xl"
+                            >
+                                <div className="p-8">
+                                    <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-3xl flex items-center justify-center mb-6">
+                                        <AlertCircle className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-2">Registrar Permiso</h3>
+                                    <p className="text-xs text-gray-500 uppercase tracking-widest font-black mb-6">Ingresa el motivo de la justificación</p>
+                                    
+                                    <textarea 
+                                        value={motivoPermiso}
+                                        onChange={(e) => setMotivoPermiso(e.target.value)}
+                                        placeholder="Ej: Motivos de salud, viaje, etc..."
+                                        className="w-full h-32 bg-black/20 border border-white/5 rounded-2xl p-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none mb-6"
+                                    />
+
+                                    <div className="flex gap-3">
+                                        <button 
+                                            onClick={() => setShowPermisoModal(false)}
+                                            className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button 
+                                            onClick={handleConfirmPermiso}
+                                            className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-lg shadow-blue-600/20 transition-all"
+                                        >
+                                            Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {showReemplazoModal && (
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-[#1e2335] w-full max-w-lg rounded-[32px] overflow-hidden border border-white/10 shadow-2xl flex flex-col max-h-[85vh]"
+                            >
+                                <div className="p-6 border-b border-white/5">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="w-12 h-12 bg-brand-primary/10 text-brand-primary rounded-2xl flex items-center justify-center">
+                                            <RefreshCw className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-black text-white uppercase tracking-tighter">Reemplazar Músico</h3>
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Cambiar a {selectedConvReemplazo?.miembro?.nombres} por un suplente</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="relative">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                        <input 
+                                            type="text"
+                                            value={searchReemplazo}
+                                            onChange={(e) => setSearchReemplazo(e.target.value)}
+                                            placeholder="Buscar por nombre o apellido..."
+                                            className="w-full bg-black/20 border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-white text-xs focus:outline-none focus:border-brand-primary/50 transition-all font-bold"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-[300px]">
+                                    {loadingReemplazo ? (
+                                        <div className="flex flex-col items-center justify-center py-12 gap-3">
+                                            <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Buscando suplentes...</p>
+                                        </div>
+                                    ) : miembrosDisponibles.filter(m => 
+                                        `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchReemplazo.toLowerCase())
+                                    ).length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                                            <UserX className="w-12 h-12 text-gray-800 mb-2" />
+                                            <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">No hay músicos disponibles</p>
+                                            <p className="text-[8px] text-gray-700 uppercase mt-1">Asegúrate de que no estén ya convocados</p>
+                                        </div>
+                                    ) : (
+                                        miembrosDisponibles.filter(m => 
+                                            `${m.nombres} ${m.apellidos}`.toLowerCase().includes(searchReemplazo.toLowerCase())
+                                        ).map(m => (
+                                            <button
+                                                key={m.id_miembro}
+                                                onClick={() => handleConfirmReemplazo(m.id_miembro)}
+                                                className="w-full flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] hover:bg-brand-primary border border-white/5 hover:border-brand-primary/30 transition-all group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white font-bold text-xs group-hover:bg-white/20">
+                                                        {m.nombres?.charAt(0)}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="text-sm font-bold text-white group-hover:text-white">{m.nombres} {m.apellidos}</p>
+                                                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider group-hover:text-white/70">{m.instrumento?.instrumento}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all">
+                                                    <UserPlus className="w-4 h-4" />
+                                                </div>
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+
+                                <div className="p-6 border-t border-white/5">
+                                    <button 
+                                        onClick={() => setShowReemplazoModal(false)}
+                                        className="w-full py-3 bg-white/5 hover:bg-white/10 text-gray-400 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all"
+                                    >
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {snackbar.show && (
+                        <motion.div 
+                            initial={{ y: 100, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 100, opacity: 0 }}
+                            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-48px)] max-w-md bg-indigo-600 rounded-3xl p-4 shadow-2xl flex items-center justify-between border border-white/20 backdrop-blur-xl"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
+                                    <RefreshCw className="w-5 h-5 text-white animate-spin-slow" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">Sincronizando...</span>
+                                    <span className="text-sm font-bold text-white">{snackbar.message}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={handleUndo}
+                                className="px-4 py-2 bg-white text-indigo-600 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-indigo-50 transition-colors"
+                            >
+                                Deshacer
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                
+                <ConfirmModal 
+                    isOpen={showCierreModal}
+                    onClose={() => setShowCierreModal(false)}
+                    onConfirm={handleConfirmCierre}
+                    title="Cerrar Asistencia"
+                    message={`¿Estás seguro de cerrar la asistencia para "${eventoACerrar?.evento}"? Ya no se podrán realizar cambios después.`}
+                    confirmText={loadingCierre ? "Cerrando..." : "Cerrar Asistencia"}
+                    variant="danger"
+                />
+            </div>
         </div>
     );
 }

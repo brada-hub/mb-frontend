@@ -94,7 +94,8 @@ export default function MainLayout() {
     // NIVELES DEFINITIVOS
     const isSuperAdmin = !!user?.is_super_admin;
     const isDirector = userRole === 'DIRECTOR';
-    const isMusico = !isSuperAdmin && !isDirector;
+    const isJefe = userRole === 'JEFE DE SECCIÓN';
+    const isMusico = !isSuperAdmin && !isDirector && !isJefe;
     const isImpersonating = user?.original_banda_id !== undefined && user?.original_banda_id !== null;
 
     const displayRole = isSuperAdmin ? 'Admin de App' : (user?.miembro?.rol?.rol || 'Miembro');
@@ -144,9 +145,20 @@ export default function MainLayout() {
                     '/dashboard/pagos',
                     '/dashboard/miembros',
                     '/dashboard/roles',
-                    '/dashboard/asistencia'
+                    '/dashboard/reportes'
                 ];
                 if (forbiddenForMusico.some(r => path.startsWith(r))) {
+                    navigate('/dashboard', { replace: true });
+                }
+            }
+
+            // 3. Jefe -> Rebotar si intenta entrar a gestión de personal pura o roles
+            if (isJefe) {
+                const forbiddenForJefe = [
+                    '/dashboard/miembros',
+                    '/dashboard/roles'
+                ];
+                if (forbiddenForJefe.some(r => path.startsWith(r))) {
                     navigate('/dashboard', { replace: true });
                 }
             }
@@ -182,16 +194,19 @@ export default function MainLayout() {
 
         if (Array.isArray(user?.permissions) && user.permissions.includes(perm)) return true;
         
-        if (isDirector) {
-            if (perm === 'GESTION_MIEMBROS') return true;
-            if (perm === 'GESTION_SECCIONES') return true;
-        if (perm === 'GESTION_ROLES') return isSuperAdmin;
+        if (isDirector || isJefe) {
+            if (perm === 'VER_DASHBOARD') return true;
+            if (perm === 'GESTION_MIEMBROS') return isDirector;
+            if (perm === 'GESTION_ELENCOS') return true;
+            if (perm === 'GESTION_SECCIONES') return isDirector;
+            if (perm === 'GESTION_ROLES') return isDirector || isSuperAdmin;
             if (perm === 'GESTION_ASISTENCIA') return true;
+            if (perm === 'VER_REPORTES') return true;
         }
 
         if (isMusico) {
             // Músicos solo ven lo básico (Agenda, Repertorio, Sus Pagos)
-            const basicPerms = [null, 'VER_DASHBOARD'];
+            const basicPerms = [null, 'VER_DASHBOARD', 'GESTION_ASISTENCIA'];
             if (basicPerms.includes(perm)) return true;
         }
 
@@ -214,23 +229,32 @@ export default function MainLayout() {
         showFor: isSuperAdmin // Solo para SuperAdmin
     });
 
-    // GRUPO 2: OPERACIÓN (BANDA)
+    // GRUPO 2: CONTROL OPERATIVO
     menuGroups.push({
-        title: 'Operación de Banda',
+        title: 'Control Operativo',
         items: [
             { icon: LayoutDashboard, label: 'Centro de Comando', to: '/dashboard', permission: 'VER_DASHBOARD' },
             { icon: Calendar, label: 'Mi Agenda', to: '/dashboard/eventos', permission: null },
             { icon: FileText, label: 'Asistencia', to: '/dashboard/asistencia', permission: 'GESTION_ASISTENCIA' },
-            { icon: Users, label: 'Personal', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
-            { icon: FileText, label: 'Reportes', to: '/dashboard/reportes', permission: 'GESTION_ASISTENCIA' },
-            { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+            { icon: FileText, label: 'Reportes', to: '/dashboard/reportes', permission: 'VER_REPORTES' },
         ],
-        hideForSuperAdmin: !isImpersonating // Ocultar si SuperAdmin no está impersonando
+        hideForSuperAdmin: !isImpersonating
     });
 
-    // GRUPO 3: CONTENIDO
+    // GRUPO 3: RECURSOS HUMANOS
     menuGroups.push({
-        title: 'Repertorio y Biblioteca',
+        title: 'Recursos Humanos',
+        items: [
+            { icon: Users, label: 'Personal', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
+            { icon: Layers, label: 'Gestión Elencos', to: '/dashboard/formaciones', permission: 'GESTION_ELENCOS' },
+            { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+        ],
+        hideForSuperAdmin: !isImpersonating
+    });
+
+    // GRUPO 4: ACADEMIA / BIBLIOTECA
+    menuGroups.push({
+        title: 'Academia / Biblioteca',
         items: [
             { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: null },
             { icon: Music, label: 'Partituras', to: '/dashboard/biblioteca', permission: null },
@@ -238,12 +262,13 @@ export default function MainLayout() {
         hideForSuperAdmin: !isImpersonating
     });
 
-    // GRUPO 4: FINANZAS
+    // GRUPO 5: ADMINISTRACIÓN
     menuGroups.push({
-        title: 'Finanzas',
+        title: 'Administración',
         items: [
             { icon: DollarSign, label: 'Gestión de Pagos', to: '/dashboard/pagos', permission: 'GESTION_PAGOS_GLOBAL' },
             { icon: DollarSign, label: 'Mis Pagos', to: '/dashboard/mis-pagos', permission: null },
+            { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
         ],
         hideForSuperAdmin: !isImpersonating
     });

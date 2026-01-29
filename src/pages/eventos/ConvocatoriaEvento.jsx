@@ -2,7 +2,8 @@ import { useState, useEffect, Fragment } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
     ArrowLeft, Users, CheckCircle2, Clock, UserPlus, 
-    Search, Filter, Music2, Shield, Check, X, Plus, Trash2 
+    Search, Filter, Music2, Shield, Check, X, Plus, Trash2,
+    Layers, Save, Info, BellRing, Send, LayoutGrid
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -25,6 +26,9 @@ export default function ConvocatoriaEvento() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedSeccion, setSelectedSeccion] = useState('');
     const [showPostularModal, setShowPostularModal] = useState(false);
+    const [showFormacionesModal, setShowFormacionesModal] = useState(false);
+    const [formacionesDisponibles, setFormacionesDisponibles] = useState([]);
+    const [importingFormacion, setImportingFormacion] = useState(false);
     const [selectedMiembros, setSelectedMiembros] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [selectedInstrumento, setSelectedInstrumento] = useState('');
@@ -107,6 +111,34 @@ export default function ConvocatoriaEvento() {
             notify('Error al cargar datos del evento', 'error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSaveAsFormacion = async () => {
+        const nombre = prompt('Nombre para esta formación:', `Lista ${evento.evento} - ${new Date().toLocaleDateString()}`);
+        if (!nombre) return;
+
+        try {
+            const payload = {
+                nombre: nombre.toUpperCase(),
+                descripcion: `Creada desde evento: ${evento.evento}`,
+                id_miembros: convocatorias.map(c => c.id_miembro)
+            };
+            await api.post('/formaciones', payload);
+            notify('¡Lista guardada como formación predefinida!', 'success');
+        } catch (error) {
+            notify('Error al guardar formación', 'error');
+        }
+    };
+
+    const handleSolicitarListas = async () => {
+        if (!confirm('¿Deseas enviar una notificación a todos los Jefes de Sección para que armen sus listas?')) return;
+        
+        try {
+            await api.post(`/eventos/${id}/solicitar-listas`);
+            notify('Solicitud enviada a los responsables', 'success');
+        } catch (error) {
+            notify('Error al enviar solicitud', 'error');
         }
     };
 
@@ -215,6 +247,33 @@ export default function ConvocatoriaEvento() {
             loadMiembrosDisponibles();
         } catch (error) {
             notify('Error al añadir', 'error');
+        }
+    };
+
+    const loadFormaciones = async () => {
+        try {
+            const res = await api.get('/formaciones');
+            const data = Array.isArray(res.data) ? res.data : [];
+            setFormacionesDisponibles(data.filter(f => f.activo));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleImportFormacion = async (id_formacion) => {
+        setImportingFormacion(true);
+        try {
+            await api.post('/convocatorias/vincular-formacion', {
+                id_evento: parseInt(id),
+                id_formacion
+            });
+            notify('Formación importada correctamente', 'success');
+            setShowFormacionesModal(false);
+            loadData();
+        } catch (error) {
+            notify('Error al importar formación', 'error');
+        } finally {
+            setImportingFormacion(false);
         }
     };
 
@@ -389,14 +448,61 @@ export default function ConvocatoriaEvento() {
                 </div>
 
                 <div className="flex gap-3">
+                    <button 
+                        onClick={() => navigate('/dashboard/reportes')}
+                        className="px-6 py-2.5 rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                    >
+                        <LayoutGrid className="w-4 h-4" />
+                        Ver Matriz
+                    </button>
+
                     {canManage && !eventStatus.isPast && (
-                        <Button 
-                            variant="primary" 
-                            onClick={handleOpenPostular}
-                        >
-                            <UserPlus className="w-5 h-5 mr-2" />
-                            Añadir Músico
-                        </Button>
+                        <div className="flex flex-wrap gap-2 justify-end">
+                            {canConfirm && !isVirtual && (
+                                <Button 
+                                    variant="secondary"
+                                    onClick={handleSolicitarListas}
+                                    className="bg-amber-600/10 text-amber-500 border-amber-500/20"
+                                    title="Notificar a los Jefes de Sección para que armen sus listas"
+                                >
+                                    <BellRing className="w-4 h-4 mr-1.5" />
+                                    Pedir Listas
+                                </Button>
+                            )}
+                            
+                            <Button 
+                                variant="secondary" 
+                                onClick={() => {
+                                    loadFormaciones();
+                                    setShowFormacionesModal(true);
+                                }}
+                                className="bg-blue-600/10 text-blue-500 border-blue-600/20"
+                            >
+                                <Layers className="w-4 h-4 mr-1.5" />
+                                Importar
+                            </Button>
+                            
+                            {convocatorias.length > 0 && (
+                                <Button 
+                                    variant="secondary"
+                                    onClick={handleSaveAsFormacion}
+                                    className="bg-purple-600/10 text-purple-500 border-purple-500/20"
+                                    title="Guardar selección actual como formación"
+                                >
+                                    <Save className="w-4 h-4 mr-1.5" />
+                                    Guardar
+                                </Button>
+                            )}
+
+                            <Button 
+                                variant="primary" 
+                                onClick={handleOpenPostular}
+                                className="shadow-lg shadow-brand-primary/20"
+                            >
+                                <UserPlus className="w-4 h-4 mr-1.5" />
+                                Añadir
+                            </Button>
+                        </div>
                     )}
                     {canConfirm && pendientes > 0 && !eventStatus.isPast && (
                         <Button 
@@ -951,6 +1057,68 @@ export default function ConvocatoriaEvento() {
                                     Convocar Seleccionados
                                 </Button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Modal de Importar Formación */}
+            {showFormacionesModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowFormacionesModal(false)} />
+                    <div className="relative w-full max-w-2xl bg-surface-card border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95">
+                        <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400">
+                                    <Layers className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">Importar Formación</h3>
+                                    <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Carga una lista de personal predefinida</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowFormacionesModal(false)} className="p-2 hover:bg-white/5 rounded-xl text-gray-400"><X /></button>
+                        </div>
+                        <div className="p-8 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                            {formacionesDisponibles.length === 0 ? (
+                                <div className="text-center py-10">
+                                    <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">No tienes formaciones activas creadas.</p>
+                                    <Button variant="secondary" onClick={() => navigate('/dashboard/formaciones')} className="mt-4">Ir a Formaciones</Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 gap-3">
+                                    {formacionesDisponibles.map(f => (
+                                        <button
+                                            key={f.id_formacion}
+                                            onClick={() => handleImportFormacion(f.id_formacion)}
+                                            disabled={importingFormacion}
+                                            className="w-full flex items-center justify-between p-6 bg-white/5 hover:bg-white/10 border border-white/5 rounded-3xl transition-all group active:scale-[0.98] disabled:opacity-50"
+                                        >
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center text-indigo-400 flex-shrink-0">
+                                                    <Users className="w-5 h-5" />
+                                                </div>
+                                                <div className="text-left overflow-hidden">
+                                                    <p className="text-white font-black uppercase tracking-tight truncate">{f.nombre}</p>
+                                                    <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1">
+                                                        {f.resumen_instrumentos && Object.entries(f.resumen_instrumentos).map(([inst, count]) => (
+                                                            <span key={inst} className="text-[9px] text-gray-500 font-bold uppercase whitespace-nowrap">
+                                                                {count} {inst}
+                                                            </span>
+                                                        ))}
+                                                        {(!f.resumen_instrumentos || Object.keys(f.resumen_instrumentos).length === 0) && (
+                                                            <span className="text-[8px] text-gray-600 italic">Sin instrumentos registrados</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-indigo-400 transition-colors ml-4" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-8 bg-black/20 text-center border-t border-white/5">
+                            <p className="text-[9px] font-bold text-gray-600 uppercase tracking-[0.2em]">Nota: Importar una formación añadirá a los músicos a la lista como pendientes.</p>
                         </div>
                     </div>
                 </div>

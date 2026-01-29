@@ -53,80 +53,56 @@ export default function MisPagos() {
     return (
         <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto px-2 sm:px-6 pb-20">
             {/* Header / Resumen */}
-            <div className="bg-gradient-to-br from-indigo-100 via-white to-gray-50 dark:from-indigo-900/40 dark:via-[#161b2c] dark:to-[#0f111a] rounded-[2.5rem] sm:rounded-[4rem] p-6 sm:p-12 border border-gray-200 dark:border-white/10 relative overflow-hidden shadow-xl dark:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] transition-colors">
-                <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
-                    <PiggyBank className="w-64 h-64 sm:w-96 sm:h-96 text-gray-900 dark:text-white -rotate-12 translate-x-20 -translate-y-10" />
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Mis Pagos y Actividad</h1>
+                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Seguimiento de tus participaciones y liquidaciones</p>
                 </div>
                 
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-                    <div className="flex flex-col">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit mb-4">
-                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                            <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Estado Financiero</span>
+                <div className="flex items-center gap-3">
+                    <div className="bg-surface-card border border-surface-border p-3 px-5 rounded-2xl flex items-center gap-4 shadow-sm transition-colors">
+                        <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Pendientes</span>
+                            <span className="text-xl font-black text-emerald-500">{totalPorCobrar}</span>
                         </div>
-                        <h1 className="text-3xl sm:text-6xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none mb-2 transition-colors">Mi Actividad</h1>
-                        <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-lg font-medium tracking-tight max-w-lg transition-colors">Seguimiento de tus participaciones y eventos por cobrar.</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 min-w-0 lg:min-w-[500px]">
-                        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-3xl border border-gray-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-emerald-500/20 rounded-2xl group-hover:scale-110 transition-transform">
-                                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500 dark:text-emerald-400" />
-                                </div>
-                                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest">Pendiente</span>
-                            </div>
-                            <div className="flex items-baseline gap-2">
-                                <p className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white tracking-tighter transition-colors">{totalPorCobrar}</p>
-                                <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
-                            </div>
-                        </div>
-
-                        <div className="bg-white/80 dark:bg-white/5 backdrop-blur-3xl border border-gray-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 duration-300 shadow-xl group">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="p-3 bg-blue-500/20 rounded-2xl group-hover:scale-110 transition-transform">
-                                    <History className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 dark:text-blue-400" />
-                                </div>
-                                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest">Completado</span>
-                            </div>
-                            <div className="flex items-baseline gap-2">
-                                <p className="text-4xl sm:text-6xl font-black text-gray-900 dark:text-white tracking-tighter transition-colors">{data.historial_cobrado.length}</p>
-                                <span className="text-xs sm:text-base text-gray-500 font-black uppercase">Eventos</span>
-                            </div>
+                        <div className="w-px h-8 bg-surface-border" />
+                        <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Cobrados</span>
+                            <span className="text-xl font-black text-indigo-500">{data.historial_cobrado.length}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Tabs & Controls */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-1.5 p-1.5 bg-surface-card border border-surface-border rounded-2xl w-full md:w-auto shadow-2xl transition-colors">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-card border border-surface-border p-4 rounded-[2rem] shadow-sm transition-colors">
+                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl border border-surface-border w-full md:w-auto">
                     <button 
                         onClick={() => setActiveTab('COBRAR')}
                         className={clsx(
-                            "flex-1 md:min-w-[180px] px-6 py-3.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] rounded-xl transition-all duration-500",
-                            activeTab === 'COBRAR' ? "bg-indigo-600 text-white shadow-[0_10px_20px_-5px_rgba(79,70,229,0.5)] scale-[1.05]" : "text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
+                            "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                            activeTab === 'COBRAR' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
-                        Pendientes de Cobro ({data.por_cobrar.length})
+                        Pendientes ({data.por_cobrar.length})
                     </button>
                     <button 
                         onClick={() => setActiveTab('HISTORIAL')}
                         className={clsx(
-                            "flex-1 md:min-w-[180px] px-6 py-3.5 text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] rounded-xl transition-all duration-500",
-                            activeTab === 'HISTORIAL' ? "bg-indigo-600 text-white shadow-[0_10px_20px_-5px_rgba(79,70,229,0.5)] scale-[1.05]" : "text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
+                            "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                            activeTab === 'HISTORIAL' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
-                        Historial de Cobros
+                        Historial
                     </button>
                 </div>
 
-                <div className="hidden md:flex items-center gap-4 text-gray-500 dark:text-gray-400 transition-colors">
-                    <p className="text-[10px] font-black uppercase tracking-widest">Filtrar por:</p>
-                    <select className="bg-surface-input border border-surface-border rounded-xl px-4 py-2 text-xs font-bold focus:outline-none focus:border-indigo-500/50 text-gray-900 dark:text-white transition-colors">
+                <div className="flex items-center gap-4 text-gray-500">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Filtrar por:</p>
+                    <select className="bg-surface-input border border-surface-border rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-indigo-500/50 text-gray-900 dark:text-white transition-colors cursor-pointer">
                         <option>Todos los eventos</option>
                         <option>Contratos</option>
-                        <option>Rematitos</option>
+                        <option>Ensayos</option>
                     </select>
                 </div>
             </div>
@@ -151,7 +127,7 @@ export default function MisPagos() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05, type: 'spring', damping: 20 }}
                                     key={item.id_convocatoria}
-                                    className="bg-surface-card border border-surface-border p-6 rounded-[2.5rem] flex flex-col gap-6 group hover:border-indigo-500/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
+                                    className="bg-surface-card border border-surface-border p-6 rounded-3xl flex flex-col gap-6 group hover:border-indigo-500/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
                                 >
                                     <div className="flex items-center justify-between gap-4">
                                         <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 min-w-[70px]">
@@ -210,16 +186,16 @@ export default function MisPagos() {
                             {Object.entries(historialGrouped).sort((a,b) => b[1][0].fecha_pago.localeCompare(a[1][0].fecha_pago)).map(([mes, eventos]) => (
                                 <div key={mes} className="relative">
                                     <div className="sticky top-[100px] z-20 py-4 mb-6">
-                                        <div className="inline-flex items-center gap-4 px-6 py-3 bg-surface-card border border-surface-border rounded-2xl shadow-2xl transition-colors">
-                                            <Calendar className="w-5 h-5 text-indigo-500" />
-                                            <h3 className="text-gray-900 dark:text-white text-sm sm:text-base font-black uppercase tracking-[0.3em] transition-colors">{mes}</h3>
+                                        <div className="inline-flex items-center gap-4 px-6 py-3 bg-surface-card border border-surface-border rounded-xl shadow-lg transition-colors">
+                                            <Calendar className="w-4 h-4 text-indigo-500" />
+                                            <h3 className="text-gray-900 dark:text-white text-xs font-black uppercase tracking-[0.2em] transition-colors">{mes}</h3>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 relative z-10">
                                         {eventos.map(item => (
                                             <div 
                                                 key={item.id_convocatoria}
-                                                className="bg-surface-card border border-surface-border p-6 rounded-[2rem] flex flex-col gap-4 opacity-80 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
+                                                className="bg-surface-card border border-surface-border p-5 rounded-2xl flex flex-col gap-4 opacity-100 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 bg-black/5 dark:bg-white/5 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 border border-surface-border group-hover:bg-emerald-500/10 transition-colors">
