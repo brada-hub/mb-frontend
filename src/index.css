@@ -5,10 +5,11 @@
 @layer base {
   /* Light mode - por defecto */
   :root {
-    --surface-base: #f9fafb; 
+    --surface-base: #f9fafb;
     --surface-card: #ffffff;
     --surface-input: #f3f4f6;
     --surface-border: rgba(0, 0, 0, 0.1);
+    color-scheme: light;
   }
 
   /* Dark mode - sobrescribe cuando html tiene clase 'dark' */
@@ -17,16 +18,19 @@
     --surface-card: #161b2c;
     --surface-input: #1d233a;
     --surface-border: rgba(255, 255, 255, 0.08);
+    color-scheme: dark;
   }
 
   body {
     background-color: var(--surface-base);
     color: #111827; /* gray-900 */
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   html.dark body {
     color: #f3f4f6; /* gray-100 */
   }

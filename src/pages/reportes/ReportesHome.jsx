@@ -1,10 +1,11 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useMemo } from 'react';
 import { Flame, Download, Filter, Search, Medal, Trophy, TableProperties, LayoutGrid, Check, ChevronDown, Calendar, User, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import SmartDateInput from '../../components/ui/SmartDateInput';
 
 export default function ReportesHome() {
     const { user } = useAuth();
@@ -26,6 +27,12 @@ export default function ReportesHome() {
     const [eventTypes, setEventTypes] = useState([]);
     const [selectedEventTypes, setSelectedEventTypes] = useState([]);
     const [minRate, setMinRate] = useState(0);
+    
+    const [secciones, setSecciones] = useState([]);
+    const [instrumentos, setInstrumentos] = useState([]);
+    const [selectedSeccion, setSelectedSeccion] = useState('');
+    const [selectedInstrumento, setSelectedInstrumento] = useState('');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
     const isAdminOrDirector = ['ADMIN', 'DIRECTOR', 'ADMINISTRADOR'].includes(user?.role?.toUpperCase());
 
@@ -36,12 +43,16 @@ export default function ReportesHome() {
     const loadInitialData = async () => {
         setLoading(true);
         try {
-            const [rankingsRes, typesRes] = await Promise.all([
+            const [rankingsRes, typesRes, secRes, insRes] = await Promise.all([
                 api.get('/asistencias/rankings'),
-                api.get('/eventos/tipos')
+                api.get('/eventos/tipos'),
+                api.get('/secciones'),
+                api.get('/instrumentos')
             ]);
             setRankings(rankingsRes.data.rankings || []);
             setEventTypes(typesRes.data || []);
+            setSecciones(secRes.data || []);
+            setInstrumentos(insRes.data || []);
             
             // Initial load of report current year
             await loadReport();
@@ -59,7 +70,9 @@ export default function ReportesHome() {
             const params = {
                 start_date: dateRange.start,
                 end_date: dateRange.end,
-                id_tipo_evento: selectedEventTypes.length > 0 ? selectedEventTypes.join(',') : undefined
+                id_tipo_evento: selectedEventTypes.length > 0 ? selectedEventTypes.join(',') : undefined,
+                id_seccion: selectedSeccion || undefined,
+                id_instrumento: selectedInstrumento || undefined
             };
             
             if (viewMode === 'table') {
@@ -71,7 +84,6 @@ export default function ReportesHome() {
                 setMatrixData(res.data);
             }
             
-            notify('Reporte actualizado', 'success');
         } catch (error) {
             console.error(error);
             notify('Error actualizando reporte', 'error');
@@ -82,7 +94,7 @@ export default function ReportesHome() {
 
     useEffect(() => {
         loadReport();
-    }, [viewMode]);
+    }, [viewMode, dateRange, selectedSeccion, selectedInstrumento, selectedEventTypes]);
 
     const toggleEventType = (id) => {
         setSelectedEventTypes(prev => 
@@ -92,13 +104,38 @@ export default function ReportesHome() {
         );
     };
 
+    const handleMonthChange = (monthIdx) => {
+        const year = new Date().getFullYear();
+        const start = new Date(year, monthIdx, 1);
+        const end = new Date(year, monthIdx + 1, 0);
+        
+        setSelectedMonth(monthIdx);
+        // This will trigger loadReport via dateRange dependency
+        setDateRange({
+            start: start.toISOString().split('T')[0],
+            end: end.toISOString().split('T')[0]
+        });
+    };
+
+    const handleSeccionChange = (val) => {
+        setSelectedSeccion(val);
+        setSelectedInstrumento(''); // Reset instrument when section changes to trigger fresh load
+    };
+
+    const MESES = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
     const handleDownloadReport = async () => {
         try {
             notify('Generando reporte PDF...', 'info');
             const params = {
                 start_date: dateRange.start,
                 end_date: dateRange.end,
-                id_tipo_evento: selectedEventTypes.length > 0 ? selectedEventTypes.join(',') : undefined
+                id_tipo_evento: selectedEventTypes.length > 0 ? selectedEventTypes.join(',') : undefined,
+                id_seccion: selectedSeccion || undefined,
+                id_instrumento: selectedInstrumento || undefined
             };
             const res = await api.get('/asistencias/reporte-grupal/pdf', { 
                 params,
@@ -130,6 +167,22 @@ export default function ReportesHome() {
         item.rate >= minRate
     );
 
+    const groupedReport = useMemo(() => {
+        const orderMap = {
+            'PLATILLO': 1, 'TAMBOR': 2, 'TIMBAL': 3, 'BOMBO': 4,
+            'TROMBON': 5, 'CLARINETE': 6, 'BARITONO': 7, 'TROMPETA': 8, 'HELICON': 9
+        };
+        const groups = {};
+        filteredReport.forEach(item => {
+            const inst = item.instrumento || 'Sin Instrumento';
+            if (!groups[inst]) groups[inst] = [];
+            groups[inst].push(item);
+        });
+        return Object.entries(groups).sort(([a], [b]) => {
+            return (orderMap[a.toUpperCase()] || 99) - (orderMap[b.toUpperCase()] || 99);
+        });
+    }, [filteredReport]);
+
     return (
         <div className="space-y-8 animate-in fade-in duration-700 pb-10">
             {/* Header */}
@@ -140,7 +193,7 @@ export default function ReportesHome() {
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl border border-surface-border">
+                    <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl border border-surface-border transition-colors">
                         <button 
                             onClick={() => setViewMode('table')}
                             className={clsx(
@@ -148,7 +201,7 @@ export default function ReportesHome() {
                                 viewMode === 'table' ? "bg-white dark:bg-gray-800 text-indigo-600 shadow-lg" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                             )}
                         >
-                            <TableProperties className="w-4 h-4" /> <span className="hidden sm:inline">Tabla</span>
+                            <TableProperties className="w-4 h-4" /> <span className="hidden sm:inline">Tabla Reporte</span>
                         </button>
                         <button 
                             onClick={() => setViewMode('matrix')}
@@ -157,102 +210,13 @@ export default function ReportesHome() {
                                 viewMode === 'matrix' ? "bg-white dark:bg-gray-800 text-indigo-600 shadow-lg" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                             )}
                         >
-                            <LayoutGrid className="w-4 h-4" /> <span className="hidden sm:inline">Matriz</span>
-                        </button>
-                    </div>
-
-                    <div className="w-px h-8 bg-surface-border mx-1 hidden md:block" />
-
-                    <div className="flex items-center gap-2">
-                        <button 
-                            onClick={() => setShowFilters(!showFilters)}
-                            className={clsx(
-                                "p-3 rounded-2xl transition-all border shrink-0",
-                                showFilters 
-                                    ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
-                                    : "bg-black/5 dark:bg-white/5 text-gray-500 border-surface-border hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10"
-                            )}
-                            title="Filtros"
-                        >
-                            <Filter className="w-4 h-4" />
-                        </button>
-                        <button 
-                            onClick={handleDownloadReport}
-                            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl flex items-center gap-2 font-black uppercase tracking-widest text-[10px] transition-all shadow-lg shadow-indigo-600/20 active:scale-95 shrink-0"
-                        >
-                            <Download className="w-4 h-4" /> <span className="hidden sm:inline">Exportar PDF</span>
+                            <LayoutGrid className="w-4 h-4" /> <span className="hidden sm:inline">Matriz Diaria</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Filter Panel */}
-            {showFilters && (
-                <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    className="bg-surface-card border border-surface-border rounded-3xl p-6 shadow-xl overflow-hidden transition-colors"
-                >
-                    <h3 className="text-gray-900 dark:text-white font-black uppercase text-sm mb-4 flex items-center gap-2 transition-colors">
-                        <Filter className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Configuración de Reporte
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
-                        <div className="md:col-span-3 space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-widest transition-colors flex items-center gap-2">
-                                <Calendar className="w-3 h-3" /> Desde
-                            </label>
-                            <input 
-                                type="date" 
-                                value={dateRange.start}
-                                onChange={e => setDateRange({...dateRange, start: e.target.value})}
-                                className="w-full bg-surface-input border border-surface-border rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:border-indigo-500/50 outline-none text-sm font-medium transition-colors"
-                            />
-                        </div>
-                        <div className="md:col-span-3 space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-widest transition-colors flex items-center gap-2">
-                                <Calendar className="w-3 h-3" /> Hasta
-                            </label>
-                            <input 
-                                type="date" 
-                                value={dateRange.end}
-                                onChange={e => setDateRange({...dateRange, end: e.target.value})}
-                                className="w-full bg-surface-input border border-surface-border rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:border-indigo-500/50 outline-none text-sm font-medium transition-colors"
-                            />
-                        </div>
-                        <div className="md:col-span-4 space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-widest transition-colors">Tipos de Evento</label>
-                            <div className="flex flex-wrap gap-2 p-3 bg-surface-input border border-surface-border rounded-xl min-h-[46px]">
-                                {eventTypes.length > 0 ? (
-                                    eventTypes.map(t => (
-                                        <button
-                                            key={t.id_tipo_evento}
-                                            onClick={() => toggleEventType(t.id_tipo_evento)}
-                                            className={clsx(
-                                                "px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border",
-                                                selectedEventTypes.includes(t.id_tipo_evento)
-                                                    ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/20"
-                                                    : "bg-white/5 dark:bg-black/20 border-surface-border text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                                            )}
-                                        >
-                                            {t.evento}
-                                        </button>
-                                    ))
-                                ) : (
-                                    <span className="text-[9px] text-gray-500 p-1">Cargando tipos...</span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="md:col-span-2">
-                            <button 
-                                onClick={loadReport}
-                                className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3.5 rounded-xl font-black uppercase tracking-widest text-[10px] w-full transition-all shadow-lg shadow-indigo-600/10 active:scale-95 flex items-center justify-center gap-2"
-                            >
-                                <Check className="w-4 h-4" /> Aplicar
-                            </button>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
+            {/* Filters have been moved inside the report card for better context */}
 
             {/* Wall of Fame (Top 3 Only if filtered?) - Keeping Full for now as per request */}
             <div className="bg-surface-card border border-surface-border rounded-[2.5rem] overflow-hidden shadow-2xl transition-colors">
@@ -262,8 +226,8 @@ export default function ReportesHome() {
                             <Flame className="w-6 h-6 text-orange-500" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter transition-colors">Wall of Fame <span className="opacity-50 text-sm not-italic ml-2">(Racha Actual)</span></h3>
-                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest transition-colors">Top Musicos Constantes</p>
+                            <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter transition-colors">Ranking de Constancia <span className="opacity-50 text-sm not-italic ml-2">(Racha Actual)</span></h3>
+                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest transition-colors">Top Musicos con más asistencias seguidas</p>
                         </div>
                     </div>
                     <div className="relative group">
@@ -331,10 +295,10 @@ export default function ReportesHome() {
             </div>
 
             {/* Detailed Report Table / Matrix */}
-            <div className="bg-surface-card border border-surface-border rounded-[2.5rem] overflow-hidden shadow-2xl transition-colors">
+            <div className="bg-surface-card border border-surface-border rounded-[2.5rem] shadow-2xl transition-colors relative">
                 {viewMode === 'table' ? (
                     <>
-                        <div className="p-8 border-b border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 transition-colors">
+                        <div className="p-8 border-b border-surface-border flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
                                     <Trophy className="w-6 h-6 text-indigo-600 dark:text-indigo-500 transition-colors" />
@@ -342,28 +306,108 @@ export default function ReportesHome() {
                                 <div>
                                     <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter transition-colors">Reporte Detallado</h3>
                                     <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest transition-colors">
-                                        {dateRange.start} - {dateRange.end}
+                                        Distribución y Eficiencia por Músico
                                     </p>
                                 </div>
                             </div>
                             
-                            <div className="flex items-center gap-4">
-                                <div className="flex flex-col items-end">
-                                    <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold transition-colors">Asistencia Min.</span>
-                                    <input 
-                                        type="number" 
-                                        min="0" max="100"
-                                        value={minRate}
-                                        onChange={e => setMinRate(Number(e.target.value))}
-                                        className="w-20 bg-surface-input text-right border border-surface-border rounded-lg px-2 py-1 text-gray-900 dark:text-white focus:border-indigo-500/50 outline-none text-xs font-medium transition-colors"
-                                    />
+                            <div className="flex flex-wrap items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className={clsx(
+                                            "flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all border shrink-0",
+                                            showFilters 
+                                                ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
+                                                : "bg-black/5 dark:bg-white/5 text-gray-500 border-surface-border hover:text-gray-900 dark:hover:text-white"
+                                        )}
+                                    >
+                                        <Filter className="w-4 h-4" /> <span>{showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}</span>
+                                    </button>
+                                    <button 
+                                        onClick={handleDownloadReport}
+                                        className="p-2.5 bg-black/5 dark:bg-white/5 text-gray-500 border border-surface-border rounded-xl hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shrink-0"
+                                        title="Exportar PDF"
+                                    >
+                                        <Download className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <div className="flex flex-col items-end">
-                                    <span className="text-2xl font-black text-gray-900 dark:text-white transition-colors">{summary?.group_average || 0}%</span>
-                                    <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest transition-colors">Promedio Grupal</span>
+
+                                <div className="hidden sm:block w-px h-10 bg-surface-border mx-2" />
+
+                                <div className="flex items-center gap-6">
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[9px] text-gray-500 dark:text-gray-400 uppercase font-black tracking-widest transition-colors mb-1">Mínimo (%)</span>
+                                        <input 
+                                            type="number" 
+                                            min="0" max="100"
+                                            value={minRate}
+                                            onChange={e => setMinRate(Number(e.target.value))}
+                                            className="w-16 bg-surface-input text-right border border-surface-border rounded-lg px-2 py-1 text-gray-900 dark:text-white focus:border-indigo-500/50 outline-none text-[11px] font-black transition-colors"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-2xl font-black text-gray-900 dark:text-white transition-colors leading-none">{summary?.group_average || 0}%</span>
+                                        <span className="text-[9px] text-gray-500 uppercase font-black tracking-widest transition-colors mt-1">Global</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Integrated Filter Panel */}
+                        <AnimatePresence>
+                            {showFilters && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="border-b border-surface-border bg-black/5 dark:bg-white/[0.03] relative z-[50]"
+                                >
+                                    <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 items-end">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Calendar className="w-3 h-3" /> Mes</label>
+                                            <select value={selectedMonth} onChange={e => handleMonthChange(Number(e.target.value))} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white focus:border-indigo-500 outline-none h-11 transition-colors">
+                                                {MESES.map((mes, idx) => <option key={idx} value={idx}>{mes}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Clock className="w-3 h-3" /> Inicio</label>
+                                            <SmartDateInput 
+                                                value={dateRange.start} 
+                                                onChange={val => setDateRange({...dateRange, start: val})} 
+                                                className="!h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Clock className="w-3 h-3" /> Fin</label>
+                                            <SmartDateInput 
+                                                value={dateRange.end} 
+                                                onChange={val => setDateRange({...dateRange, end: val})} 
+                                                className="!h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest">Sección</label>
+                                            <select value={selectedSeccion} onChange={e => handleSeccionChange(e.target.value)} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white h-11 transition-colors">
+                                                <option value="">Todas</option>
+                                                {secciones.map(s => <option key={s.id_seccion} value={s.id_seccion}>{s.seccion}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest">Instrumento</label>
+                                            <select value={selectedInstrumento} onChange={e => setSelectedInstrumento(e.target.value)} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white h-11 transition-colors">
+                                                <option value="">Todos</option>
+                                                {instrumentos.filter(i => !selectedSeccion || i.id_seccion == selectedSeccion).map(i => <option key={i.id_instrumento} value={i.id_instrumento}>{i.instrumento}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center gap-2 h-11 px-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                                            <span className="text-[9px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Auto-actualizando</span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
@@ -373,42 +417,58 @@ export default function ReportesHome() {
                                         <th className="p-6 text-center">Eventos</th>
                                         <th className="p-6 text-center">Asistencias</th>
                                         <th className="p-6 text-center">Faltas</th>
+                                        <th className="p-6 text-center">Permisos</th>
                                         <th className="p-6 text-center text-indigo-600 dark:text-indigo-400 transition-colors">Efectividad</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-surface-border">
-                                    {filteredReport.length > 0 ? (
-                                        filteredReport.map((row) => (
-                                            <tr key={row.id_miembro} className="text-gray-900 dark:text-white hover:bg-black/[0.02] dark:hover:bg-white/5 transition-colors">
-                                                <td className="p-6">
-                                                    <div className="font-bold transition-colors">{row.nombres} {row.apellidos}</div>
-                                                    <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider transition-colors">{row.instrumento}</div>
-                                                </td>
-                                                <td className="p-6 text-center font-medium text-gray-500 dark:text-gray-300 transition-colors">{row.total_events}</td>
-                                                <td className="p-6 text-center font-medium text-green-600 dark:text-green-400 transition-colors">{row.present_count}</td>
-                                                <td className="p-6 text-center font-medium text-red-600 dark:text-red-400 transition-colors">{row.absent_count}</td>
-                                                <td className="p-6 text-center">
-                                                    <div className="flex items-center justify-between gap-3 max-w-[120px] mx-auto">
-                                                        <div className="flex-1 h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden transition-colors">
-                                                            <div 
-                                                                className={clsx("h-full rounded-full",
-                                                                    row.rate >= 80 ? 'bg-green-500' : 
-                                                                    row.rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                                                                )} 
-                                                                style={{ width: `${row.rate}%` }}
-                                                            />
+                                    {groupedReport.length > 0 ? (
+                                        groupedReport.map(([instrumento, miembros]) => (
+                                            <Fragment key={instrumento}>
+                                                <tr className="bg-black/10 dark:bg-white/[0.03] transition-colors">
+                                                    <td colSpan="6" className="p-4 px-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/50" />
+                                                            <span className="text-[11px] font-black uppercase text-gray-900 dark:text-white tracking-[0.2em]">{instrumento}</span>
+                                                            <div className="flex-1 h-px bg-surface-border ml-4" />
+                                                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{miembros.length} Miembros</span>
                                                         </div>
-                                                        <span className={clsx("text-sm font-black w-10 text-right",
-                                                            row.rate >= 80 ? 'text-green-500' : 
-                                                            row.rate >= 50 ? 'text-yellow-500' : 'text-red-500'
-                                                        )}>{row.rate}%</span>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                </tr>
+                                                {miembros.map((row) => (
+                                                    <tr key={row.id_miembro} className="text-gray-900 dark:text-white hover:bg-black/[0.02] dark:hover:bg-white/5 transition-colors group">
+                                                        <td className="p-6">
+                                                            <div className="font-bold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{row.nombres} {row.apellidos}</div>
+                                                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider transition-colors">{row.seccion}</div>
+                                                        </td>
+                                                        <td className="p-6 text-center font-medium text-gray-500 dark:text-gray-300 transition-colors uppercase tabular-nums tracking-tighter">{row.total_events}</td>
+                                                        <td className="p-6 text-center font-medium text-green-600 dark:text-green-400 transition-colors uppercase tabular-nums tracking-tighter bg-green-500/5">{row.present_count}</td>
+                                                        <td className="p-6 text-center font-medium text-red-600 dark:text-red-400 transition-colors uppercase tabular-nums tracking-tighter bg-red-500/5">{row.absent_count + row.unmarked_count}</td>
+                                                        <td className="p-6 text-center font-medium text-blue-600 dark:text-blue-400 transition-colors uppercase tabular-nums tracking-tighter bg-blue-500/5">{row.justified_count}</td>
+                                                        <td className="p-6 text-center">
+                                                            <div className="flex items-center justify-between gap-3 max-w-[120px] mx-auto">
+                                                                <div className="flex-1 h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden transition-colors border border-surface-border">
+                                                                    <div 
+                                                                        className={clsx("h-full rounded-full transition-all duration-500",
+                                                                            row.rate >= 80 ? 'bg-green-500' : 
+                                                                            row.rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                                                        )} 
+                                                                        style={{ width: `${row.rate}%` }}
+                                                                    />
+                                                                </div>
+                                                                <span className={clsx("text-xs font-black w-10 text-right tabular-nums",
+                                                                    row.rate >= 80 ? 'text-green-500' : 
+                                                                    row.rate >= 50 ? 'text-yellow-500' : 'text-red-500'
+                                                                )}>{row.rate}%</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </Fragment>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5" className="p-12 text-center text-gray-500">
+                                            <td colSpan="6" className="p-12 text-center text-gray-400 italic">
                                                 No hay datos que coincidan con los filtros.
                                             </td>
                                         </tr>
@@ -420,7 +480,7 @@ export default function ReportesHome() {
                 ) : (
                     <>
                         {/* Matrix View Header */}
-                        <div className="p-8 border-b border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 transition-colors">
+                        <div className="p-8 border-b border-surface-border flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
                                     <LayoutGrid className="w-6 h-6 text-indigo-600 dark:text-indigo-500 transition-colors" />
@@ -430,23 +490,101 @@ export default function ReportesHome() {
                                     <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest transition-colors">Control diario por músico</p>
                                 </div>
                             </div>
-                            <div className="flex gap-4">
-                                <div className="flex items-center gap-4 px-4 py-2 bg-black/5 dark:bg-white/5 rounded-xl border border-surface-border">
-                                    <div className="flex items-center gap-1.5">
+                            
+                            <div className="flex flex-wrap items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className={clsx(
+                                            "flex items-center gap-2 px-4 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all border shrink-0",
+                                            showFilters 
+                                                ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
+                                                : "bg-black/5 dark:bg-white/5 text-gray-500 border-surface-border hover:text-gray-900 dark:hover:text-white"
+                                        )}
+                                    >
+                                        <Filter className="w-4 h-4" /> <span>{showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}</span>
+                                    </button>
+                                    <button 
+                                        onClick={handleDownloadReport}
+                                        className="p-2.5 bg-black/5 dark:bg-white/5 text-gray-500 border border-surface-border rounded-xl hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shrink-0"
+                                    >
+                                        <Download className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                <div className="hidden sm:block w-px h-10 bg-surface-border mx-2" />
+
+                                <div className="flex items-center gap-4 px-4 py-3 bg-black/5 dark:bg-white/[0.03] rounded-2xl border border-surface-border shadow-inner">
+                                    <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
                                         <div className="w-2 h-2 rounded-full bg-green-500" />
-                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Presente (A)</span>
+                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Presente</span>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
                                         <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Permiso (P)</span>
+                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Permiso</span>
                                     </div>
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
                                         <div className="w-2 h-2 rounded-full bg-red-500" />
-                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Falta (F)</span>
+                                        <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider">Falta</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Integrated Filter Panel */}
+                        <AnimatePresence>
+                            {showFilters && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="border-b border-surface-border bg-black/5 dark:bg-white/[0.03] relative z-[50]"
+                                >
+                                    <div className="p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 items-end">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Calendar className="w-3 h-3" /> Mes</label>
+                                            <select value={selectedMonth} onChange={e => handleMonthChange(Number(e.target.value))} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white focus:border-indigo-500 outline-none h-11 transition-colors">
+                                                {MESES.map((mes, idx) => <option key={idx} value={idx}>{mes}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Clock className="w-3 h-3" /> Inicio</label>
+                                            <SmartDateInput 
+                                                value={dateRange.start} 
+                                                onChange={val => setDateRange({...dateRange, start: val})} 
+                                                className="!h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest flex items-center gap-2"><Clock className="w-3 h-3" /> Fin</label>
+                                            <SmartDateInput 
+                                                value={dateRange.end} 
+                                                onChange={val => setDateRange({...dateRange, end: val})} 
+                                                className="!h-11"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest">Sección</label>
+                                            <select value={selectedSeccion} onChange={e => handleSeccionChange(e.target.value)} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white h-11 transition-colors">
+                                                <option value="">Todas</option>
+                                                {secciones.map(s => <option key={s.id_seccion} value={s.id_seccion}>{s.seccion}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] uppercase font-black text-gray-500 tracking-widest">Instrumento</label>
+                                            <select value={selectedInstrumento} onChange={e => setSelectedInstrumento(e.target.value)} className="w-full bg-surface-card border border-surface-border rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 dark:text-white h-11 transition-colors">
+                                                <option value="">Todos</option>
+                                                {instrumentos.filter(i => !selectedSeccion || i.id_seccion == selectedSeccion).map(i => <option key={i.id_instrumento} value={i.id_instrumento}>{i.instrumento}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="flex items-center gap-2 h-11 px-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                                            <span className="text-[9px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-widest">Auto-actualizando</span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">

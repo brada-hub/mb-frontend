@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api';
+import { isNative } from '../utils/nativeApp';
 
 const AuthContext = createContext(null);
 
@@ -8,13 +9,14 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(() => localStorage.getItem('token'));
     const [loading, setLoading] = useState(!!token);
 
-    const login = async (username, password) => {
+    const login = async (username, password, band_slug = null) => {
         setLoading(true); // Set loading before starting login process
         try {
             const response = await api.post('/login', { 
                 user: username, 
                 password, 
-                platform: 'web' 
+                platform: isNative() ? 'android' : 'web',
+                band_slug // Enviamos el slug si estamos en un login personalizado
             });
             
             const { token: newToken, user: userData, role, permissions, password_changed, profile_completed, is_super_admin } = response.data;

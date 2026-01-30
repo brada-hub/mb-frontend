@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { format, parse, isValid, getYear, getMonth, setYear, setMonth, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, subMonths, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export default function SmartDateInput({ value, onChange, label, error, name, max, min }) {
+export default function SmartDateInput({ value, onChange, label, error, name, max, min, className }) {
     const [inputValue, setInputValue] = useState('');
     const [showPicker, setShowPicker] = useState(false);
     const [viewDate, setViewDate] = useState(new Date());
@@ -183,8 +183,9 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                     onFocus={() => setShowPicker(true)}
                     placeholder="DD/MM/AAAA"
                     className={clsx(
-                        'flex h-14 w-full rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none font-mono',
-                        error ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-surface-border focus:ring-brand-primary/30 focus:border-brand-primary/50'
+                        'flex h-14 w-full min-w-[140px] rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none font-mono',
+                        error ? 'border-red-500/50 ring-2 ring-red-500/20' : 'border-surface-border focus:ring-brand-primary/30 focus:border-brand-primary/50',
+                        className
                     )}
                 />
                 

@@ -26,6 +26,10 @@ const routes = [
         element: <LoginPage />
     },
     {
+        path: '/:bandSlug/login',
+        element: <LoginPage />
+    },
+    {
         path: '/dashboard',
         element: <MainLayout />,
         children: [

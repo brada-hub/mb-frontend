@@ -62,6 +62,7 @@ const SidebarItem = ({ icon: Icon, label, to, active, onClick, collapsed }) => {
 };
 
 import { requestForToken } from '../firebase-config';
+import { isNative, setupNativeNotifications } from '../utils/nativeApp';
 import api from '../api';
 import NotificationBell from '../components/NotificationBell';
 
@@ -104,14 +105,27 @@ export default function MainLayout() {
     useEffect(() => {
         if (isAuthenticated && !loading) {
             const setupPush = async () => {
-                const token = await requestForToken();
-                if (token) {
-                    try {
+                try {
+                    let token = null;
+                    
+                    if (isNative()) {
+                        // Usar notificaciones nativas de Capacitor en Android
+                        await setupNativeNotifications((nativeToken) => {
+                            token = nativeToken;
+                        });
+                        // Esperar un poco para que el token se registre
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    } else {
+                        // Usar Firebase Web Push en navegador
+                        token = await requestForToken();
+                    }
+                    
+                    if (token) {
                         await api.post('/update-fcm-token', { fcm_token: token });
                         console.log('Push token sincronizado con el servidor.');
-                    } catch (error) {
-                        console.error('Error sincronizando push token:', error);
                     }
+                } catch (error) {
+                    console.error('Error configurando push notifications:', error);
                 }
             };
             setupPush();
@@ -246,7 +260,7 @@ export default function MainLayout() {
         title: 'Recursos Humanos',
         items: [
             { icon: Users, label: 'Personal', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
-            { icon: Layers, label: 'Gestión Elencos', to: '/dashboard/formaciones', permission: 'GESTION_ELENCOS' },
+            { icon: Layers, label: 'Formaciones', to: '/dashboard/formaciones', permission: 'GESTION_ELENCOS' },
             { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
         ],
         hideForSuperAdmin: !isImpersonating

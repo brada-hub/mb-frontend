@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Users, DollarSign, Calendar, ChevronRight, CheckCircle2, 
@@ -122,6 +122,22 @@ export default function PagosAdmin() {
 
     const totalDeudaGlobal = deudas.reduce((acc, curr) => acc + curr.total_eventos, 0);
 
+    const groupedDeudas = useMemo(() => {
+        const orderMap = {
+            'PLATILLO': 1, 'TAMBOR': 2, 'TIMBAL': 3, 'BOMBO': 4,
+            'TROMBON': 5, 'CLARINETE': 6, 'BARITONO': 7, 'TROMPETA': 8, 'HELICON': 9
+        };
+        const groups = {};
+        filteredDeudas.forEach(item => {
+            const inst = item.instrumento || 'Sin Instrumento';
+            if (!groups[inst]) groups[inst] = [];
+            groups[inst].push(item);
+        });
+        return Object.entries(groups).sort(([a], [b]) => {
+            return (orderMap[a.toUpperCase()] || 99) - (orderMap[b.toUpperCase()] || 99);
+        });
+    }, [filteredDeudas]);
+
     return (
         <div className="space-y-6 animate-in fade-in duration-500 h-full flex flex-col">
             <div className="flex items-center justify-between shrink-0">
@@ -178,50 +194,58 @@ export default function PagosAdmin() {
                                 <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
                                 <p className="text-xs text-gray-500 font-bold uppercase tracking-widest transition-colors">Calculando deudas...</p>
                             </div>
-                        ) : filteredDeudas.length === 0 ? (
+                        ) : groupedDeudas.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
                                 <DollarSign className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-2 transition-colors" />
-                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Todo al día</p>
-                                <p className="text-xs text-gray-400 dark:text-gray-600 transition-colors">No hay pagos pendientes</p>
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Sin deudas</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-600 transition-colors">Prueba con otro filtro</p>
                             </div>
                         ) : (
-                            filteredDeudas.map(item => (
-                                <button
-                                    key={item.id_miembro}
-                                    onClick={() => handleSelectMember(item)}
-                                    className={clsx(
-                                        "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
-                                        selectedMember?.id_miembro === item.id_miembro 
-                                            ? "bg-brand-primary/10 border-brand-primary/50" 
-                                            : "bg-black/[0.02] dark:bg-[#161b2c] border-surface-border hover:border-gray-300 dark:hover:border-white/10 hover:bg-black/5 dark:hover:bg-[#1a2035]"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className={clsx(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-colors",
-                                            selectedMember?.id_miembro === item.id_miembro
-                                                ? "bg-brand-primary text-white"
-                                                : "bg-black/10 dark:bg-[#252b43] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                                        )}>
-                                            {item.nombres.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <p className={clsx(
-                                                "font-bold text-sm leading-tight transition-colors",
-                                                selectedMember?.id_miembro === item.id_miembro ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
-                                            )}>
-                                                {item.nombres} {item.apellidos}
-                                            </p>
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest transition-colors">{item.instrumento}</p>
-                                        </div>
+                            groupedDeudas.map(([instrumento, miembros]) => (
+                                <Fragment key={instrumento}>
+                                    <div className="flex items-center gap-2 px-2 py-3 sticky top-0 bg-surface-card z-10 transition-colors">
+                                        <div className="w-1 h-3 bg-brand-primary rounded-full" />
+                                        <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{instrumento} ({miembros.length})</span>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-lg font-black text-gray-900 dark:text-white transition-colors">
-                                            {item.total_eventos}
-                                        </span>
-                                        <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest transition-colors">Pendientes</span>
-                                    </div>
-                                </button>
+                                    {miembros.map(item => (
+                                        <button
+                                            key={item.id_miembro}
+                                            onClick={() => handleSelectMember(item)}
+                                            className={clsx(
+                                                "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
+                                                selectedMember?.id_miembro === item.id_miembro 
+                                                    ? "bg-brand-primary/10 border-brand-primary/50" 
+                                                    : "bg-black/[0.02] dark:bg-[#161b2c] border-surface-border hover:border-gray-300 dark:hover:border-white/10 hover:bg-black/5 dark:hover:bg-[#1a2035]"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={clsx(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-colors",
+                                                    selectedMember?.id_miembro === item.id_miembro
+                                                        ? "bg-brand-primary text-white"
+                                                        : "bg-black/10 dark:bg-[#252b43] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                                )}>
+                                                    {item.nombres.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className={clsx(
+                                                        "font-bold text-sm leading-tight transition-colors",
+                                                        selectedMember?.id_miembro === item.id_miembro ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
+                                                    )}>
+                                                        {item.nombres} {item.apellidos}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest transition-colors">{item.instrumento}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-lg font-black text-gray-900 dark:text-white transition-colors">
+                                                    {item.total_eventos}
+                                                </span>
+                                                <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest transition-colors">Eventos</span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </Fragment>
                             ))
                         )}
                     </div>
