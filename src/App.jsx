@@ -1,10 +1,57 @@
 import { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Router from './router';
 import { Capacitor } from '@capacitor/core';
+
+// Componente interno que maneja el botón atrás
+function BackButtonHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const setupBackButton = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { App } = await import('@capacitor/app');
+          
+          // Listener para el botón atrás de Android
+          App.addListener('backButton', ({ canGoBack }) => {
+            // Si estamos en login o dashboard, minimizar app
+            if (location.pathname === '/login' || location.pathname === '/dashboard') {
+              App.minimizeApp();
+            } else if (canGoBack || window.history.length > 1) {
+              // Ir atrás en el historial
+              navigate(-1);
+            } else {
+              // Minimizar si no hay historial
+              App.minimizeApp();
+            }
+          });
+          
+          console.log('Back button handler configurado');
+        } catch (error) {
+          console.log('Error configurando back button:', error.message);
+        }
+      }
+    };
+
+    setupBackButton();
+
+    // Cleanup
+    return () => {
+      if (Capacitor.isNativePlatform()) {
+        import('@capacitor/app').then(({ App }) => {
+          App.removeAllListeners();
+        }).catch(() => {});
+      }
+    };
+  }, [navigate, location]);
+
+  return null;
+}
 
 function App() {
   // Inicialización de la app nativa
@@ -20,7 +67,8 @@ function App() {
           const StatusBar = statusBarModule.StatusBar;
           const SplashScreen = splashModule.SplashScreen;
           
-          // Configurar StatusBar
+          // Configurar StatusBar - NO superponer sobre el contenido web
+          await StatusBar.setOverlaysWebView({ overlay: false });
           await StatusBar.setStyle({ style: 'DARK' });
           await StatusBar.setBackgroundColor({ color: '#0f111a' });
           
@@ -44,6 +92,7 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <BrowserRouter>
+            <BackButtonHandler />
             <Router />
           </BrowserRouter>
         </ThemeProvider>
@@ -53,4 +102,5 @@ function App() {
 }
 
 export default App;
+
 
