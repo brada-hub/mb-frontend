@@ -1,3 +1,23 @@
 {
-  "css.lint.unknownAtRules": "ignore"
+  "java.server.launchMode": "LightWeight",
+  "java.autobuild.enabled": false,
+  "java.project.sourcePaths": [],
+  "java.project.outputPath": "",
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.import.gradle.enabled": false,
+  "java.import.maven.enabled": false,
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/android/**"
+  ],
+  "java.project.referencedLibraries": [],
+  "files.exclude": {
+    "**/node_modules/@capacitor/**/android/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  }
 }

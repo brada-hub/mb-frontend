@@ -86,21 +86,21 @@ export default function LoginPage() {
                 {/* Orbe Cian - Monster Color */}
                 <motion.div 
                     animate={{ 
-                        scale: [1, 1.1, 1],
-                        opacity: [0.2, 0.3, 0.2],
+                        scale: [1, 1.05, 1],
+                        opacity: [0.15, 0.25, 0.15],
                     }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-[-15%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[120px] bg-[#00f2fe]/20" 
+                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full blur-[80px] bg-[#00f2fe]/15 will-change-transform" 
                 />
 
                 {/* Orbe profundo */}
                 <motion.div 
                     animate={{ 
-                        scale: [1.1, 1, 1.1],
-                        opacity: [0.1, 0.2, 0.1],
+                        scale: [1.05, 1, 1.05],
+                        opacity: [0.1, 0.15, 0.1],
                     }}
-                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-[-15%] left-[-5%] w-[500px] h-[500px] rounded-full blur-[100px] bg-indigo-900/30" 
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-[-10%] left-[-5%] w-[350px] h-[350px] rounded-full blur-[70px] bg-indigo-900/20 will-change-transform" 
                 />
             </div>
 
@@ -117,7 +117,7 @@ export default function LoginPage() {
                         style={{ backgroundColor: '#00f2fe' }}
                     />
                     
-                    <div className="relative bg-[#0d0f17]/90 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-6 md:p-10 shadow-2xl">
+                    <div className="relative bg-[#0d0f17]/90 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-6 md:p-10 shadow-2xl">
                         
                         {/* Header Compacto */}
                         <div className="text-center mb-5 md:mb-6">
@@ -128,7 +128,7 @@ export default function LoginPage() {
                                 <img 
                                     src={logo} 
                                     alt={bandName} 
-                                    className="relative w-28 h-28 md:w-36 md:h-36 object-contain drop-shadow-[0_0_20px_rgba(0,242,254,0.3)]" 
+                                    className="relative w-24 h-24 md:w-36 md:h-36 object-contain drop-shadow-[0_0_20px_rgba(0,242,254,0.3)]" 
                                 />
                             </div>
                             

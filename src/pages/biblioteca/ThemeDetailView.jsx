@@ -30,6 +30,7 @@ import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RecursoModal from '../../components/modals/RecursoModal';
 import TemaModal from '../../components/modals/TemaModal';
 import { useAuth } from '../../context/AuthContext';
+import { SkeletonDetail } from '../../components/ui/skeletons/Skeletons';
 
 const getCleanUrl = (url) => {
     if (!url) return '';
@@ -170,12 +171,7 @@ export default function ThemeDetailView() {
     };
 
     if (loading && !tema) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-                <p className="text-gray-500 font-bold uppercase text-xs tracking-widest">Sincronizando partituras...</p>
-            </div>
-        );
+        return <SkeletonDetail />;
     }
 
     if (!tema) return null;

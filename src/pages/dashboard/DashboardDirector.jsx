@@ -95,22 +95,22 @@ export default function DashboardDirector() {
             <div className="max-w-[1600px] mx-auto px-4 py-8 space-y-8">
                 
                 {/* Hero Premium */}
-                <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 rounded-[2.5rem] p-8 sm:p-10 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                <div className="bg-gradient-to-br from-brand-primary via-brand-dark to-purple-800 rounded-[2.5rem] p-8 sm:p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
                     
                     <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                         <div>
                             <div className="flex items-center gap-3 mb-4">
-                                <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">{bandName}</span>
+                                <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10">{bandName}</span>
                                 {user?.is_super_admin && (
-                                    <span className="px-3 py-1 bg-amber-500/30 text-amber-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-400/30">
+                                    <span className="px-3 py-1 bg-amber-500/30 text-amber-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-400/30 backdrop-blur-md">
                                         SuperAdmin
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter">
-                                {greeting}, <span className="text-indigo-200">{displayName}</span>
+                            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter drop-shadow-lg">
+                                {greeting}, <span className="text-white/80">{displayName}</span>
                             </h1>
                             <p className="mt-3 text-white/60 text-sm uppercase tracking-widest font-bold">
                                 Panel de Control • Director de Banda
@@ -118,15 +118,15 @@ export default function DashboardDirector() {
                         </div>
                         
                         <div className="flex gap-3">
-                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all">
+                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
                                 <Calendar className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
                                 <p className="text-xs font-bold">Agenda</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all">
+                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
                                 <Users className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
                                 <p className="text-xs font-bold">Personal</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all">
+                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
                                 <Activity className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
                                 <p className="text-xs font-bold">Control</p>
                             </button>

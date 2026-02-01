@@ -26,7 +26,7 @@ const Input = forwardRef(({
     return (
         <div className="w-full space-y-2.5 group">
             {label && (
-                <div className="flex items-center gap-2.5 mb-2.5 px-1">
+                <div className="flex items-center gap-2.5 mb-2.5 px-1 cursor-pointer" onClick={() => document.getElementById(inputId)?.focus()}>
                     {Icon && <Icon className={clsx(
                         "w-5 h-5 transition-colors",
                         error ? "text-red-400" : "text-gray-500 dark:text-gray-400 group-focus-within:text-brand-primary"
@@ -34,8 +34,8 @@ const Input = forwardRef(({
                     <label 
                         htmlFor={inputId}
                         className={clsx(
-                            "text-sm font-bold tracking-tight transition-colors",
-                            error ? "text-red-400" : "text-gray-700 dark:text-gray-300 pointer-events-auto cursor-pointer"
+                            "text-sm font-bold tracking-tight transition-colors cursor-pointer",
+                            error ? "text-red-400" : "text-gray-700 dark:text-gray-300 group-focus-within:text-brand-primary"
                         )}
                     >
                         {label} {props.required && <span className="text-brand-primary">*</span>}
@@ -56,6 +56,7 @@ const Input = forwardRef(({
                     type={inputType}
                     onInput={onInput}
                     aria-label={props['aria-label'] || label || props.placeholder}
+                    autoComplete={props.autoComplete || (isPassword ? 'current-password' : type === 'email' ? 'email' : 'off')}
                     className={clsx(
                         'flex w-full rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none',
                         isTextArea ? 'min-h-[100px] py-4 resize-none' : 'h-14',

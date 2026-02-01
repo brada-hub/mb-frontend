@@ -9,6 +9,7 @@ import { useToast } from '../../context/ToastContext';
 import clsx from 'clsx';
 import { Button } from '../../components/ui/Button';
 import ConfirmModal from '../../components/modals/ConfirmModal';
+import { SkeletonList } from '../../components/ui/skeletons/Skeletons';
 
 export default function PagosAdmin() {
     const { notify } = useToast();
@@ -190,10 +191,7 @@ export default function PagosAdmin() {
                     {/* Lista Scrolleable */}
                     <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                         {loading ? (
-                            <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest transition-colors">Calculando deudas...</p>
-                            </div>
+                            <SkeletonList items={5} />
                         ) : groupedDeudas.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
                                 <DollarSign className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-2 transition-colors" />
@@ -214,8 +212,8 @@ export default function PagosAdmin() {
                                             className={clsx(
                                                 "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
                                                 selectedMember?.id_miembro === item.id_miembro 
-                                                    ? "bg-brand-primary/10 border-brand-primary/50" 
-                                                    : "bg-black/[0.02] dark:bg-[#161b2c] border-surface-border hover:border-gray-300 dark:hover:border-white/10 hover:bg-black/5 dark:hover:bg-[#1a2035]"
+                                                    ? "bg-brand-primary/10 border-brand-primary/50 shadow-lg shadow-brand-primary/5" 
+                                                    : "bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5"
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
@@ -223,14 +221,14 @@ export default function PagosAdmin() {
                                                     "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-colors",
                                                     selectedMember?.id_miembro === item.id_miembro
                                                         ? "bg-brand-primary text-white"
-                                                        : "bg-black/10 dark:bg-[#252b43] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                                                        : "bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400 group-hover:bg-brand-primary/20 group-hover:text-brand-primary"
                                                 )}>
                                                     {item.nombres.charAt(0)}
                                                 </div>
                                                 <div>
                                                     <p className={clsx(
                                                         "font-bold text-sm leading-tight transition-colors",
-                                                        selectedMember?.id_miembro === item.id_miembro ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
+                                                        selectedMember?.id_miembro === item.id_miembro ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
                                                     )}>
                                                         {item.nombres} {item.apellidos}
                                                     </p>
@@ -238,7 +236,10 @@ export default function PagosAdmin() {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end">
-                                                <span className="text-lg font-black text-gray-900 dark:text-white transition-colors">
+                                                <span className={clsx(
+                                                    "text-lg font-black transition-colors",
+                                                    selectedMember?.id_miembro === item.id_miembro ? "text-brand-primary" : "text-gray-900 dark:text-white"
+                                                )}>
                                                     {item.total_eventos}
                                                 </span>
                                                 <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest transition-colors">Eventos</span>
@@ -293,9 +294,7 @@ export default function PagosAdmin() {
                             {/* Lista Detalle */}
                             <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-black/[0.02] dark:bg-[#0b0e14] custom-scrollbar transition-colors">
                                 {loadingDetails ? (
-                                    <div className="flex justify-center py-10">
-                                        <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                    </div>
+                                    <SkeletonList items={3} />
                                 ) : (
                                     memberDetails.map((detalle, idx) => (
                                         <div 
@@ -311,8 +310,8 @@ export default function PagosAdmin() {
                                             <div className={clsx(
                                                 "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
                                                 selection.includes(detalle.id_convocatoria)
-                                                    ? "bg-indigo-500 border-indigo-500"
-                                                    : "border-white/20 group-hover:border-white/40"
+                                                    ? "bg-brand-primary border-brand-primary shadow-sm shadow-brand-primary/50"
+                                                    : "border-white/20 group-hover:border-brand-primary/50"
                                             )}>
                                                 {selection.includes(detalle.id_convocatoria) && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                                             </div>

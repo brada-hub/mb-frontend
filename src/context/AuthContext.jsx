@@ -52,13 +52,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        setLoading(true); // Show loader during logout if needed
-        api.post('/logout').finally(() => {
-            localStorage.removeItem('token');
-            setToken(null);
-            setUser(null);
-            setLoading(false);
-        });
+        // PRIMERO limpiar estado local para evitar peticiones race-condition
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+        
+        // Luego notificar al servidor (fire and forget)
+        api.post('/logout').catch(() => {});
     };
 
     // Check auth on load

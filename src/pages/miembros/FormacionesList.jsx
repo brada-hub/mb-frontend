@@ -14,6 +14,7 @@ import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import FormacionModal from '../../components/modals/FormacionModal';
+import { SkeletonFormacionCard } from '../../components/ui/skeletons/Skeletons';
 
 export default function FormacionesList() {
     const { notify } = useToast();
@@ -91,9 +92,9 @@ export default function FormacionesList() {
                 </div>
 
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="h-64 bg-white/5 rounded-[2.5rem] animate-pulse" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[1, 2, 3, 4].map(i => (
+                            <SkeletonFormacionCard key={i} />
                         ))}
                     </div>
                 ) : filteredConvocatorias.length === 0 ? (

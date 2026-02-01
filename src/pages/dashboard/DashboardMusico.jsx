@@ -5,6 +5,7 @@ import { clsx } from 'clsx';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Skeleton } from '../../components/ui/skeletons/Skeletons';
 
 export default function DashboardMusico() {
     const navigate = useNavigate();
@@ -27,6 +28,39 @@ export default function DashboardMusico() {
         } catch (error) { console.error(error); } finally { setLoading(false); }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-full bg-gray-50 dark:bg-[#0a0d14] p-4 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-300">
+                {/* Header Skeleton */}
+                <div className="h-64 rounded-[2rem] bg-[#1a1b26] border border-white/5 relative overflow-hidden p-8 flex flex-col justify-end space-y-4">
+                    <Skeleton className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10" />
+                    <Skeleton className="h-4 w-40 opacity-50" />
+                    <Skeleton className="h-10 w-3/4" />
+                    <Skeleton className="h-16 w-48 rounded-2xl opacity-20" />
+                </div>
+                {/* Grid Skeleton */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <Skeleton key={i} className="h-32 rounded-2xl bg-[#1a1b26] border border-white/5" />
+                    ))}
+                </div>
+                {/* List Skeleton */}
+                <div className="bg-[#1a1b26] rounded-3xl p-6 border border-white/5 space-y-6">
+                    <Skeleton className="h-6 w-32" />
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="flex items-center space-x-4">
+                             <Skeleton className="h-12 w-12 rounded-xl" />
+                             <div className="flex-1 space-y-2">
+                                 <Skeleton className="h-4 w-1/3" />
+                                 <Skeleton className="h-3 w-1/4" />
+                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
     const getAsistenciaColor = (pct) => {
         if (pct >= 80) return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
         if (pct >= 50) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
@@ -38,31 +72,31 @@ export default function DashboardMusico() {
             <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
                 
                 {/* Header Personal */}
-                <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2rem] p-8 text-white relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                <div className="bg-gradient-to-br from-brand-primary to-brand-dark rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl animate-pulse" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
                     
                     <div className="relative z-10">
                         <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.3em] mb-2">{bandName} • {instrumento}</p>
-                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-2">
+                        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-2 drop-shadow-md">
                             {greeting}, {displayName}
                         </h1>
-                        <p className="text-white/70 text-sm">Tu centro de control personal</p>
+                        <p className="text-white/70 text-sm font-medium tracking-wide">Tu centro de control personal</p>
                         
                         {/* Indicador de Asistencia */}
-                        <div className="mt-6 inline-flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-2xl px-5 py-3 border border-white/10">
-                            <div className={clsx("w-3 h-3 rounded-full animate-pulse", (data?.mi_asistencia || 0) >= 80 ? "bg-emerald-400" : (data?.mi_asistencia || 0) >= 50 ? "bg-amber-400" : "bg-red-400")} />
+                        <div className="mt-6 inline-flex items-center gap-3 bg-white/10 backdrop-blur-lg rounded-2xl px-5 py-3 border border-white/10 hover:bg-white/15 transition-all cursor-default">
+                            <div className={clsx("w-3 h-3 rounded-full animate-pulse shadow-[0_0_10px_currentColor]", (data?.mi_asistencia || 0) >= 80 ? "bg-emerald-400 text-emerald-400" : (data?.mi_asistencia || 0) >= 50 ? "bg-amber-400 text-amber-400" : "bg-red-400 text-red-400")} />
                             <span className="text-xl font-black">{data?.mi_asistencia || 0}%</span>
-                            <span className="text-white/50 text-sm font-bold">Asistencia</span>
+                            <span className="text-white/50 text-sm font-bold uppercase tracking-wider">Asistencia Global</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Stats Row */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
+                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-all hover:bg-gray-50 dark:hover:bg-white/[0.03]">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500">
+                            <div className="p-2.5 bg-brand-primary/10 rounded-xl text-brand-primary">
                                 <Calendar className="w-5 h-5" />
                             </div>
                         </div>
@@ -70,7 +104,7 @@ export default function DashboardMusico() {
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Eventos Hoy</p>
                     </div>
                     
-                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
+                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-all hover:bg-gray-50 dark:hover:bg-white/[0.03]">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
                                 <Clock className="w-5 h-5" />
@@ -80,7 +114,7 @@ export default function DashboardMusico() {
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Esta Semana</p>
                     </div>
                     
-                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
+                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-all hover:bg-gray-50 dark:hover:bg-white/[0.03]">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500">
                                 <Flame className="w-5 h-5" />
@@ -90,7 +124,7 @@ export default function DashboardMusico() {
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Racha Actual</p>
                     </div>
                     
-                    <div className={clsx("border rounded-2xl p-5 transition-colors", getAsistenciaColor(data?.mi_asistencia || 0))}>
+                    <div className={clsx("border rounded-2xl p-5 transition-all hover:-translate-y-1 shadow-sm", getAsistenciaColor(data?.mi_asistencia || 0))}>
                         <div className="flex items-center gap-3 mb-3">
                             <div className="p-2.5 bg-current/10 rounded-xl">
                                 <Activity className="w-5 h-5" />

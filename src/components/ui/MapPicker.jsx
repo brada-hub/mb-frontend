@@ -98,16 +98,16 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
             <div className="mb-6">
                 <div className="w-full h-72 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative flex flex-col group">
                     {/* Map Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#1c233a]">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-gray-50 dark:bg-[#1c233a] transition-colors">
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-indigo-400" />
-                            <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">{label}</span>
+                            <MapPin className="w-4 h-4 text-brand-primary" />
+                            <span className="text-xs font-black text-gray-500 dark:text-gray-300 uppercase tracking-wider">{label}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <button 
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); getCurrentLocation(); }}
-                                className="p-1.5 hover:bg-white/10 text-gray-400 hover:text-white rounded-lg transition-all"
+                                className="p-2 hover:bg-brand-primary/10 text-gray-400 hover:text-brand-primary rounded-lg transition-all"
                                 title="Mi Ubicación Actual"
                             >
                                 {isLoadingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crosshair className="w-4 h-4" />}
@@ -115,7 +115,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
                             <button 
                                 type="button"
                                 onClick={toggleFullScreen}
-                                className="p-1.5 hover:bg-indigo-500 text-white bg-indigo-600 rounded-lg transition-all active:scale-90 shadow-lg shadow-indigo-600/20"
+                                className="p-2 hover:bg-brand-primary text-brand-primary hover:text-white bg-brand-primary/10 rounded-lg transition-all active:scale-90 shadow-none hover:shadow-lg hover:shadow-brand-primary/20"
                                 title="Expandir a pantalla completa"
                             >
                                 <Maximize2 className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
                                 <Circle 
                                     center={position} 
                                     radius={radius} 
-                                    pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.2 }} 
+                                    pathOptions={{ color: 'var(--brand-primary)', fillColor: 'var(--brand-primary)', fillOpacity: 0.2 }} 
                                 />
                             )}
                             <ChangeView center={position} />

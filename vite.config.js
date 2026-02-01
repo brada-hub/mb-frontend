@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     react(),
-    /* VitePWA({
+    VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       manifest: {
@@ -27,10 +27,20 @@ export default defineConfig({
           }
         ]
       }
-    }) */
+    })
   ],
   optimizeDeps: {
-    include: ['date-fns', 'date-fns/locale'],
+    include: [
+      'date-fns', 
+      'date-fns/locale',
+      '@capacitor/core',
+      '@capacitor/app',
+      '@capacitor/device',
+      '@capacitor/geolocation',
+      '@capacitor/push-notifications',
+      '@capacitor/splash-screen',
+      '@capacitor/status-bar'
+    ],
   },
   server: {
     host: true,

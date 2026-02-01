@@ -3,6 +3,7 @@ import { Bell, CheckCircle2, Info, AlertTriangle, Clock, Trash2, Ghost } from 'l
 import api from '../../api';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { SkeletonList } from '../../components/ui/skeletons/Skeletons';
 
 export default function NotificationsList() {
     const [notifications, setNotifications] = useState([]);
@@ -43,9 +44,8 @@ export default function NotificationsList() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Sincronizando alertas...</p>
+            <div className="max-w-3xl mx-auto space-y-6 pt-10 px-4">
+                 <SkeletonList items={6} />
             </div>
         );
     }

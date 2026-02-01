@@ -10,6 +10,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal';
 import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import { SkeletonCalendar } from '../../components/ui/skeletons/Skeletons';
 
 export default function EventosList() {
     const navigate = useNavigate();
@@ -101,10 +102,7 @@ export default function EventosList() {
             </div>
 
             {loading ? (
-                <div className="text-center py-20 text-gray-500 flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-bold uppercase tracking-widest">Sincronizando Agenda...</span>
-                </div>
+                <SkeletonCalendar />
             ) : (
                 <CalendarioMensual 
                     eventos={eventos} 

@@ -16,6 +16,7 @@ import MiembroDetalleModal from '../../components/modals/MiembroDetalleModal';
 import MiembroPermisosModal from '../../components/modals/MiembroPermisosModal';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SkeletonMemberTable } from '../../components/ui/skeletons/Skeletons';
 
 export default function MiembrosList() {
     const [miembros, setMiembros] = useState([]);
@@ -462,9 +463,8 @@ export default function MiembrosList() {
             </div>
 
             {loading ? (
-                <div className="text-gray-900 dark:text-white text-center py-20 flex flex-col items-center gap-4 transition-colors">
-                    <div className="w-10 h-10 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin"></div>
-                    <p className="text-gray-500 font-black uppercase tracking-widest text-[10px]">Actualizando nómina...</p>
+                <div className="pb-20">
+                     <SkeletonMemberTable />
                 </div>
             ) : (
                 <div className="pb-20">

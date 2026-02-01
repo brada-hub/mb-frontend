@@ -1,13 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import api from '../../api';
 import { Button } from '../../components/ui/Button';
 import { Layers, Plus, Trash2, Edit2, Search, AlertCircle, Music } from 'lucide-react';
 import SeccionModal from '../../components/modals/SeccionModal';
 import InstrumentoModal from '../../components/modals/InstrumentoModal';
-import ConfirmModal from '../../components/ui/ConfirmModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 import { useToast } from '../../context/ToastContext';
 import { Input } from '../../components/ui/Input';
 import { clsx } from 'clsx';
+import { SkeletonSectionCard, Skeleton } from '../../components/ui/skeletons/Skeletons';
 
 export default function SeccionesList() {
     const [secciones, setSecciones] = useState([]);
@@ -27,6 +29,8 @@ export default function SeccionesList() {
         try {
             const res = await api.get('/secciones');
             setSecciones(res.data);
+            // Guardar cantidad para skeleton futuro
+            localStorage.setItem('monster_sections_count', res.data.length);
         } catch (error) {
             console.error("Error loading sections:", error);
             notify("Error al cargar las secciones", "error");
@@ -131,9 +135,10 @@ export default function SeccionesList() {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20">
-                    <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-xs transition-colors">Sincronizando Secciones...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+                    {[...Array(parseInt(localStorage.getItem('monster_sections_count') || 3))].map((_, i) => (
+                        <SkeletonSectionCard key={i} />
+                    ))}
                 </div>
             ) : filtered.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">

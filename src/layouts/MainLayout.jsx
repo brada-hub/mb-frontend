@@ -40,15 +40,15 @@ const SidebarItem = ({ icon: Icon, label, to, active, onClick, collapsed }) => {
             to={to} 
             onClick={onClick}
             className={clsx(
-                "flex items-center gap-3 px-4 py-3 sm:py-3.5 rounded-2xl transition-all duration-300 group relative",
+                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative",
                 active 
-                    ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20" 
-                    : "text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-white hover:bg-indigo-50 dark:hover:bg-white/5",
-                collapsed ? "justify-center px-0 w-12 h-12 mx-auto" : "px-4 w-full"
+                    ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/25" 
+                    : "text-gray-500 dark:text-gray-400 hover:text-brand-primary dark:hover:text-white hover:bg-brand-primary/5 dark:hover:bg-white/5",
+                collapsed ? "justify-center px-0 w-11 h-11 mx-auto" : "w-full"
             )}
             title={collapsed ? label : ""}
         >
-            <LucideIcon className={clsx("transition-transform duration-300", active ? "text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-white", collapsed ? "w-6 h-6" : "w-5 h-5", !collapsed && "group-hover:scale-110")} />
+            <LucideIcon className={clsx("transition-transform duration-300", active ? "text-white" : "group-hover:scale-110", collapsed ? "w-5 h-5" : "w-5 h-5")} />
             {!collapsed && <span className="font-bold text-xs uppercase tracking-wide truncate">{label}</span>}
             
             {collapsed && active && (
@@ -337,7 +337,7 @@ export default function MainLayout() {
 
 
     return (
-        <div className="h-screen w-full bg-gray-50 dark:bg-[#0f111a] flex flex-col text-gray-900 dark:text-gray-100 font-sans overflow-hidden transition-colors duration-300">
+        <div className="h-screen w-full bg-gray-50 dark:bg-[#0f111a] flex flex-col pt-[env(safe-area-inset-top)] text-gray-900 dark:text-gray-100 font-sans overflow-hidden transition-colors duration-300">
             {/* Impersonation Banner */}
             {isImpersonating && (
                 <div className="w-full bg-amber-500 py-2 px-4 shadow-xl z-[60] flex items-center justify-between shrink-0">
@@ -491,7 +491,7 @@ export default function MainLayout() {
                     "flex-1 h-full flex flex-col relative transition-all duration-500 overflow-hidden ml-0",
                     isMobileMenuOpen ? "ml-0" : (isSidebarCollapsed ? "lg:ml-20" : "lg:ml-72")
                 )}>
-                    <header className="h-16 sm:h-20 lg:h-24 px-4 sm:px-8 flex items-center justify-between border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-[#0f111a]/80 backdrop-blur-2xl shrink-0 sticky top-0 z-30 transition-colors duration-300">
+                    <header className="h-auto min-h-[64px] sm:min-h-[80px] lg:min-h-[96px] py-2 sm:py-0 px-4 sm:px-8 flex items-center justify-between border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-[#0f111a]/80 backdrop-blur-2xl shrink-0 sticky top-0 z-30 transition-colors duration-300">
                         <div className="flex items-center gap-4 sm:gap-6">
                             <button 
                                 className="p-3 sm:p-4 text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-2xl transition-all active:scale-90"
@@ -547,7 +547,10 @@ export default function MainLayout() {
                             </div>
 
                             <div className="hidden sm:block h-10 w-px bg-white/5 mx-2" />
-                            <button className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors">
+                            <button 
+                                onClick={() => navigate('/dashboard/perfil')}
+                                className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-white transition-colors"
+                            >
                                 <Settings className="w-4 h-4" />
                                 Config
                             </button>

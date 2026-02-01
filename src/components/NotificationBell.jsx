@@ -140,13 +140,14 @@ export default function NotificationBell() {
     const hasPriorityNotifications = notifications.some(n => !n.leido && n.tipo === 'asistencia');
 
     const getIcon = (tipo, titulo) => {
-        if (tipo === 'pago') return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
-        if (tipo === 'convocatoria') return <Info className="w-4 h-4 text-blue-400" />;
-        if (tipo === 'cancelacion') return <X className="w-4 h-4 text-red-500" />;
-        if (tipo === 'asistencia') return <AlertTriangle className="w-4 h-4 text-amber-400" />;
+        const iconClasses = "w-4 h-4";
+        if (tipo === 'pago') return <CheckCircle2 className={`${iconClasses} text-emerald-400`} />;
+        if (tipo === 'convocatoria') return <Info className={`${iconClasses} text-blue-400`} />;
+        if (tipo === 'cancelacion') return <X className={`${iconClasses} text-red-500`} />;
+        if (tipo === 'asistencia') return <AlertTriangle className={`${iconClasses} text-amber-400`} />;
         const t = titulo.toLowerCase();
-        if (t.includes('pago')) return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
-        return <Bell className="w-4 h-4 text-indigo-400" />;
+        if (t.includes('pago')) return <CheckCircle2 className={`${iconClasses} text-emerald-400`} />;
+        return <Bell className={`${iconClasses} text-indigo-400`} />;
     };
 
     return (
@@ -185,7 +186,7 @@ export default function NotificationBell() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-4 w-[320px] sm:w-[400px] bg-[#161b2c] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden backdrop-blur-xl"
+                        className="fixed sm:absolute right-4 sm:right-0 top-[calc(64px+env(safe-area-inset-top))] sm:top-auto sm:mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-[#161b2c] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden backdrop-blur-xl"
                     >
                         {view === 'list' ? (
                             <>
@@ -233,7 +234,7 @@ export default function NotificationBell() {
                                                     key={n.id_notificacion}
                                                     onClick={() => handleNotificationClick(n)}
                                                     className={clsx(
-                                                        "p-4 flex gap-4 transition-all cursor-pointer group relative",
+                                                        "p-4 flex gap-4 transition-all duration-300 cursor-pointer group relative active:scale-[0.99]",
                                                         !n.leido ? "bg-indigo-500/[0.03] hover:bg-indigo-500/[0.07]" : "hover:bg-white/[0.02]"
                                                     )}
                                                 >

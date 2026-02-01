@@ -39,18 +39,18 @@ export default function ConfirmModal({
                         <Button 
                             variant="secondary" 
                             onClick={onClose}
-                            className="h-14 rounded-2xl font-bold border-surface-border active:scale-95"
+                            className="h-14 rounded-2xl font-bold border-surface-border active:scale-95 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                             disabled={loading}
                         >
                             {cancelText}
                         </Button>
                         <Button 
-                            variant={variant === 'danger' ? 'monster' : 'monster'}
+                            variant={variant === 'danger' ? 'danger' : 'primary'}
                             onClick={onConfirm}
                             loading={loading}
                             className={clsx(
-                                "h-14 rounded-2xl font-bold active:scale-95",
-                                variant === 'danger' ? "bg-red-600 hover:bg-red-700 shadow-red-500/20" : ""
+                                "h-14 rounded-2xl font-bold active:scale-95 shadow-xl",
+                                variant === 'danger' ? "shadow-red-500/20" : "shadow-brand-primary/25"
                             )}
                         >
                             {confirmText}
@@ -60,9 +60,9 @@ export default function ConfirmModal({
 
                 <button 
                     onClick={onClose}
-                    className="absolute top-6 right-6 p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="absolute top-4 right-4 p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all active:scale-90"
                 >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5" />
                 </button>
             </div>
         </div>

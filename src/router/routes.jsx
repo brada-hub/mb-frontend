@@ -1,24 +1,36 @@
-import LoginPage from '../pages/auth/LoginPage';
-import DashboardHome from '../pages/dashboard/DashboardHome';
-import MiembrosList from '../pages/miembros/MiembrosList';
-import RolesList from '../pages/roles/RolesList';
-import SeccionesList from '../pages/secciones/SeccionesList';
-import BibliotecaList from '../pages/biblioteca/BibliotecaList';
-import ThemeDetailView from '../pages/biblioteca/ThemeDetailView';
-import EventosList from '../pages/eventos/EventosList';
-import AsistenciasList from '../pages/asistencias/AsistenciasList';
-import AsistenciaReporte from '../pages/asistencias/AsistenciaReporte';
-import ConvocatoriaEvento from '../pages/eventos/ConvocatoriaEvento';
-import MixesList from '../pages/repertorio/MixesList';
-import MainLayout from '../layouts/MainLayout';
-import PagosAdmin from '../pages/pagos/PagosAdmin';
-import MisPagos from '../pages/pagos/MisPagos';
-import ReportesHome from '../pages/reportes/ReportesHome';
-import FormacionesList from '../pages/miembros/FormacionesList';
+import { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
-import NotificationsList from '../pages/notificaciones/NotificationsList';
-import SuperAdminPanel from '../pages/superadmin/SuperAdminPanel';
+// Lazy loading function
+const Loadable = (Component) => (props) => (
+  <Suspense fallback={<LoadingSpinner />}>
+    <Component {...props} />
+  </Suspense>
+);
+
+// Lazy imports
+const LoginPage = Loadable(lazy(() => import('../pages/auth/LoginPage')));
+const DashboardHome = Loadable(lazy(() => import('../pages/dashboard/DashboardHome')));
+const MiembrosList = Loadable(lazy(() => import('../pages/miembros/MiembrosList')));
+const RolesList = Loadable(lazy(() => import('../pages/roles/RolesList')));
+const SeccionesList = Loadable(lazy(() => import('../pages/secciones/SeccionesList')));
+const BibliotecaList = Loadable(lazy(() => import('../pages/biblioteca/BibliotecaList')));
+const ThemeDetailView = Loadable(lazy(() => import('../pages/biblioteca/ThemeDetailView')));
+const EventosList = Loadable(lazy(() => import('../pages/eventos/EventosList')));
+const AsistenciasList = Loadable(lazy(() => import('../pages/asistencias/AsistenciasList')));
+const AsistenciaReporte = Loadable(lazy(() => import('../pages/asistencias/AsistenciaReporte')));
+const ConvocatoriaEvento = Loadable(lazy(() => import('../pages/eventos/ConvocatoriaEvento')));
+const MixesList = Loadable(lazy(() => import('../pages/repertorio/MixesList')));
+const MainLayout = Loadable(lazy(() => import('../layouts/MainLayout')));
+const PagosAdmin = Loadable(lazy(() => import('../pages/pagos/PagosAdmin')));
+const MisPagos = Loadable(lazy(() => import('../pages/pagos/MisPagos')));
+const ReportesHome = Loadable(lazy(() => import('../pages/reportes/ReportesHome')));
+const FormacionesList = Loadable(lazy(() => import('../pages/miembros/FormacionesList')));
+const NotificationsList = Loadable(lazy(() => import('../pages/notificaciones/NotificationsList')));
+const ProfilePage = Loadable(lazy(() => import('../pages/auth/ProfilePage')));
+const SuperAdminPanel = Loadable(lazy(() => import('../pages/superadmin/SuperAdminPanel')));
+
 
 const routes = [
     {
@@ -49,6 +61,7 @@ const routes = [
             { path: 'asistencia/reporte', element: <AsistenciaReporte /> },
             { path: 'reportes', element: <ReportesHome /> },
             { path: 'notificaciones', element: <NotificationsList /> },
+            { path: 'perfil', element: <ProfilePage /> },
             { path: 'superadmin', element: <SuperAdminPanel /> }
         ]
     },

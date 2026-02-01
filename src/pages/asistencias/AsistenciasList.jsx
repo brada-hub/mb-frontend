@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import MemberHistory from './components/MemberHistory';
 import { Search } from 'lucide-react';
 import ConfirmModal from '../../components/modals/ConfirmModal';
+import { SkeletonList, SkeletonAsistencia } from '../../components/ui/skeletons/Skeletons';
 
 const getEstadoClasses = (estado) => {
     const normalized = (estado === 'PUNTUAL' || estado === 'RETRASO') ? 'PRESENTE' : estado;
@@ -644,14 +645,7 @@ export default function AsistenciasList() {
     const jefeBloqueado = isJefe && !hasFullAccess && !jefeYaMarco;
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Cargando asistencias...</p>
-                </div>
-            </div>
-        );
+        return <SkeletonAsistencia />;
     }
 
     return (
@@ -1098,9 +1092,8 @@ export default function AsistenciasList() {
                             {(hasFullAccess || isJefe) && (
                                 <div className="max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar transition-all">
                                     {loadingLista ? (
-                                        <div className="p-12 text-center">
-                                            <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                                            <p className="text-gray-500 text-sm">Cargando lista...</p>
+                                        <div className="p-4">
+                                            <SkeletonList items={8} />
                                         </div>
                                     ) : listaAsistencia.length === 0 ? (
                                         <div className="p-12 text-center text-gray-500 font-medium uppercase text-xs tracking-widest">

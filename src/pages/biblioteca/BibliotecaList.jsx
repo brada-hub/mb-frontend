@@ -26,6 +26,7 @@ import MusicCatalogModal from '../../components/modals/MusicCatalogModal';
 import TemaModal from '../../components/modals/TemaModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
+import { SkeletonRepertoireGrid, SkeletonGenreList } from '../../components/ui/skeletons/Skeletons';
 
 export default function BibliotecaList() {
     const navigate = useNavigate();
@@ -154,83 +155,89 @@ export default function BibliotecaList() {
                                     setGenreToEdit(null);
                                     setIsCatalogModalOpen(true);
                                 }}
-                                className="h-11 w-11 rounded-xl shrink-0 z-50 shadow-lg bg-indigo-600 p-0 flex items-center justify-center active:scale-90"
+                                className="h-11 px-5 rounded-xl shrink-0 z-50 shadow-lg bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center gap-2 active:scale-95 transition-all w-auto"
                             >
                                 <Plus className="w-5 h-5 text-white" strokeWidth={3} />
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest hidden sm:inline">AÑADIR</span>
                             </Button>
                         )}
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        {filteredGeneros.map((gen) => (
-                            <div
-                                key={gen.id_genero}
-                                onClick={() => {
-                                    setSelectedGenero(gen);
-                                    setMobileView('themes');
-                                }}
-                                className={clsx(
-                                    "relative flex flex-col rounded-[32px] transition-all duration-500 group overflow-hidden shadow-xl shrink-0 cursor-pointer border-2",
-                                    selectedGenero?.id_genero === gen.id_genero
-                                        ? "border-brand-primary bg-brand-primary/5 scale-[1.02] z-10"
-                                        : "border-surface-border hover:border-gray-300 dark:hover:border-white/20"
-                                )}
-                            >
-                                <div 
-                                    className="relative h-32 flex items-center px-6 overflow-hidden"
-                                    style={{ 
-                                        background: `linear-gradient(135deg, ${gen.color_primario || '#4f46e5'}, ${gen.color_secundario || '#7c3aed'})` 
+                        {loading && generos.length === 0 ? (
+                            <SkeletonGenreList />
+                        ) : (
+                            filteredGeneros.map((gen) => (
+                                <div
+                                    key={gen.id_genero}
+                                    onClick={() => {
+                                        setSelectedGenero(gen);
+                                        setMobileView('themes');
                                     }}
+                                    className={clsx(
+                                        "relative flex flex-col rounded-[32px] transition-all duration-500 group overflow-hidden shadow-xl shrink-0 cursor-pointer border-2",
+                                        selectedGenero?.id_genero === gen.id_genero
+                                            ? "border-brand-primary bg-brand-primary/5 scale-[1.02] z-10"
+                                            : "border-surface-border hover:border-gray-300 dark:hover:border-white/20"
+                                    )}
                                 >
-                                    <div className="relative z-10 text-left max-w-[60%]">
-                                        <h4 className="text-xl text-white uppercase tracking-tight leading-tight drop-shadow-lg mb-1 truncate font-black">
-                                            {gen.nombre_genero}
-                                        </h4>
-                                        <div className="inline-flex items-center text-[9px] font-black text-white/80 uppercase tracking-widest bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                                            {gen.temas_count} CANCIONES
+                                    <div 
+                                        className="relative h-32 flex items-center px-6 overflow-hidden"
+                                        style={{ 
+                                            background: `linear-gradient(135deg, ${gen.color_primario || '#4f46e5'}, ${gen.color_secundario || '#7c3aed'})` 
+                                        }}
+                                    >
+                                        <div className="relative z-10 text-left max-w-[60%]">
+                                            <h4 className="text-xl text-white uppercase tracking-tight leading-tight drop-shadow-lg mb-1 truncate font-black">
+                                                {gen.nombre_genero}
+                                            </h4>
+                                            <div className="inline-flex items-center text-[9px] font-black text-white/80 uppercase tracking-widest bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                                                {gen.temas_count} CANCIONES
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="absolute -right-2 top-0 bottom-0 w-36 flex items-center justify-center transition-transform group-hover:scale-110 duration-500 pointer-events-none drop-shadow-2xl">
+                                            {gen.banner_url ? (
+                                                <img src={gen.banner_url} alt="" className="h-[120%] object-contain origin-center translate-y-2 opacity-90 group-hover:opacity-100 transition-opacity" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-white/10 -rotate-12 translate-x-4">
+                                                    <Tag className="w-20 h-20" />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    
-                                    <div className="absolute -right-2 top-0 bottom-0 w-36 flex items-center justify-center transition-transform group-hover:scale-110 duration-500 pointer-events-none drop-shadow-2xl">
-                                        {gen.banner_url ? (
-                                            <img src={gen.banner_url} alt="" className="h-[120%] object-contain origin-center translate-y-2 opacity-90 group-hover:opacity-100 transition-opacity" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-white/10 -rotate-12 translate-x-4">
-                                                <Tag className="w-20 h-20" />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
 
-                                {canManage && (
-                                    <div className="bg-black/5 dark:bg-[#1a2035] p-3 flex items-center gap-2 border-t border-surface-border animate-in slide-in-from-bottom duration-300 transition-colors">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setGenreToEdit(gen);
-                                                setIsCatalogModalOpen(true);
-                                            }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-surface-border text-[9px] font-black text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10 uppercase tracking-widest transition-all active:scale-95"
-                                        >
-                                            <Edit className="w-4 h-4" /> <span className="hidden sm:inline">EDITAR</span>
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (gen.temas_count > 0) {
-                                                    notify(`No puedes eliminar el género "${gen.nombre_genero}" porque contiene ${gen.temas_count} canciones.`, "warning");
-                                                    return;
-                                                }
-                                                setDeleteConfirmation({ isOpen: true, id: gen.id_genero, type: 'genero' });
-                                            }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/10 text-red-600 dark:text-red-500/50 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-500/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
-                                        >
-                                            <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">ELIMINAR</span>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                    {/* Edit Mode Overlay */}
+                                    {editMode && (
+                                        <div className="px-4 py-3 bg-white dark:bg-[#0f121d] border-t border-surface-border flex gap-2 animate-in slide-in-from-top-2">
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setGenreToEdit(gen);
+                                                    setIsCatalogModalOpen(true);
+                                                }}
+                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-blue-500/10 text-blue-600 dark:text-blue-500/50 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-blue-500/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
+                                            >
+                                                <Edit className="w-4 h-4" /> <span className="hidden sm:inline">EDITAR</span>
+                                            </button>
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (gen.temas_count > 0) {
+                                                        notify(`No puedes eliminar el género "${gen.nombre_genero}" porque contiene ${gen.temas_count} canciones.`, "warning");
+                                                        return;
+                                                    }
+                                                    setDeleteConfirmation({ isOpen: true, id: gen.id_genero, type: 'genero' });
+                                                }}
+                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/10 text-red-600 dark:text-red-500/50 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-500/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
+                                            >
+                                                <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">ELIMINAR</span>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        )}
                     </div>
                 </aside>
 
@@ -272,19 +279,17 @@ export default function BibliotecaList() {
                                     setEditTemaInitialData(null);
                                     setIsTemaModalOpen(true);
                                 }} 
-                                className="h-12 w-12 rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary p-0 flex items-center justify-center"
+                                className="h-12 px-5 rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary hover:bg-indigo-500 flex items-center justify-center gap-2 active:scale-95 transition-all w-auto"
                             >
                                 <Plus className="w-6 h-6 text-white" strokeWidth={3} />
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest hidden sm:inline">AÑADIR</span>
                             </Button>
                         )}
                     </div>
 
                     <div>
                         {loading ? (
-                            <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-                                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 shadow-xl text-indigo-500"></div>
-                                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">Sincronizando...</p>
-                            </div>
+                            <SkeletonRepertoireGrid />
                         ) : filteredTemas.length > 0 ? (
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 px-1">
                                 {filteredTemas.map((tema) => (

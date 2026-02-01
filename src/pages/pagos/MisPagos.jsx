@@ -68,7 +68,7 @@ export default function MisPagos() {
                         <div className="w-px h-8 bg-surface-border" />
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Cobrados</span>
-                            <span className="text-xl font-black text-indigo-500">{data.historial_cobrado.length}</span>
+                            <span className="text-xl font-black text-brand-primary">{data.historial_cobrado.length}</span>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ export default function MisPagos() {
                         onClick={() => setActiveTab('COBRAR')}
                         className={clsx(
                             "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                            activeTab === 'COBRAR' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                            activeTab === 'COBRAR' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
                         Pendientes ({data.por_cobrar.length})
@@ -90,7 +90,7 @@ export default function MisPagos() {
                         onClick={() => setActiveTab('HISTORIAL')}
                         className={clsx(
                             "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                            activeTab === 'HISTORIAL' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                            activeTab === 'HISTORIAL' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
                         Historial
