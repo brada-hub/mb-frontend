@@ -67,9 +67,10 @@ function App() {
           const StatusBar = statusBarModule.StatusBar;
           const SplashScreen = splashModule.SplashScreen;
           
-          // Configurar StatusBar - NO superponer sobre el contenido web
-          await StatusBar.setOverlaysWebView({ overlay: false });
+          // Configurar StatusBar - Superponer para look inmersivo premium
+          await StatusBar.setOverlaysWebView({ overlay: true });
           await StatusBar.setStyle({ style: 'DARK' });
+          // Color transparente o que combine con el header
           await StatusBar.setBackgroundColor({ color: '#0f111a' });
           
           // Ocultar SplashScreen después de 2 segundos
