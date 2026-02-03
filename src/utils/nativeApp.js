@@ -24,6 +24,19 @@ export const setupNativeNotifications = async (onTokenReceived) => {
   // Registrar para recibir notificaciones
   await PushNotifications.register();
 
+  // Crear canal de notificaciones para Android (IMPORTANTE para notificaciones en primer plano/heads-up)
+  if (Capacitor.getPlatform() === 'android') {
+    await PushNotifications.createChannel({
+      id: 'high_importance_channel',
+      name: 'Notificaciones Importantes',
+      description: 'Canal para notificaciones de eventos y ensayos',
+      importance: 5, // 5 = high, 4 = default
+      visibility: 1, // 1 = public
+      sound: 'default',
+      vibration: true
+    });
+  }
+
   // Listeners
   PushNotifications.addListener('registration', (token) => {
     console.log('Push registration success, token: ' + token.value);
@@ -56,4 +69,8 @@ export const getCurrentPosition = async () => {
 
 export const getDeviceInfo = async () => {
     return await Device.getInfo();
+};
+
+export const getDeviceId = async () => {
+    return await Device.getId();
 };

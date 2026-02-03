@@ -18,7 +18,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
     const isSuperAdmin = user?.is_super_admin;
 
     useEffect(() => {
-        if (isOpen && activeTab === 'scurity' && miembro) {
+        if (isOpen && activeTab === 'security' && miembro) {
             loadDevices();
         }
     }, [isOpen, activeTab, miembro]);
@@ -153,8 +153,8 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                              {/* Solo SuperAdmin puede ver Seguridad */}
                              {isSuperAdmin && (
                                  <button
-                                    onClick={() => setActiveTab('scurity')}
-                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'scurity' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                                    onClick={() => setActiveTab('security')}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'security' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                                  >
                                     <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                     Seguridad

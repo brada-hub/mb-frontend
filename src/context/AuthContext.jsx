@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api';
-import { isNative, getDeviceInfo } from '../utils/nativeApp';
+import { isNative, getDeviceInfo, getDeviceId } from '../utils/nativeApp';
 
 const AuthContext = createContext(null);
 
@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }) => {
             if (isNative()) {
                 try {
                     const info = await getDeviceInfo();
+                    const idRes = await getDeviceId();
                     deviceInfo = {
-                        uuid_celular: info.id || info.uuid,
+                        uuid_celular: idRes.identifier || idRes.uuid || idRes.id,
                         device_model: `${info.manufacturer || ''} ${info.model || 'Dispositivo'}`.trim()
                     };
                 } catch (e) {
@@ -112,6 +113,29 @@ export const AuthProvider = ({ children }) => {
     const updateUser = (data) => {
         setUser(prev => prev ? { ...prev, ...data } : null);
     };
+
+    // Inicializar Notificaciones Push si estamos en móvil
+    useEffect(() => {
+        if (token && user && isNative()) {
+            const initPush = async () => {
+                try {
+                    const { setupNativeNotifications } = await import('../utils/nativeApp');
+                    await setupNativeNotifications(async (fcmToken) => {
+                        console.log('FCM Token recibido:', fcmToken);
+                        try {
+                            await api.post('/update-fcm-token', { fcm_token: fcmToken });
+                            console.log('Token FCM actualizado en el servidor');
+                        } catch (err) {
+                            console.error('Error al actualizar token FCM en el servidor:', err);
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error inicializando notificaciones push:', err);
+                }
+            };
+            initPush();
+        }
+    }, [token, user]);
 
     return (
         <AuthContext.Provider value={{ user, token, login, logout, updateUser, loading, isAuthenticated: !!user }}>

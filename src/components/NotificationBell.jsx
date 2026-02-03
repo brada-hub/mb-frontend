@@ -186,7 +186,7 @@ export default function NotificationBell() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="fixed sm:absolute right-4 sm:right-0 top-[calc(64px+env(safe-area-inset-top))] sm:top-auto sm:mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-[#161b2c] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden backdrop-blur-xl"
+                        className="fixed sm:absolute right-4 sm:right-0 top-[calc(84px+env(safe-area-inset-top))] sm:top-auto sm:mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-[#161b2c] border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-[110] overflow-hidden backdrop-blur-2xl"
                     >
                         {view === 'list' ? (
                             <>
