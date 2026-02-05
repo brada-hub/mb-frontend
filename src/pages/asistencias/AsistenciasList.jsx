@@ -129,7 +129,7 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                 onPointerCancel={onPointerUp}
                 style={{ x }}
                 className={clsx(
-                    "relative z-10 p-3 border-b border-surface-border transition-all duration-300",
+                    "relative z-10 p-2 sm:p-3 border-b border-surface-border transition-all duration-300",
                     isLongPressing ? "bg-blue-500/20 scale-[0.98] shadow-inner" : "bg-surface-card hover:bg-black/[0.02] dark:hover:bg-white/[0.02]",
                     estadoActual === 'PRESENTE' && !isLongPressing && "bg-green-500/[0.04]",
                     estadoActual === 'FALTA' && !isLongPressing && "bg-red-500/[0.04]",
@@ -147,15 +147,15 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                             }}
                         >
                             <div className={clsx(
-                                "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs border transition-all duration-500",
+                                "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-[10px] sm:text-xs border transition-all duration-500",
                                 estadoActual ? getEstadoClasses(estadoActual) : "bg-white/5 text-gray-500 border-white/10"
                             )}>
                                 {estadoActual ? getEstadoIcon(estadoActual) : conv.miembro?.nombres?.charAt(0)}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate leading-tight flex items-center gap-2 transition-colors">
+                                <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate leading-tight flex items-center gap-2 transition-colors">
                                     {conv.miembro?.nombres} {conv.miembro?.apellidos}
-                                    {isExpanded && <ChevronDown className="w-3 h-3 text-gray-500" />}
+                                    {isExpanded && <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gray-500" />}
                                 </p>
                                 <div className="flex flex-col">
                                     <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider leading-tight flex items-center gap-2">
@@ -188,10 +188,10 @@ const SwipeableAsistenciaItem = ({ conv, estadoActual, handleMarcarEstado, puede
                                     e.stopPropagation();
                                     onReemplazar(conv);
                                 }}
-                                className="p-2 bg-black/5 dark:bg-white/5 hover:bg-brand-primary/10 text-gray-500 hover:text-brand-primary rounded-xl transition-all border border-gray-200 dark:border-white/5 hover:border-brand-primary/20 group/rep"
+                                className="p-1.5 sm:p-2 bg-black/5 dark:bg-white/5 hover:bg-brand-primary/10 text-gray-500 hover:text-brand-primary rounded-lg sm:rounded-xl transition-all border border-gray-200 dark:border-white/5 hover:border-brand-primary/20 group/rep"
                                 title="Reemplazar por Suplente"
                             >
-                                <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+                                <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:rotate-180 transition-transform duration-500" />
                             </button>
                         )}
                     </div>
@@ -649,16 +649,16 @@ export default function AsistenciasList() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex items-center justify-between pb-2">
-                <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter transition-colors">Control de Asistencia</h1>
+        <div className="space-y-4 sm:space-y-8 animate-in fade-in duration-500">
+            <div className="flex items-center justify-between pb-1 sm:pb-2">
+                <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter transition-colors">Asistencias</h1>
                 {(isAdmin || isDirector) && (
                     <button 
                         onClick={() => navigate('/dashboard/asistencia/reporte')}
-                        className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-surface-border"
+                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-all border border-surface-border"
                     >
-                        <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
-                        Reporte Grupal
+                        <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-500" />
+                        Reporte
                     </button>
                 )}
             </div>
@@ -690,7 +690,7 @@ export default function AsistenciasList() {
                                         whileTap={{ scale: 0.98 }}
                                         key={evento.id_evento}
                                         onClick={() => handleSelectEvento(evento)}
-                                        className={`w-full text-left p-4 rounded-xl border transition-all cursor-pointer ${
+                                        className={`w-full text-left p-3 sm:p-4 rounded-xl border transition-all cursor-pointer ${
                                             isSelected 
                                                 ? 'bg-brand-primary/10 border-brand-primary/40 shadow-lg shadow-brand-primary/5' 
                                                 : 'bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/10'

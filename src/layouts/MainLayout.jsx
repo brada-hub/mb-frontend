@@ -22,7 +22,8 @@ import {
     Monitor,
     Building2,
     HardDrive,
-    Activity
+    Activity,
+    Flame
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
@@ -183,6 +184,8 @@ export default function MainLayout() {
     if (!isAuthenticated) return <Navigate to="/login" />;
 
     const hasPermission = (perm) => {
+        if (perm === 'GESTION_ROLES') return isSuperAdmin;
+
         // REGLA DE ORO: Si es SuperAdmin y NO está impersonando, solo tiene permisos de SaaS
         if (isSuperAdmin && !isImpersonating) {
             return perm === 'CREAR_BANDAS' || perm === 'VER_INGRESOS_SAAS' || perm === 'CONFIG_SAAS';
@@ -213,7 +216,6 @@ export default function MainLayout() {
             if (perm === 'GESTION_MIEMBROS') return isDirector;
             if (perm === 'GESTION_ELENCOS') return true;
             if (perm === 'GESTION_SECCIONES') return isDirector;
-            if (perm === 'GESTION_ROLES') return isDirector || isSuperAdmin;
             if (perm === 'GESTION_ASISTENCIA') return true;
             if (perm === 'VER_REPORTES') return true;
         }
@@ -233,11 +235,11 @@ export default function MainLayout() {
     menuGroups.push({
         title: 'App Owner (SaaS)',
         items: [
-            { icon: Crown, label: 'Resumen Global', to: '/dashboard/superadmin?tab=resumen', permission: 'CREAR_BANDAS' },
-            { icon: Building2, label: 'Organizaciones', to: '/dashboard/superadmin?tab=bandas', permission: 'CREAR_BANDAS' },
-            { icon: HardDrive, label: 'Almacenamiento', to: '/dashboard/superadmin?tab=storage', permission: 'CREAR_BANDAS' },
-            { icon: Activity, label: 'Monitor Actividad', to: '/dashboard/superadmin?tab=logs', permission: 'CREAR_BANDAS' },
-            { icon: Settings, label: 'Config. Planes', to: '/dashboard/superadmin?tab=config', permission: 'CREAR_BANDAS' },
+            { icon: Crown, label: 'Resumen Global', to: '/dashboard/superadmin', permission: 'CREAR_BANDAS' },
+            { icon: Building2, label: 'Organizaciones', to: '/dashboard/superadmin/organizaciones', permission: 'CREAR_BANDAS' },
+            { icon: HardDrive, label: 'Almacenamiento', to: '/dashboard/superadmin/almacenamiento', permission: 'CREAR_BANDAS' },
+            { icon: Activity, label: 'Monitor Actividad', to: '/dashboard/superadmin/logs', permission: 'CREAR_BANDAS' },
+            { icon: Settings, label: 'Config. Planes', to: '/dashboard/superadmin/planes', permission: 'CREAR_BANDAS' },
             { icon: Shield, label: 'Roles y Permisos', to: '/dashboard/roles', permission: 'GESTION_ROLES' },
         ],
         showFor: isSuperAdmin // Solo para SuperAdmin
@@ -417,14 +419,6 @@ export default function MainLayout() {
                                 </motion.div>
                             )}
                         </div>
-                        {isMobileMenuOpen && (
-                            <button 
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-3 text-gray-400 hover:text-white bg-white/5 rounded-2xl active:scale-90 transition-all"
-                            >
-                                <LogOut className="w-5 h-5 rotate-180" />
-                            </button>
-                        )}
                     </div>
 
                     <div className="p-3 sm:p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] space-y-8">
@@ -458,22 +452,25 @@ export default function MainLayout() {
                     </div>
 
                     <div className="w-full p-4 border-t border-gray-200 dark:border-white/5 shrink-0 bg-gray-50 dark:bg-black/20">
-                        <div className={clsx(
-                            "flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-white/5 mb-4 border border-gray-200 dark:border-white/5 transition-all duration-500 shadow-sm dark:shadow-none",
-                            isSidebarCollapsed && !isMobileMenuOpen ? "justify-center px-0" : "px-3"
-                        )}>
-                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-black border border-indigo-500/20 shrink-0">
+                        <button 
+                            onClick={() => navigate('/dashboard/perfil')}
+                            className={clsx(
+                                "w-full flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-white/5 mb-4 border border-gray-200 dark:border-white/5 transition-all duration-500 shadow-sm dark:shadow-none hover:border-indigo-500 group",
+                                isSidebarCollapsed && !isMobileMenuOpen ? "justify-center px-0" : "px-3"
+                            )}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-black border border-indigo-500/20 shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
                                 {user?.user?.charAt(0).toUpperCase()}
                             </div>
                             {(!isSidebarCollapsed || isMobileMenuOpen) && (
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 text-left">
                                     <p className="text-xs font-black text-gray-900 dark:text-white truncate uppercase tracking-tight transition-colors">{user?.user}</p>
                                     <p className="text-[10px] text-indigo-400 font-bold tracking-widest truncate uppercase opacity-70">
                                         {displayRole}
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </button>
                         <button 
                             onClick={logout} 
                             className={clsx(
@@ -545,6 +542,17 @@ export default function MainLayout() {
                                     <Moon className="w-4 h-4" />
                                 </button>
                             </div>
+
+                            {!isSuperAdmin && (
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 text-orange-500 rounded-xl border border-orange-500/20"
+                                    title="Tu racha de asistencia"
+                                >
+                                    <Flame className="w-4 h-4 fill-current" />
+                                    <span className="text-sm font-black tracking-tighter">{user?.streak || 0}</span>
+                                </motion.div>
+                            )}
 
                             <div className="hidden sm:block h-10 w-px bg-white/5 mx-2" />
                             <button 

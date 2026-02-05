@@ -184,7 +184,7 @@ export default function LoginPage() {
                         {/* Link de Ayuda / Soporte */}
                         <div className="mt-4 md:mt-5 text-center">
                             <a 
-                                href="https://wa.me/59167544099?text=Hola!%20Tengo%20problemas%20para%20ingresar%20al%20portal%20de%20Monster%20Band." 
+                                href="https://api.whatsapp.com/send?phone=59167544099&text=Hola!%20Tengo%20problemas%20para%20ingresar%20al%20portal%20de%20Monster%20Band." 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="group/wa inline-flex flex-col items-center gap-1 transition-all"

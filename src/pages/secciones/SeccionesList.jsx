@@ -111,23 +111,23 @@ export default function SeccionesList() {
             />
 
             {/* Header con Título y Descripción */}
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 sm:gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Secciones</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Gestión de instrumentos</p>
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Secciones</h1>
+                    <p className="text-[10px] sm:text-xs text-gray-500 font-medium uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors">Gestión de instrumentos</p>
                 </div>
                 
-                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-                    <div className="w-full md:w-80">
+                <div className="flex flex-col md:flex-row gap-2 sm:gap-3 w-full xl:w-auto">
+                    <div className="w-full xl:w-80">
                         <Input 
                             icon={Search}
                             placeholder="Buscar sección..." 
-                            className="h-12 w-full text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
+                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <Button onClick={handleAdd} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-brand-primary/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
                         <Plus className="w-4 h-4 mr-2" />
                         Nuevo
                     </Button>
@@ -145,12 +145,12 @@ export default function SeccionesList() {
                         {filtered.map((s) => (
                             <div 
                                 key={s.id_seccion} 
-                                className="group bg-surface-card border border-surface-border rounded-[40px] p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
+                                className="group bg-surface-card border border-surface-border rounded-3xl sm:rounded-[40px] p-5 sm:p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
                             >
                                 {/* Top Info */}
-                                <div className="flex items-center gap-5 mb-8">
-                                    <div className="w-16 h-16 bg-black/5 dark:bg-[#1e2330] rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
-                                        <Layers className="w-8 h-8" />
+                                <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-8">
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black/5 dark:bg-[#1e2330] rounded-2xl sm:rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                        <Layers className="w-6 h-6 sm:w-8 sm:h-8" />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight leading-none mb-2 transition-colors">
@@ -174,18 +174,18 @@ export default function SeccionesList() {
                                     </button>
                                 </div>
 
-                                <div className="mb-10 flex-grow">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-tight leading-relaxed line-clamp-3 transition-colors">
+                                <div className="mb-6 sm:mb-10 flex-grow">
+                                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium uppercase tracking-tight leading-relaxed line-clamp-3 transition-colors">
                                         {s.descripcion || 'Sin descripción detallada de la sección.'}
                                     </p>
                                 </div>
 
                                 {/* Action Buttons - Layout Matching Image */}
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2 sm:space-y-3">
+                                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                                         <button 
                                             onClick={() => handleEdit(s)}
-                                            className="h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-gray-700 dark:text-white text-[11px] font-black uppercase tracking-widest hover:bg-black/10 dark:hover:bg-white/10 transition-all border border-surface-border active:scale-95"
+                                            className="h-10 sm:h-12 rounded-xl sm:rounded-2xl bg-black/5 dark:bg-white/5 text-gray-700 dark:text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest hover:bg-black/10 dark:hover:bg-white/10 transition-all border border-surface-border active:scale-95"
                                         >
                                             Editar
                                         </button>
@@ -193,7 +193,7 @@ export default function SeccionesList() {
                                             onClick={() => handleDeleteClick(s.id_seccion)}
                                             disabled={s.instrumentos?.length > 0}
                                             className={clsx(
-                                                "h-12 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border active:scale-95",
+                                                "h-10 sm:h-12 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all border active:scale-95",
                                                 s.instrumentos?.length > 0
                                                     ? "bg-black/5 dark:bg-white/2 border-surface-border text-gray-400 dark:text-gray-700 cursor-not-allowed opacity-20"
                                                     : "bg-red-500/5 text-red-600 dark:text-red-500/60 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-500 border-red-500/10"
@@ -208,7 +208,7 @@ export default function SeccionesList() {
                                             setSelectedSeccion(s);
                                             setIsInstrumentModalOpen(true);
                                         }}
-                                        className="w-full h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white text-[11px] font-black uppercase tracking-[0.15em] transition-all border border-indigo-500/20 shadow-lg active:scale-[0.98]"
+                                        className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] transition-all border border-indigo-500/20 shadow-lg active:scale-[0.98]"
                                     >
                                         Gestionar Instrumentos
                                     </button>

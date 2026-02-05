@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, ArrowUpRight, Clock, MapPin, Layers } from 'lucide-react';
+import { Users, Calendar, DollarSign, Activity, Flame, TrendingUp, ArrowUpRight, Clock, MapPin, Layers, Send, Eye, CheckCircle2, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { clsx } from 'clsx';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 // --- Componentes ---
 const StatCard = ({ title, value, label, icon: Icon, color, loading, onClick }) => {
@@ -20,20 +21,20 @@ const StatCard = ({ title, value, label, icon: Icon, color, loading, onClick }) 
             whileHover={{ y: -4 }} 
             onClick={onClick}
             className={clsx(
-                "bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-all hover:shadow-xl dark:hover:shadow-none",
+                "bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all hover:shadow-xl dark:hover:shadow-none",
                 onClick && "cursor-pointer active:scale-95 transition-transform"
             )}
         >
-            <div className={clsx("p-3 rounded-xl border w-fit mb-4", colors[color])}>
-                <Icon className="w-5 h-5" />
+            <div className={clsx("p-2 sm:p-3 rounded-lg sm:rounded-xl border w-fit mb-2 sm:mb-4", colors[color])}>
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{title}</p>
+            <p className="text-[9px] sm:text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">{title}</p>
             {loading ? (
-                <div className="h-9 w-24 bg-gray-100 dark:bg-white/5 animate-pulse rounded-lg mt-1" />
+                <div className="h-7 sm:h-9 w-16 sm:w-24 bg-gray-100 dark:bg-white/5 animate-pulse rounded-lg mt-1" />
             ) : (
-                <h3 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">{value}</h3>
+                <h3 className="text-xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight mt-0.5 sm:mt-1">{value}</h3>
             )}
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-2">{label}</p>
+            <p className="text-[8px] sm:text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-1 sm:mt-2">{label}</p>
         </motion.div>
     );
 };
@@ -71,8 +72,16 @@ const TopStreaksList = ({ musicians, loading }) => {
 export default function DashboardDirector() {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { notify } = useToast();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
+    const [broadcastForm, setBroadcastForm] = useState({ titulo: '', mensaje: '' });
+    const [sending, setSending] = useState(false);
+    const [showTracking, setShowTracking] = useState(false);
+    const [trackingData, setTrackingData] = useState([]);
+    const [trackingLoading, setTrackingLoading] = useState(false);
+    const [recentBroadcasts, setRecentBroadcasts] = useState([]);
 
     const isImpersonating = user?.original_banda_id !== undefined && user?.original_banda_id !== null;
     const displayName = user?.miembro?.nombres || user?.user || 'Director';
@@ -87,48 +96,84 @@ export default function DashboardDirector() {
             const endpoint = (user?.is_super_admin && !isImpersonating) ? '/superadmin/stats' : '/dashboard/stats';
             const res = await api.get(endpoint);
             setData(res.data);
+            
+            // Si es director, cargar comunicaciones recientes
+            if (!user?.is_super_admin || isImpersonating) {
+                const notifsRes = await api.get('/notificaciones');
+                setRecentBroadcasts(notifsRes.data.filter(n => n.tipo === 'broadcast').slice(0, 5));
+            }
         } catch (error) { console.error(error); } finally { setLoading(false); }
+    };
+
+    const handleSendBroadcast = async (e) => {
+        e.preventDefault();
+        setSending(true);
+        try {
+            await api.post('/notificaciones/broadcast', broadcastForm);
+            setIsBroadcastModalOpen(false);
+            setBroadcastForm({ titulo: '', mensaje: '' });
+            notify('Comunicado enviado a toda la banda', 'success');
+            loadStats();
+        } catch (error) {
+            console.error(error);
+            notify('Error al enviar comunicado', 'error');
+        } finally {
+            setSending(false);
+        }
+    };
+
+    const handleViewTracking = async (id_referencia, tipo) => {
+        setTrackingLoading(true);
+        setShowTracking(true);
+        try {
+            const res = await api.get(`/notificaciones/seguimiento/${id_referencia}/${tipo}`);
+            setTrackingData(res.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setTrackingLoading(false);
+        }
     };
 
     return (
         <div className="min-h-full bg-gray-50 dark:bg-[#0a0d14] transition-colors">
-            <div className="max-w-[1600px] mx-auto px-4 py-8 space-y-8">
+            <div className="max-w-[1600px] mx-auto px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
                 
                 {/* Hero Premium */}
-                <div className="bg-gradient-to-br from-brand-primary via-brand-dark to-purple-800 rounded-[2.5rem] p-8 sm:p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+                <div className="bg-gradient-to-br from-brand-primary via-brand-dark to-purple-800 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
                     
-                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 sm:gap-8">
                         <div>
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10">{bandName}</span>
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
+                                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-white/20 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10">{bandName}</span>
                                 {user?.is_super_admin && (
-                                    <span className="px-3 py-1 bg-amber-500/30 text-amber-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-400/30 backdrop-blur-md">
+                                    <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-amber-500/30 text-amber-200 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-amber-400/30 backdrop-blur-md">
                                         SuperAdmin
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter drop-shadow-lg">
-                                {greeting}, <span className="text-white/80">{displayName}</span>
+                            <h1 className="text-2xl sm:text-5xl font-black uppercase tracking-tighter drop-shadow-lg leading-none">
+                                {greeting}, <br className="sm:hidden" /> <span className="text-white/80">{displayName}</span>
                             </h1>
-                            <p className="mt-3 text-white/60 text-sm uppercase tracking-widest font-bold">
+                            <p className="mt-2 sm:mt-3 text-white/60 text-[9px] sm:text-sm uppercase tracking-widest font-bold">
                                 Panel de Control • Director de Banda
                             </p>
                         </div>
                         
-                        <div className="flex gap-3">
-                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
-                                <Calendar className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
-                                <p className="text-xs font-bold">Agenda</p>
+                        <div className="flex gap-2 sm:gap-3">
+                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                                <p className="text-[10px] sm:text-xs font-bold text-center">Agenda</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
-                                <Users className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
-                                <p className="text-xs font-bold">Personal</p>
+                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                                <p className="text-[10px] sm:text-xs font-bold text-center">Personal</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95">
-                                <Activity className="w-6 h-6 mb-2 group-hover:scale-110 transition-transform" />
-                                <p className="text-xs font-bold">Control</p>
+                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Activity className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                                <p className="text-[10px] sm:text-xs font-bold text-center">Control</p>
                             </button>
                         </div>
                     </div>
@@ -267,6 +312,10 @@ export default function DashboardDirector() {
                                     <TrendingUp className="w-5 h-5 text-emerald-500" />
                                     <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Ver Reportes</span>
                                 </button>
+                                <button onClick={() => setIsBroadcastModalOpen(true)} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group border-2 border-dashed border-blue-500/20">
+                                    <Send className="w-5 h-5 text-blue-500" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">Enviar Comunicado</span>
+                                </button>
                             </div>
                         </div>
 
@@ -286,6 +335,35 @@ export default function DashboardDirector() {
                             </div>
                             <ArrowUpRight className="w-5 h-5" />
                         </button>
+
+                        {/* Recent Broadcasts tracking */}
+                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
+                            <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4 flex items-center justify-between">
+                                Comunicados Recientes
+                                <Send className="w-4 h-4 text-blue-500" />
+                            </h3>
+                            <div className="space-y-3">
+                                {recentBroadcasts.length > 0 ? (
+                                    recentBroadcasts.map((b, idx) => (
+                                        <div key={idx} className="p-3 bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-100 dark:border-white/5 flex items-center justify-between group">
+                                            <div className="flex-1 min-w-0 pr-4">
+                                                <p className="text-xs font-bold text-gray-900 dark:text-white truncate">{b.titulo}</p>
+                                                <p className="text-[10px] text-gray-500 mt-0.5">{new Date(b.created_at).toLocaleDateString()}</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => handleViewTracking(b.id_referencia, 'broadcast')}
+                                                className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition-all"
+                                                title="Ver quién leyó"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-[10px] text-gray-500 text-center py-4">No hay envíos recientes</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -314,6 +392,107 @@ export default function DashboardDirector() {
                     </div>
                 )}
             </div>
+
+            {/* Modal de Broadcast */}
+            {isBroadcastModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-[#161b2c] w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                        <div className="p-6 border-b border-white/5 bg-brand-primary text-white">
+                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+                                <Send className="w-6 h-6" /> Enviar Comunicado
+                            </h3>
+                            <p className="text-xs font-bold text-white/60 uppercase tracking-widest mt-1">Llegará a toda la organización</p>
+                        </div>
+                        <form onSubmit={handleSendBroadcast} className="p-6 space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Asunto / Título</label>
+                                <input 
+                                    required
+                                    type="text" 
+                                    value={broadcastForm.titulo}
+                                    onChange={e => setBroadcastForm({...broadcastForm, titulo: e.target.value})}
+                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold"
+                                    placeholder="Ej: Ensayo General Cancelado"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Mensaje</label>
+                                <textarea 
+                                    required
+                                    value={broadcastForm.mensaje}
+                                    onChange={e => setBroadcastForm({...broadcastForm, mensaje: e.target.value})}
+                                    rows={4}
+                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold"
+                                    placeholder="Escribe el mensaje para los músicos..."
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-4">
+                                <button type="button" onClick={() => setIsBroadcastModalOpen(false)} className="flex-1 py-3 bg-gray-100 dark:bg-white/5 text-gray-500 rounded-xl font-black uppercase tracking-widest text-xs">Cancelar</button>
+                                <button type="submit" disabled={sending} className="flex-[2] py-3 bg-brand-primary text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-primary/20 disabled:opacity-50">
+                                    {sending ? 'Enviando...' : 'Enviar Ahora'}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
+
+            {/* Modal de Seguimiento */}
+            {showTracking && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-[#161b2c] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[80vh]">
+                        <div className="p-6 border-b border-white/5 bg-gray-50 dark:bg-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3 text-gray-900 dark:text-white">
+                                    <Eye className="w-6 h-6 text-blue-500" /> Seguimiento de Lectura
+                                </h3>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Conoce quién ha visto el mensaje</p>
+                            </div>
+                            <button onClick={() => setShowTracking(false)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-6 space-y-2">
+                            {trackingLoading ? (
+                                [1,2,3,4].map(i => <div key={i} className="h-12 bg-gray-100 dark:bg-white/5 animate-pulse rounded-xl" />)
+                            ) : trackingData.length > 0 ? (
+                                trackingData.map((t, idx) => (
+                                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-100 dark:border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className={clsx("w-8 h-8 rounded-full flex items-center justify-center font-black text-xs", t.leido ? "bg-emerald-500/20 text-emerald-500" : "bg-gray-500/20 text-gray-500")}>
+                                                {t.nombre.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-gray-900 dark:text-white">{t.nombre}</p>
+                                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">@{t.usuario}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            {t.leido ? (
+                                                <div className="flex flex-col items-end">
+                                                    <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center gap-1">
+                                                        <CheckCircle2 className="w-3 h-3" /> Visto
+                                                    </span>
+                                                    <span className="text-[9px] text-gray-400 font-bold">{t.fecha_lectura}</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-[10px] font-black text-gray-400 uppercase">Pendiente</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center text-gray-500 py-10 font-bold uppercase tracking-widest text-xs">No hay datos disponibles</p>
+                            )}
+                        </div>
+                        
+                        <div className="p-6 bg-gray-50 dark:bg-black/20 border-t border-white/5">
+                            <button onClick={() => setShowTracking(false)} className="w-full py-3 bg-brand-primary text-white rounded-xl font-black uppercase tracking-widest text-xs">Cerrar</button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 }

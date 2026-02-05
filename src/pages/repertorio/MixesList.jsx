@@ -130,23 +130,23 @@ export default function MixesList() {
                     mobileView === 'detail' && 'hidden lg:flex'
                 )}>
                             {/* Header Mixes - Compacto */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2 sm:mb-3 px-1">
                         <div>
-                            <h2 className="text-lg font-black text-white uppercase tracking-tight">Mixes</h2>
-                            <p className="text-gray-500 text-[10px] font-medium uppercase tracking-widest">Repertorios disponibles</p>
+                            <h2 className="text-base sm:text-lg font-black text-white uppercase tracking-tight">Mixes</h2>
+                            <p className="text-gray-500 text-[9px] sm:text-[10px] font-medium uppercase tracking-widest">Repertorios disponibles</p>
                         </div>
                         <div className="flex items-center gap-2">
                             {authorized && (
                                 <button
                                     onClick={toggleEditMode}
                                     className={clsx(
-                                        "h-9 px-3 rounded-lg flex items-center gap-1.5 transition-all duration-300 font-black text-[9px] uppercase tracking-widest border",
+                                        "h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg flex items-center gap-1.5 transition-all duration-300 font-black text-[9px] uppercase tracking-widest border",
                                         editMode 
                                             ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
                                             : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                     )}
                                 >
-                                    {editMode ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                                    {editMode ? <Unlock className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
                                 </button>
                             )}
                             <Input 
@@ -154,18 +154,18 @@ export default function MixesList() {
                                 placeholder="Buscar..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-9 w-32 bg-[#161b2c] border-white/5 rounded-lg text-xs focus:ring-brand-primary/50"
+                                className="h-8 sm:h-9 w-28 sm:w-32 bg-[#161b2c] border-white/5 rounded-lg text-[10px] sm:text-xs focus:ring-brand-primary/50"
                             />
                             {canManage && (
-                                <Button 
+                                <button 
                                     onClick={() => {
                                         setMixToEdit(null);
                                         setIsMixModalOpen(true);
                                     }}
-                                    className="h-9 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-dark"
+                                    className="h-8 sm:h-9 px-2.5 sm:px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-dark text-white"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
-                                </Button>
+                                </button>
                             )}
                         </div>
                     </div>
@@ -189,30 +189,30 @@ export default function MixesList() {
                                         !mix.activo && "opacity-60 saturate-50"
                                     )}
                                 >
-                                    <div className="p-4">
-                                        <div className="flex items-center gap-4">
+                                    <div className="p-3 sm:p-4">
+                                        <div className="flex items-center gap-3 sm:gap-4">
                                             <div className={clsx(
-                                                "w-12 h-12 rounded-xl flex items-center justify-center transition-all",
+                                                "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all",
                                                 selectedMix?.id_mix === mix.id_mix 
                                                     ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/30" 
                                                     : "bg-white/5 text-gray-400 group-hover:bg-brand-primary/20 group-hover:text-brand-primary"
                                             )}>
-                                                <Layers className="w-6 h-6" />
+                                                <Layers className="w-5 h-5 sm:w-6 sm:h-6" />
                                             </div>
                                             <div className="flex-1">
-                                                <h4 className="text-xl font-black text-white uppercase tracking-tight mb-1">{mix.nombre}</h4>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                                                <h4 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight mb-0.5 sm:mb-1">{mix.nombre}</h4>
+                                                <div className="flex items-center gap-2 sm:gap-3">
+                                                    <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                                                         {mix.temas_count} CANCIONES
                                                     </span>
                                                     <span className="w-1 h-1 rounded-full bg-white/10" />
                                                     {!mix.activo ? (
-                                                        <span className="flex items-center gap-1 text-[9px] text-red-500 font-black uppercase tracking-widest bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/10">
-                                                            <EyeOff className="w-3 h-3" /> REPERTORIO OCULTO
+                                                        <span className="flex items-center gap-1 text-[8px] sm:text-[9px] text-red-500 font-black uppercase tracking-widest bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/10">
+                                                            <EyeOff className="w-3 h-3" /> OCULTO
                                                         </span>
                                                     ) : (
-                                                        <span className="text-[10px] text-brand-primary font-bold uppercase tracking-widest">
-                                                            SETLIST LISTO
+                                                        <span className="text-[9px] sm:text-[10px] text-brand-primary font-bold uppercase tracking-widest">
+                                                            LISTO
                                                         </span>
                                                     )}
                                                 </div>
@@ -230,13 +230,13 @@ export default function MixesList() {
                                                             initialIndex: 0
                                                         });
                                                     }}
-                                                    className="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white flex items-center justify-center transition-all"
+                                                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white flex items-center justify-center transition-all"
                                                 >
-                                                    <Play className="w-4 h-4 fill-current" />
+                                                    <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                                                 </button>
                                             )}
                                             <ChevronRight className={clsx(
-                                                "w-6 h-6 transition-all",
+                                                "w-5 h-5 sm:w-6 sm:h-6 transition-all",
                                                 selectedMix?.id_mix === mix.id_mix ? "text-brand-primary translate-x-1" : "text-gray-700"
                                             )} />
                                         </div>

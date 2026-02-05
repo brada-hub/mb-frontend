@@ -59,7 +59,7 @@ const Input = forwardRef(({
                     autoComplete={props.autoComplete || (isPassword ? 'current-password' : type === 'email' ? 'email' : 'off')}
                     className={clsx(
                         'flex w-full rounded-2xl bg-surface-input px-5 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 transition-all border outline-none',
-                        isTextArea ? 'min-h-[100px] py-4 resize-none' : 'h-14',
+                        isTextArea ? 'min-h-[100px] py-4 resize-none' : 'h-11 sm:h-14',
                         // Left padding for start icon
                         !label && Icon && 'pl-12',
                         // Right padding for password toggle

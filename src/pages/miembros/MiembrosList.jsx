@@ -359,17 +359,17 @@ export default function MiembrosList() {
             </div>
 
             {/* Header Sticky */}
-            <div className="sticky top-0 z-40 bg-white/80 dark:bg-[#121625]/80 backdrop-blur-xl border-b border-surface-border -mx-4 px-4 py-4 mb-6 transition-colors">
-                <div className="flex flex-col gap-4">
+            <div className="sticky top-0 z-40 bg-white/80 dark:bg-[#121625]/80 backdrop-blur-xl border-b border-surface-border -mx-4 px-4 py-2 sm:py-4 mb-4 sm:mb-6 transition-colors">
+                <div className="flex flex-col gap-3 sm:gap-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Miembros</h1>
-                                <span className="bg-brand-primary/20 text-brand-primary text-[10px] font-black px-2 py-0.5 rounded-full border border-brand-primary/30">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Miembros</h1>
+                                <span className="bg-brand-primary/20 text-brand-primary text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border border-brand-primary/30">
                                     {miembros.length}
                                 </span>
                             </div>
-                            <p className="text-gray-500 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest mt-0.5 transition-colors">Gestión de personal y músicos</p>
+                            <p className="text-gray-500 dark:text-gray-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-0.5 transition-colors leading-none">Gestión de personal militar</p>
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
@@ -419,15 +419,15 @@ export default function MiembrosList() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="flex flex-col lg:flex-row gap-2 sm:gap-3">
                         {/* Buscador - 60% approx */}
                         <div className="flex-grow lg:flex-[6]">
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500" />
                                 <input 
                                     type="text"
-                                    placeholder="BUSCAR POR NOMBRE, CI O CELULAR..."
-                                    className="w-full bg-surface-input border border-surface-border rounded-xl py-3 pl-11 pr-4 text-[10px] font-bold text-gray-900 dark:text-white uppercase placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-primary/50 transition-all"
+                                    placeholder="BUSCAR..."
+                                    className="w-full bg-surface-input border border-surface-border rounded-xl py-2.5 sm:py-3 pl-11 pr-4 text-[9px] sm:text-[10px] font-bold text-gray-900 dark:text-white uppercase placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-primary/50 transition-all h-10 sm:h-12"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                 />
@@ -437,22 +437,22 @@ export default function MiembrosList() {
                         {/* Filtros - 20% approx */}
                         <div className="flex lg:flex-[3] gap-2">
                              <select 
-                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-11 px-3 text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
                                 value={filterInstrument}
                                 onChange={(e) => setFilterInstrument(e.target.value)}
                             >
-                                <option value="" className="bg-surface-card">TODOS LOS INSTRUMENTOS</option>
+                                <option value="" className="bg-surface-card">INSTRUMENTOS</option>
                                 {catalogs.secciones?.flatMap(s => s.instrumentos || []).map(inst => (
                                     <option key={inst.id_instrumento} value={inst.id_instrumento} className="bg-surface-card">{inst.instrumento}</option>
                                 ))}
                             </select>
-
+ 
                             <select 
-                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-11 px-3 text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
                             >
-                                <option value="all" className="bg-surface-card">TODOS LOS ESTADOS</option>
+                                <option value="all" className="bg-surface-card">ESTADOS</option>
                                 <option value="active" className="bg-surface-card">CON ACCESO</option>
                                 <option value="inactive" className="bg-surface-card">SIN ACCESO</option>
                             </select>

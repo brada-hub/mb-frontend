@@ -35,11 +35,11 @@ export const AuthProvider = ({ children }) => {
                 ...deviceInfo // uuid_celular y device_model si es nativo
             });
             
-            const { token: newToken, user: userData, role, permissions, password_changed, profile_completed, is_super_admin } = response.data;
+            const { token: newToken, user: userData, role, permissions, password_changed, profile_completed, is_super_admin, streak } = response.data;
             
             localStorage.setItem('token', newToken);
             setToken(newToken);
-            setUser({ ...userData, role, permissions, password_changed, profile_completed, is_super_admin });
+            setUser({ ...userData, role, permissions, password_changed, profile_completed, is_super_admin, streak });
             setLoading(false); // Success
             return { success: true };
         } catch (error) {
@@ -70,8 +70,8 @@ export const AuthProvider = ({ children }) => {
             api.get('/profile') 
                 .then(res => {
                     if (isMounted) {
-                        const { user: userData, role, permissions, password_changed, profile_completed } = res.data;
-                        setUser({ ...userData, role, permissions, password_changed, profile_completed });
+                        const { user: userData, role, permissions, password_changed, profile_completed, streak } = res.data;
+                        setUser({ ...userData, role, permissions, password_changed, profile_completed, streak });
                     }
                 })
                 .catch(() => {
@@ -123,8 +123,14 @@ export const AuthProvider = ({ children }) => {
                     await setupNativeNotifications(async (fcmToken) => {
                         console.log('FCM Token recibido:', fcmToken);
                         try {
-                            await api.post('/update-fcm-token', { fcm_token: fcmToken });
-                            console.log('Token FCM actualizado en el servidor');
+                            const idRes = await getDeviceId();
+                            const uuid = idRes.identifier || idRes.uuid || idRes.id;
+                            
+                            await api.post('/update-fcm-token', { 
+                                fcm_token: fcmToken,
+                                uuid_celular: uuid
+                            });
+                            console.log('Token FCM actualizado en el servidor para el dispositivo:', uuid);
                         } catch (err) {
                             console.error('Error al actualizar token FCM en el servidor:', err);
                         }

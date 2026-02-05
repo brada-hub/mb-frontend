@@ -51,58 +51,58 @@ export default function MisPagos() {
     }
 
     return (
-        <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto px-2 sm:px-6 pb-20">
+        <div className="space-y-4 sm:space-y-8 animate-in fade-in duration-500 max-w-[1600px] mx-auto px-2 sm:px-6 pb-20">
             {/* Header / Resumen */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Mis Pagos y Actividad</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Seguimiento de tus participaciones y liquidaciones</p>
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors leading-none">Mis Pagos y Actividad</h1>
+                    <p className="text-gray-500 text-[9px] sm:text-xs font-medium uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors leading-none">Seguimiento de participaciones</p>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                    <div className="bg-surface-card border border-surface-border p-3 px-5 rounded-2xl flex items-center gap-4 shadow-sm transition-colors">
+                    <div className="bg-surface-card border border-surface-border p-2 sm:p-3 px-4 sm:px-5 rounded-xl sm:rounded-2xl flex items-center gap-3 sm:gap-4 shadow-sm transition-colors">
                         <div className="flex flex-col items-end">
-                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Pendientes</span>
-                            <span className="text-xl font-black text-emerald-500">{totalPorCobrar}</span>
+                            <span className="text-[8px] sm:text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Pendientes</span>
+                            <span className="text-lg sm:text-xl font-black text-emerald-500 leading-none">{totalPorCobrar}</span>
                         </div>
-                        <div className="w-px h-8 bg-surface-border" />
+                        <div className="w-px h-6 sm:h-8 bg-surface-border" />
                         <div className="flex flex-col items-end">
-                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Cobrados</span>
-                            <span className="text-xl font-black text-brand-primary">{data.historial_cobrado.length}</span>
+                            <span className="text-[8px] sm:text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Cobrados</span>
+                            <span className="text-lg sm:text-xl font-black text-brand-primary leading-none">{data.historial_cobrado.length}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Tabs & Controls */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-card border border-surface-border p-4 rounded-[2rem] shadow-sm transition-colors">
-                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl border border-surface-border w-full md:w-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 bg-surface-card border border-surface-border p-3 sm:p-4 rounded-2xl sm:rounded-[2rem] shadow-sm transition-colors">
+                <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-xl sm:rounded-2xl border border-surface-border w-full md:w-auto">
                     <button 
                         onClick={() => setActiveTab('COBRAR')}
                         className={clsx(
-                            "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                            "flex-1 md:min-w-[160px] px-4 sm:px-6 py-2 sm:py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-lg sm:rounded-xl transition-all",
                             activeTab === 'COBRAR' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
-                        Pendientes ({data.por_cobrar.length})
+                        Pend ({data.por_cobrar.length})
                     </button>
                     <button 
                         onClick={() => setActiveTab('HISTORIAL')}
                         className={clsx(
-                            "flex-1 md:min-w-[160px] px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                            "flex-1 md:min-w-[160px] px-4 sm:px-6 py-2 sm:py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-lg sm:rounded-xl transition-all",
                             activeTab === 'HISTORIAL' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
                         Historial
                     </button>
                 </div>
-
-                <div className="flex items-center gap-4 text-gray-500">
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Filtrar por:</p>
-                    <select className="bg-surface-input border border-surface-border rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-indigo-500/50 text-gray-900 dark:text-white transition-colors cursor-pointer">
-                        <option>Todos los eventos</option>
-                        <option>Contratos</option>
-                        <option>Ensayos</option>
+ 
+                <div className="flex items-center gap-3 sm:gap-4 text-gray-500 w-full sm:w-auto">
+                    <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-50 whitespace-nowrap">Filtrar:</p>
+                    <select className="flex-1 sm:flex-initial bg-surface-input border border-surface-border rounded-xl px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-indigo-500/50 text-gray-900 dark:text-white transition-colors cursor-pointer h-9 sm:h-10">
+                        <option>EVENTOS</option>
+                        <option>CONTRATOS</option>
+                        <option>ENSAYOS</option>
                     </select>
                 </div>
             </div>
@@ -127,23 +127,23 @@ export default function MisPagos() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05, type: 'spring', damping: 20 }}
                                     key={item.id_convocatoria}
-                                    className="bg-surface-card border border-surface-border p-6 rounded-3xl flex flex-col gap-6 group hover:border-indigo-500/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
+                                    className="bg-surface-card border border-surface-border p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col gap-4 sm:gap-6 group hover:border-indigo-500/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
                                 >
                                     <div className="flex items-center justify-between gap-4">
-                                        <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 min-w-[70px]">
-                                            <span className="text-[10px] font-black uppercase leading-none mb-1">{new Date(item.fecha).toLocaleString('es', { month: 'short' })}</span>
-                                            <span className="text-2xl font-black leading-none">{new Date(item.fecha).getDate()}</span>
+                                        <div className="p-3 sm:p-4 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 min-w-[60px] sm:min-w-[70px]">
+                                            <span className="text-[8px] sm:text-[10px] font-black uppercase leading-none mb-1">{new Date(item.fecha).toLocaleString('es', { month: 'short' })}</span>
+                                            <span className="text-xl sm:text-2xl font-black leading-none">{new Date(item.fecha).getDate()}</span>
                                         </div>
-                                        <div className="flex flex-col items-end gap-2">
+                                        <div className="flex flex-col items-end gap-1.5 sm:gap-2">
                                             <span className={clsx(
-                                                "text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border",
+                                                "text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border",
                                                 item.tipo === 'CONTRATO' 
                                                     ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
                                                     : "bg-blue-500/10 text-blue-400 border-blue-500/20"
                                             )}>
                                                 {item.tipo}
                                             </span>
-                                            <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-black uppercase">
+                                            <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-emerald-400 font-black uppercase">
                                                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                                                 Listo
                                             </div>
@@ -164,9 +164,9 @@ export default function MisPagos() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-auto pt-4 border-t border-surface-border flex items-center justify-between transition-colors">
-                                        <span className="text-[10px] text-emerald-500 dark:text-emerald-400 font-black uppercase tracking-widest transition-colors">Actividad Remunerada</span>
-                                        <div className="text-gray-900 dark:text-white font-black text-lg transition-colors">
+                                    <div className="mt-auto pt-3 sm:pt-4 border-t border-surface-border flex items-center justify-between transition-colors">
+                                        <span className="text-[9px] sm:text-[10px] text-emerald-500 dark:text-emerald-400 font-black uppercase tracking-widest transition-colors leading-none truncate">Liquidación</span>
+                                        <div className="text-gray-900 dark:text-white font-black text-sm sm:text-lg transition-colors leading-none">
                                             PENDIENTE
                                         </div>
                                     </div>
@@ -185,34 +185,34 @@ export default function MisPagos() {
                         <div className="space-y-12 pb-20">
                             {Object.entries(historialGrouped).sort((a,b) => b[1][0].fecha_pago.localeCompare(a[1][0].fecha_pago)).map(([mes, eventos]) => (
                                 <div key={mes} className="relative">
-                                    <div className="sticky top-[100px] z-20 py-4 mb-6">
-                                        <div className="inline-flex items-center gap-4 px-6 py-3 bg-surface-card border border-surface-border rounded-xl shadow-lg transition-colors">
-                                            <Calendar className="w-4 h-4 text-indigo-500" />
-                                            <h3 className="text-gray-900 dark:text-white text-xs font-black uppercase tracking-[0.2em] transition-colors">{mes}</h3>
+                                    <div className="sticky top-[100px] z-20 py-2 sm:py-4 mb-4 sm:mb-6">
+                                        <div className="inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2 sm:py-3 bg-surface-card border border-surface-border rounded-xl shadow-lg transition-colors">
+                                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
+                                            <h3 className="text-gray-900 dark:text-white text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-colors">{mes}</h3>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 relative z-10">
                                         {eventos.map(item => (
                                             <div 
                                                 key={item.id_convocatoria}
-                                                className="bg-surface-card border border-surface-border p-5 rounded-2xl flex flex-col gap-4 opacity-100 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
+                                                className="bg-surface-card border border-surface-border p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col gap-3 sm:gap-4 opacity-100 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
                                             >
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-black/5 dark:bg-white/5 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 border border-surface-border group-hover:bg-emerald-500/10 transition-colors">
-                                                        <CheckCircle2 className="w-6 h-6" />
+                                                <div className="flex items-center gap-3 sm:gap-4">
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 border border-surface-border group-hover:bg-emerald-500/10 transition-colors">
+                                                        <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <h3 className="font-bold text-gray-700 dark:text-gray-200 text-base truncate transition-colors">{item.evento}</h3>
-                                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 transition-colors">Cobrado con éxito</p>
+                                                        <h3 className="font-bold text-gray-700 dark:text-gray-200 text-sm sm:text-base truncate transition-colors leading-tight">{item.evento}</h3>
+                                                        <p className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors">Cobrado</p>
                                                     </div>
                                                 </div>
-                                                <div className="mt-2 pt-4 border-t border-surface-border flex flex-col gap-2 transition-colors">
-                                                    <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-wider transition-colors">
-                                                        <span>Estado de Actividad</span>
-                                                        <span className="text-emerald-500 dark:text-emerald-400 font-black uppercase transition-colors">Cobrado / Liquidado</span>
+                                                <div className="mt-1 sm:mt-2 pt-3 sm:pt-4 border-t border-surface-border flex flex-col gap-1 sm:gap-2 transition-colors">
+                                                    <div className="flex justify-between items-center text-[8px] sm:text-[10px] text-gray-500 font-black uppercase tracking-wider transition-colors">
+                                                        <span>Estado</span>
+                                                        <span className="text-emerald-500 dark:text-emerald-400 font-black uppercase transition-colors">Liquidado</span>
                                                     </div>
-                                                    <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-wider transition-colors">
-                                                        <span>Fecha de Pago</span>
+                                                    <div className="flex justify-between items-center text-[8px] sm:text-[10px] text-gray-500 font-black uppercase tracking-wider transition-colors">
+                                                        <span>Fecha</span>
                                                         <span className="text-gray-700 dark:text-gray-300 transition-colors">{new Date(item.fecha_pago).toLocaleDateString()}</span>
                                                     </div>
                                                 </div>

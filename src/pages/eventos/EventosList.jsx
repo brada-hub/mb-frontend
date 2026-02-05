@@ -87,15 +87,15 @@ export default function EventosList() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header Unified */}
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 sm:gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Agenda de la Banda</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Control de ensayos y presentaciones</p>
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Agenda de la Banda</h1>
+                    <p className="text-[10px] sm:text-xs text-gray-500 font-medium uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors">Control de ensayos y presentaciones</p>
                 </div>
                 
                 {canManage && (
-                    <Button onClick={() => handleCreate()} className="h-12 px-8 shadow-xl shadow-brand-primary/20 text-[10px] font-black uppercase tracking-widest rounded-2xl bg-indigo-600 hover:bg-indigo-500 shrink-0">
-                        <Plus className="w-5 h-5 mr-2" />
+                    <Button onClick={() => handleCreate()} className="h-10 sm:h-12 px-6 sm:px-8 shadow-xl shadow-brand-primary/20 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-500 shrink-0">
+                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         Programar Actividad
                     </Button>
                 )}

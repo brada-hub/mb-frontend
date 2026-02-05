@@ -318,9 +318,28 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                 </div>
                             </div>
                             <div className="bg-surface-input border border-surface-border p-5 rounded-2xl space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <MapPin className="w-5 h-5 text-emerald-500" />
-                                    <div><span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Punto de Encuentro</span><span className="font-bold text-gray-900 dark:text-white uppercase">{formData.direccion || 'Ubicación de la banda'}</span></div>
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <MapPin className="w-5 h-5 text-emerald-500" />
+                                        <div>
+                                            <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Punto de Encuentro</span>
+                                            <span className="font-bold text-gray-900 dark:text-white uppercase">{formData.direccion || 'Ubicación de la banda'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {(formData.latitud && formData.longitud || formData.direccion) && (
+                                        <a 
+                                            href={formData.latitud && formData.longitud 
+                                                ? `https://www.google.com/maps/search/?api=1&query=${formData.latitud},${formData.longitud}`
+                                                : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.direccion || formData.evento)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all flex items-center gap-2"
+                                        >
+                                            <Navigation className="w-3 h-3" />
+                                            Como llegar
+                                        </a>
+                                    )}
                                 </div>
                                 <div className="h-[200px] rounded-xl overflow-hidden border border-surface-border shadow-inner">
                                     <MapPicker staticView label="Mapa" value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} radius={formData.radio} />

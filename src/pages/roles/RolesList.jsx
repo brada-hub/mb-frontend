@@ -96,24 +96,24 @@ export default function RolesList() {
                 variant="danger"
             />
 
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 sm:gap-6 pb-2">
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Roles y Permisos</h1>
-                    <p className="text-gray-500 text-xs font-medium uppercase tracking-widest mt-1 transition-colors">Gestión de accesos y facultades del sistema</p>
+                    <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Roles y Permisos</h1>
+                    <p className="text-[10px] sm:text-xs text-gray-500 font-medium uppercase tracking-widest mt-0.5 sm:mt-1 transition-colors">Gestión de accesos y facultades</p>
                 </div>
                 
-                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
-                    <div className="w-full md:w-80">
+                <div className="flex flex-col md:flex-row gap-2 sm:gap-3 w-full xl:w-auto">
+                    <div className="w-full xl:w-80">
                         <Input 
                             icon={Search}
                             placeholder="Buscar rol..." 
-                            className="h-12 w-full text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
+                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                     
-                    <Button onClick={handleAdd} className="h-12 px-6 shadow-lg shadow-brand-primary/10 text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-brand-primary/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
                         <Plus className="w-4 h-4 mr-2" />
                         Nuevo
                     </Button>

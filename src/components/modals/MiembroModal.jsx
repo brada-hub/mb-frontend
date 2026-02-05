@@ -346,27 +346,17 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                 />
                                 <Input 
                                     name="direccion"
-                                    label="DIRECCIÓN DETALLADA DE LA VIVIENDA" 
+                                    label="Dirección y Referencia" 
                                     type="textarea"
-                                    placeholder="ZONA, CALLE Y NÚMERO..." 
+                                    placeholder="ZONA, CALLE, NÚMERO DE CASA, Y REFERENCIAS (EJ. PORTÓN BLANCO)..." 
                                     icon={Home}
                                     onInput={filterAlphanumeric}
-                                    helperText="DIRECCIÓN DETALLADA DE LA VIVIENDA"
                                     error={errors.direccion?.message}
                                     {...register('direccion', { 
                                         required: "La dirección es necesaria",
                                         minLength: { value: 10, message: "Mínimo 10 caracteres" },
-                                        maxLength: { value: 200, message: "Máximo 200 caracteres" }
+                                        maxLength: { value: 300, message: "Máximo 300 caracteres" }
                                     })} 
-                                />
-                                <Input 
-                                    name="referencia_vivienda"
-                                    label="REFERENCIA / DETALLES DE LA CASA" 
-                                    placeholder="EJ: CASA CON REJAS BLANCAS, FRENTE A LA PLAZA..." 
-                                    icon={MapPin}
-                                    onInput={filterAlphanumeric}
-                                    error={errors.referencia_vivienda?.message}
-                                    {...register('referencia_vivienda')} 
                                 />
                             </div>
                         </section>

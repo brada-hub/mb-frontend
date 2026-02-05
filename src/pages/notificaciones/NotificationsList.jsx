@@ -51,11 +51,11 @@ export default function NotificationsList() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6 pb-20">
-            <div className="flex items-center justify-between">
+        <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 pb-20 px-1 sm:px-0">
+            <div className="flex items-center justify-between px-2">
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Notificaciones</h1>
-                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Historial completo de alertas</p>
+                    <h1 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tighter">Notificaciones</h1>
+                    <p className="text-gray-500 text-[9px] sm:text-xs font-bold uppercase tracking-widest mt-0.5 sm:mt-1">Historial completo de alertas</p>
                 </div>
             </div>
 
@@ -75,14 +75,14 @@ export default function NotificationsList() {
                             key={n.id_notificacion}
                             onClick={() => !n.leido && markAsRead(n.id_notificacion)}
                             className={clsx(
-                                "bg-surface-card border p-5 rounded-[2rem] flex items-center gap-5 transition-all cursor-pointer group",
+                                "bg-surface-card border p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] flex items-center gap-3 sm:gap-5 transition-all cursor-pointer group",
                                 !n.leido 
                                     ? "border-indigo-500/30 bg-indigo-500/[0.03] shadow-lg shadow-indigo-500/5" 
                                     : "border-white/5 opacity-70 hover:opacity-100"
                             )}
                         >
                             <div className={clsx(
-                                "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border",
+                                "w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 border",
                                 !n.leido ? "bg-indigo-500/10 border-indigo-500/20" : "bg-white/5 border-white/5"
                             )}>
                                 {getIcon(n.titulo)}

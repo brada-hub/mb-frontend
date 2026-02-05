@@ -34,37 +34,37 @@ export default function DashboardJefeSeccion() {
 
     return (
         <div className="min-h-full bg-gray-50 dark:bg-[#0a0d14] transition-colors">
-            <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+            <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
                 
                 {/* Header con Badge de Jefe */}
-                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[2rem] p-8 text-white relative overflow-hidden">
+                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     
-                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
                         <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-widest">{bandName}</span>
-                                <span className="px-3 py-1 bg-amber-500/30 text-amber-200 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-400/30">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-white/20 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest">{bandName}</span>
+                                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-amber-500/30 text-amber-200 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-amber-400/30">
                                     Jefe de Sección
                                 </span>
                             </div>
-                            <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-2">
-                                {greeting}, {displayName}
+                            <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight mb-1 sm:mb-2 leading-none">
+                                {greeting}, <br className="sm:hidden" /> {displayName}
                             </h1>
-                            <p className="text-white/70 text-sm flex items-center gap-2">
+                            <p className="text-white/70 text-xs flex items-center gap-2">
                                 <Music className="w-4 h-4" /> Coordinador de {instrumento}
                             </p>
                         </div>
                         
                         {/* Mi Asistencia Personal */}
-                        <div className="flex gap-4">
-                            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-5 border border-white/10 text-center min-w-[120px]">
-                                <p className="text-3xl font-black">{data?.mi_asistencia || 0}%</p>
-                                <p className="text-[10px] text-white/60 font-bold uppercase mt-1">Mi Asistencia</p>
+                        <div className="flex gap-3 sm:gap-4">
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 text-center flex-1 sm:min-w-[120px]">
+                                <p className="text-2xl sm:text-3xl font-black">{data?.mi_asistencia || 0}%</p>
+                                <p className="text-[9px] sm:text-[10px] text-white/60 font-bold uppercase mt-1">Mi Asistencia</p>
                             </div>
-                            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-5 border border-white/10 text-center min-w-[120px]">
-                                <p className="text-3xl font-black">{miembrosSeccion.length}</p>
-                                <p className="text-[10px] text-white/60 font-bold uppercase mt-1">Mi Sección</p>
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10 text-center flex-1 sm:min-w-[120px]">
+                                <p className="text-2xl sm:text-3xl font-black">{miembrosSeccion.length}</p>
+                                <p className="text-[9px] sm:text-[10px] text-white/60 font-bold uppercase mt-1">Mi Sección</p>
                             </div>
                         </div>
                     </div>
@@ -118,26 +118,26 @@ export default function DashboardJefeSeccion() {
                         </div>
 
                         {/* Stats de la Sección */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-4 transition-colors">
-                                <Calendar className="w-5 h-5 text-indigo-500 mb-2" />
-                                <p className="text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.hoy || 0}</p>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase">Eventos Hoy</p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500 mb-1 sm:mb-2" />
+                                <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.hoy || 0}</p>
+                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Eventos Hoy</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-4 transition-colors">
-                                <Clock className="w-5 h-5 text-amber-500 mb-2" />
-                                <p className="text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.proximos || 0}</p>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase">Esta Semana</p>
+                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 mb-1 sm:mb-2" />
+                                <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.proximos || 0}</p>
+                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Esta Semana</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-4 transition-colors">
-                                <Flame className="w-5 h-5 text-orange-500 mb-2" />
-                                <p className="text-2xl font-black text-gray-900 dark:text-white">{data?.mi_racha || 0}</p>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase">Mi Racha</p>
+                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mb-1 sm:mb-2" />
+                                <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.mi_racha || 0}</p>
+                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Mi Racha</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-4 transition-colors">
-                                <Activity className="w-5 h-5 text-emerald-500 mb-2" />
-                                <p className="text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.asistencia?.promedio || 0}%</p>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase">Asist. Sección</p>
+                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mb-1 sm:mb-2" />
+                                <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.asistencia?.promedio || 0}%</p>
+                                <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Asist. Sección</p>
                             </div>
                         </div>
                     </div>

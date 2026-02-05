@@ -30,6 +30,11 @@ const FormacionesList = Loadable(lazy(() => import('../pages/miembros/Formacione
 const NotificationsList = Loadable(lazy(() => import('../pages/notificaciones/NotificationsList')));
 const ProfilePage = Loadable(lazy(() => import('../pages/auth/ProfilePage')));
 const SuperAdminPanel = Loadable(lazy(() => import('../pages/superadmin/SuperAdminPanel')));
+const SAResumen = Loadable(lazy(() => import('../pages/superadmin/sections/SAResumen')));
+const SAOrganizaciones = Loadable(lazy(() => import('../pages/superadmin/sections/SAOrganizaciones')));
+const SAAlmacenamiento = Loadable(lazy(() => import('../pages/superadmin/sections/SAAlmacenamiento')));
+const SAPlanes = Loadable(lazy(() => import('../pages/superadmin/sections/SAPlanes')));
+const SAAuditoria = Loadable(lazy(() => import('../pages/superadmin/sections/SAAuditoria')));
 
 
 const routes = [
@@ -62,7 +67,17 @@ const routes = [
             { path: 'reportes', element: <ReportesHome /> },
             { path: 'notificaciones', element: <NotificationsList /> },
             { path: 'perfil', element: <ProfilePage /> },
-            { path: 'superadmin', element: <SuperAdminPanel /> }
+            { 
+                path: 'superadmin', 
+                element: <SuperAdminPanel />,
+                children: [
+                    { index: true, element: <SAResumen /> },
+                    { path: 'organizaciones', element: <SAOrganizaciones /> },
+                    { path: 'almacenamiento', element: <SAAlmacenamiento /> },
+                    { path: 'planes', element: <SAPlanes /> },
+                    { path: 'logs', element: <SAAuditoria /> }
+                ]
+            }
         ]
     },
     {
