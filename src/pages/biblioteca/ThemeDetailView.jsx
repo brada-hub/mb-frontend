@@ -255,7 +255,7 @@ export default function ThemeDetailView() {
                         </button>
                         <div className="flex flex-col min-w-0">
                             <h3 className="text-xs lg:text-sm font-black text-white uppercase tracking-tight truncate max-w-[150px] lg:max-w-2xl">
-                                {tema.nombre_tema} • <span className="text-brand-primary">{currentFile.title}</span>
+                                {tema.nombre_tema} • <span className="text-[#ffbe0b]">{currentFile.title}</span>
                             </h3>
                             {memberFiles.length > 1 && (
                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-0.5">
@@ -273,7 +273,7 @@ export default function ThemeDetailView() {
                                 className={clsx(
                                     "p-3 rounded-2xl flex items-center justify-center transition-all duration-300 border mr-2",
                                     editMode 
-                                        ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                        ? "bg-[#bc1b1b]/20 border-[#bc1b1b] text-[#bc1b1b]" 
                                         : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                 )}
                             >
@@ -301,7 +301,7 @@ export default function ThemeDetailView() {
                         <a 
                             href={getCleanUrl(currentFile.url_archivo)}
                             download
-                            className="h-10 rounded-2xl px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-brand-primary hover:bg-brand-primary/80 text-white transition-all shadow-lg"
+                            className="h-10 rounded-2xl px-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-[#bc1b1b] hover:bg-[#991b1b] text-white transition-all shadow-lg"
                         >
                             <Download className="w-4 h-4" /> <span className="hidden sm:inline">Descargar</span>
                         </a>
@@ -368,15 +368,15 @@ export default function ThemeDetailView() {
 
                 {(allAudioResources.length > 0 || tema.audio) && (
                     <div className="absolute bottom-6 right-6 z-50">
-                         <div className="bg-[#161b2c]/95 backdrop-blur-xl border border-white/10 rounded-[24px] p-4 shadow-2xl shadow-black/50 flex flex-col gap-3 max-w-[280px]">
+                         <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-[24px] p-4 shadow-2xl shadow-black/50 flex flex-col gap-3 max-w-[280px]">
                             <div className="flex items-center gap-3 border-b border-white/5 pb-2">
-                                <Music className="w-3.5 h-3.5 text-indigo-400" />
+                                <Music className="w-3.5 h-3.5 text-[#bc1b1b]" />
                                 <span className="text-[10px] font-black text-white uppercase tracking-widest pl-1">Guías de Audio</span>
                             </div>
                             <div className="space-y-3 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
                                 {tema.audio && (
-                                    <div className="flex flex-col gap-1.5 p-2 bg-indigo-600/5 rounded-xl border border-indigo-500/10">
-                                         <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tight truncate">Audio Principal (Tema)</span>
+                                    <div className="flex flex-col gap-1.5 p-2 bg-[#bc1b1b]/5 rounded-xl border border-[#bc1b1b]/10">
+                                         <span className="text-[9px] font-black text-[#bc1b1b] uppercase tracking-tight truncate">Audio Principal (Tema)</span>
                                         <audio controls className="w-full h-8 block custom-audio-player-xs" src={getCleanUrl(tema.audio.url_audio)}></audio>
                                     </div>
                                 )}
@@ -403,7 +403,7 @@ export default function ThemeDetailView() {
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={() => navigate('/dashboard/biblioteca')}
-                        className="p-3 bg-surface-card hover:bg-brand-primary rounded-xl text-gray-500 dark:text-white/50 hover:text-white transition-all group shrink-0 border border-surface-border shadow-lg"
+                        className="p-3 bg-surface-card hover:bg-[#bc1b1b] rounded-xl text-gray-500 dark:text-white/50 hover:text-white transition-all group shrink-0 border border-surface-border shadow-lg"
                         title="Volver a Biblioteca"
                     >
                         <ArrowLeft className="w-5 h-5" />
@@ -417,7 +417,7 @@ export default function ThemeDetailView() {
                                         type="text"
                                         value={editName}
                                         onChange={(e) => setEditName(e.target.value)}
-                                        className="bg-surface-input border border-brand-primary/50 rounded-xl px-4 py-1 text-2xl font-black text-gray-900 dark:text-white uppercase focus:outline-none focus:ring-2 focus:ring-brand-primary w-full max-w-sm transition-colors"
+                                        className="bg-surface-input border border-[#bc1b1b]/50 rounded-xl px-4 py-1 text-2xl font-black text-gray-900 dark:text-white uppercase focus:outline-none focus:ring-2 focus:ring-[#bc1b1b] w-full max-w-sm transition-colors"
                                         autoFocus
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') handleUpdateName();
@@ -447,7 +447,7 @@ export default function ThemeDetailView() {
                                     });
                                     setIsRecursoModalOpen(true);
                                 }}
-                                className="h-12 px-6 shadow-lg shadow-indigo-600/10 text-[11px] font-black uppercase tracking-widest rounded-xl bg-indigo-600 hover:bg-indigo-500"
+                                className="h-12 px-6 shadow-lg shadow-[#bc1b1b]/20 text-[11px] font-black uppercase tracking-widest rounded-xl bg-[#bc1b1b] hover:bg-[#991b1b]"
                             >
                                 <Plus className="w-4 h-4 mr-2" /> RECURSO
                             </Button>
@@ -488,7 +488,7 @@ export default function ThemeDetailView() {
                                                     {voz.nombre_voz}
                                                 </th>
                                             ))}
-                                            <th className="px-4 py-4 text-center text-[10px] font-black text-white bg-indigo-600/20 uppercase tracking-widest rounded-tr-2xl">Gestión</th>
+                                            <th className="px-4 py-4 text-center text-[10px] font-black text-white bg-[#bc1b1b] uppercase tracking-widest rounded-tr-2xl">Gestión</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -496,7 +496,7 @@ export default function ThemeDetailView() {
                                             <tr key={inst.id_instrumento} className="group">
                                             <td className="px-6 py-4 bg-black/[0.02] dark:bg-white/2 rounded-l-[24px] border-l border-t border-b border-surface-border transition-colors">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                    <div className="w-10 h-10 bg-[#bc1b1b]/10 rounded-xl flex items-center justify-center text-[#bc1b1b] group-hover:bg-[#bc1b1b] group-hover:text-white transition-all">
                                                         <Layers className="w-5 h-5" />
                                                     </div>
                                                     <div className="flex flex-col">
@@ -525,7 +525,7 @@ export default function ThemeDetailView() {
                                                                                     })),
                                                                                     initialIndex: index
                                                                                 })}
-                                                                                className="w-10 h-10 flex items-center justify-center bg-indigo-600/10 hover:bg-indigo-600 text-indigo-600 dark:text-indigo-400 hover:text-white rounded-xl transition-all border border-indigo-500/20 shadow-lg"
+                                                                                className="w-10 h-10 flex items-center justify-center bg-[#bc1b1b]/10 hover:bg-[#bc1b1b] text-[#bc1b1b] hover:text-white rounded-xl transition-all border border-[#bc1b1b]/20 shadow-lg"
                                                                                 title={`Ver archivo ${index + 1}`}
                                                                             >
                                                                                 {file.tipo === 'pdf' ? <FileText className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
@@ -550,8 +550,8 @@ export default function ThemeDetailView() {
                                                     {recursos.filter(r => r.id_instrumento === inst.id_instrumento).length > 0 ? (
                                                         <div className="space-y-1">
                                                             {recursos.filter(r => r.id_instrumento === inst.id_instrumento).map((res) => (
-                                                                <div key={res.id_recurso} className="flex items-center justify-between p-2 bg-black/10 dark:bg-black/20 rounded-lg border border-surface-border hover:border-indigo-500/30 transition-all">
-                                                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase truncate transition-colors">
+                                                                <div key={res.id_recurso} className="flex items-center justify-between p-2 bg-black/10 dark:bg-black/20 rounded-lg border border-surface-border hover:border-[#bc1b1b]/30 transition-all">
+                                                                        <span className="text-[10px] font-bold text-[#bc1b1b] uppercase truncate transition-colors">
                                                                             {res.id_voz ? voces.find(v => v.id_voz === res.id_voz)?.nombre_voz : 'GRAL / PERCUSIÓN'}
                                                                         </span>
                                                                         <div className="flex gap-1">
@@ -563,7 +563,7 @@ export default function ThemeDetailView() {
                                                                                     });
                                                                                     setIsRecursoModalOpen(true);
                                                                                 }}
-                                                                                className="p-1 hover:bg-indigo-500 rounded text-gray-500 hover:text-white transition-colors"
+                                                                                className="p-1 hover:bg-[#bc1b1b] rounded text-gray-500 hover:text-white transition-colors"
                                                                             >
                                                                                 <Edit2 className="w-3 h-3" />
                                                                             </button>
@@ -589,7 +589,7 @@ export default function ThemeDetailView() {
                                                                         });
                                                                         setIsRecursoModalOpen(true);
                                                                     }}
-                                                                    className="text-[9px] font-black text-white/20 hover:text-brand-primary uppercase tracking-widest transition-colors"
+                                                                    className="text-[9px] font-black text-white/20 hover:text-[#bc1b1b] uppercase tracking-widest transition-colors"
                                                                 >
                                                                     + Añadir Recursos
                                                                 </button>
@@ -619,7 +619,7 @@ export default function ThemeDetailView() {
                                     <div key={`mob-adm-${inst.id_instrumento}`} className="bg-surface-card border border-surface-border rounded-3xl p-5 shadow-xl transition-colors">
                                     <div className="flex items-center justify-between mb-4 border-b border-surface-border pb-3 transition-colors">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-colors">
+                                                <div className="w-10 h-10 bg-[#bc1b1b]/10 rounded-xl flex items-center justify-center text-[#bc1b1b] transition-colors">
                                                 <Layers className="w-5 h-5" />
                                             </div>
                                             <div>
@@ -637,7 +637,7 @@ export default function ThemeDetailView() {
                                                     });
                                                     setIsRecursoModalOpen(true);
                                                 }}
-                                                className="p-2 bg-indigo-600/20 text-indigo-400 rounded-lg"
+                                                className="p-2 bg-[#bc1b1b] text-white hover:bg-[#991b1b] rounded-lg transition-colors"
                                             >
                                                 <Plus className="w-4 h-4" />
                                             </button>
@@ -651,7 +651,7 @@ export default function ThemeDetailView() {
                                                 return (
                                                     <div key={`res-mob-${res.id_recurso}`} className="bg-black/[0.02] dark:bg-white/2 rounded-xl p-3 border border-surface-border transition-colors">
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest transition-colors">{vozName}</span>
+                                                        <span className="text-[10px] font-black text-[#bc1b1b] uppercase tracking-widest transition-colors">{vozName}</span>
                                                             <div className="flex gap-1">
                                                                 <button onClick={() => { setRecursoInitialData({...res, id_genero: tema.id_genero}); setIsRecursoModalOpen(true); }} className="p-1.5 text-gray-500 hover:text-white"><Edit2 className="w-3.5 h-3.5" /></button>
                                                                 <button onClick={() => setDeleteConfirm({ isOpen: true, id: res.id_recurso })} className="p-1.5 text-gray-600 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -669,7 +669,7 @@ export default function ThemeDetailView() {
                                                                         })),
                                                                         initialIndex: i
                                                                     })}
-                                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600/10 rounded-lg text-[9px] font-bold text-white uppercase tracking-widest"
+                                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#bc1b1b]/10 rounded-lg text-[9px] font-bold text-white uppercase tracking-widest"
                                                                 >
                                                                     {f.tipo === 'pdf' ? <FileText className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
                                                                     VER

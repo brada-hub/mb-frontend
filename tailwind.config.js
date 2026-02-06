@@ -9,9 +9,9 @@ export default {
     extend: {
       colors: {
         brand: {
-          primary: '#5e5ce6',
-          secondary: '#818cf8',
-          dark: '#4f46e5',
+          primary: '#bc1b1b', // Monster Red
+          secondary: '#ffbe0b', // Monster Gold
+          dark: '#7f1d1d', // Deep Maroon
         },
         monster: {
           purple: '#c084fc',

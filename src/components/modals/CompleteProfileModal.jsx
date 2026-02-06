@@ -78,7 +78,7 @@ export default function CompleteProfileModal({ isOpen, user }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-6 bg-gray-900/90 dark:bg-[#0a0d14]/95 backdrop-blur-xl transition-all">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-6 bg-gray-900/90 dark:bg-surface-base/95 backdrop-blur-xl transition-all">
             <div className="relative w-full max-w-5xl h-full md:h-auto max-h-[100vh] md:max-h-[90vh] overflow-y-auto bg-surface-card md:border md:border-surface-border md:rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.8)] custom-scrollbar text-gray-900 dark:text-gray-100 transition-colors">
                 
                 {/* Header Centered */}

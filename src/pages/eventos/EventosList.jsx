@@ -94,7 +94,11 @@ export default function EventosList() {
                 </div>
                 
                 {canManage && (
-                    <Button onClick={() => handleCreate()} className="h-10 sm:h-12 px-6 sm:px-8 shadow-xl shadow-brand-primary/20 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-500 shrink-0">
+                    <Button 
+                        onClick={() => handleCreate()} 
+                        variant="custom"
+                        className="h-10 sm:h-12 px-6 sm:px-8 shadow-xl shadow-[#bc1b1b]/20 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl sm:rounded-2xl bg-[#bc1b1b] hover:bg-[#7f1d1d] text-white shrink-0"
+                    >
                         <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         Programar Actividad
                     </Button>

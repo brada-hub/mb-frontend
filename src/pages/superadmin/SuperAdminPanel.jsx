@@ -49,7 +49,7 @@ export default function SuperAdminPanel() {
     const [modalMode, setModalMode] = useState('create');
     const [selectedBanda, setSelectedBanda] = useState(null);
     const [formData, setFormData] = useState({ 
-        nombre: '', color_primario: '#6366f1', color_secundario: '#161b2c',
+        nombre: '', color_primario: '#bc1b1b', color_secundario: '#0a0a0a',
         plan: 'BASIC', id_plan: '', cuota_mensual: 0, max_miembros: 15,
         logo: null, estado: true, admin_user: '', admin_password: ''
     });
@@ -109,7 +109,7 @@ export default function SuperAdminPanel() {
         setModalMode('create');
         setSelectedBanda(null);
         setFormData({ 
-            nombre: '', color_primario: '#6366f1', color_secundario: '#161b2c',
+            nombre: '', color_primario: '#bc1b1b', color_secundario: '#0a0a0a',
             plan: 'BASIC', id_plan: plans.find(p => p.nombre === 'BASIC')?.id_plan || '',
             cuota_mensual: 0, max_miembros: 15, logo: null,
             admin_user: '', admin_password: '', estado: true
@@ -122,8 +122,8 @@ export default function SuperAdminPanel() {
         setModalMode('edit');
         setSelectedBanda(banda);
         setFormData({ 
-            nombre: banda.nombre, color_primario: banda.color_primario || '#6366f1', 
-            color_secundario: banda.color_secundario || '#161b2c',
+            nombre: banda.nombre, color_primario: banda.color_primario || '#bc1b1b', 
+            color_secundario: banda.color_secundario || '#0a0a0a',
             plan: banda.plan || 'BASIC', id_plan: banda.id_plan || plans.find(p => p.nombre === banda.plan)?.id_plan || '',
             cuota_mensual: banda.cuota_mensual || 0, max_miembros: banda.max_miembros || 15,
             logo: null, estado: banda.estado ?? true, admin_user: '', admin_password: ''
@@ -206,18 +206,18 @@ export default function SuperAdminPanel() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-surface-base">
-                <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
+                <div className="w-12 h-12 border-4 border-[#bc1b1b] border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-[#0f111a] p-2 sm:p-6 lg:p-8 animate-in fade-in duration-500">
+        <div className="min-h-screen bg-gray-50 dark:bg-surface-base p-2 sm:p-6 lg:p-8 animate-in fade-in duration-500">
             {/* Header */}
             <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
                 <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-primary to-brand-dark rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-brand-primary/20">
+                    <div className="w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-[#bc1b1b] to-[#991b1b] rounded-xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-[#bc1b1b]/20">
                         <Crown className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                     </div>
                     <div>
@@ -268,7 +268,7 @@ export default function SuperAdminPanel() {
                             <form onSubmit={handleSubmit} className="p-8 space-y-8">
                                 <div className="flex gap-6 items-center">
                                     <div 
-                                        className="w-24 h-24 rounded-3xl bg-gray-100 dark:bg-white/5 border-2 border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center relative overflow-hidden group hover:border-brand-primary transition-colors cursor-pointer"
+                                        className="w-24 h-24 rounded-3xl bg-gray-100 dark:bg-white/5 border-2 border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center relative overflow-hidden group hover:border-[#bc1b1b] transition-colors cursor-pointer"
                                         style={!logoPreview ? {backgroundColor: formData.color_primario} : {}}
                                     >
                                         <input type="file" onChange={e => {
@@ -305,7 +305,7 @@ export default function SuperAdminPanel() {
                                                     return newData;
                                                 });
                                             }}
-                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary focus:bg-white dark:focus:bg-black/20 outline-none font-bold text-gray-900 dark:text-white transition-all placeholder-gray-400" 
+                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] focus:bg-white dark:focus:bg-black/20 outline-none font-bold text-gray-900 dark:text-white transition-all placeholder-gray-400" 
                                             placeholder="EJ. BANDA MUNICIPAL"
                                             required
                                         />
@@ -317,7 +317,7 @@ export default function SuperAdminPanel() {
                                         <label className="text-[10px] font-black uppercase text-gray-500 tracking-widest">Color Institucional</label>
                                         <div className="flex gap-2">
                                             <input type="color" value={formData.color_primario} onChange={e => setFormData({...formData, color_primario: e.target.value})} className="w-12 h-12 rounded-xl cursor-pointer border-none p-0 bg-transparent" />
-                                            <input type="text" value={formData.color_primario} onChange={e => setFormData({...formData, color_primario: e.target.value})} className="flex-1 bg-gray-100 dark:bg-surface-input px-3 rounded-xl border-transparent focus:border-brand-primary outline-none font-mono text-xs uppercase" />
+                                            <input type="text" value={formData.color_primario} onChange={e => setFormData({...formData, color_primario: e.target.value})} className="flex-1 bg-gray-100 dark:bg-surface-input px-3 rounded-xl border-transparent focus:border-[#bc1b1b] outline-none font-mono text-xs uppercase" />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -334,7 +334,7 @@ export default function SuperAdminPanel() {
                                                     max_miembros: plan?.max_miembros || 15
                                                 }));
                                             }}
-                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold text-gray-900 dark:text-white cursor-pointer appearance-none"
+                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold text-gray-900 dark:text-white cursor-pointer appearance-none"
                                         >
                                             <option value="">Seleccionar...</option>
                                             {plans.map(p => <option key={p.id_plan} value={p.id_plan}>{p.label}</option>)}
@@ -362,14 +362,14 @@ export default function SuperAdminPanel() {
                                             type="number" 
                                             value={formData.max_miembros} 
                                             onChange={e => setFormData({...formData, max_miembros: e.target.value})} 
-                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold text-gray-900 dark:text-white"
+                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold text-gray-900 dark:text-white"
                                         />
                                     </div>
                                 </div>
 
                                 {modalMode === 'create' && (
-                                    <div className="p-6 bg-brand-primary/5 border border-brand-primary/10 rounded-2xl space-y-4">
-                                        <div className="flex items-center gap-2 text-brand-primary font-black uppercase text-xs">
+                                    <div className="p-6 bg-[#bc1b1b]/5 border border-[#bc1b1b]/10 rounded-2xl space-y-4">
+                                        <div className="flex items-center gap-2 text-[#bc1b1b] font-black uppercase text-xs">
                                             <Shield className="w-4 h-4" /> Credenciales Admin
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
@@ -387,7 +387,7 @@ export default function SuperAdminPanel() {
 
                                 <div className="flex gap-4 pt-4 border-t border-gray-100 dark:border-white/5">
                                     <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-4 rounded-xl font-black uppercase text-xs text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">Cancelar</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-4 bg-brand-primary hover:bg-brand-dark text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-brand-primary/20 transition-all active:scale-95 disabled:opacity-50">
+                                    <button type="submit" disabled={processing} className="flex-1 py-4 bg-[#bc1b1b] hover:bg-[#991b1b] text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-[#bc1b1b]/20 transition-all active:scale-95 disabled:opacity-50">
                                         {processing ? 'Guardando...' : 'Guardar Organización'}
                                     </button>
                                 </div>
@@ -425,7 +425,7 @@ export default function SuperAdminPanel() {
                                             type="text" 
                                             value={planFormData.nombre} 
                                             onChange={e => setPlanFormData({...planFormData, nombre: e.target.value.toUpperCase().replace(/\s/g, '_')})} 
-                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold text-gray-900 dark:text-white" 
+                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold text-gray-900 dark:text-white" 
                                             placeholder="EJ. PRO_MAX"
                                         />
                                     </div>
@@ -435,7 +435,7 @@ export default function SuperAdminPanel() {
                                             type="text" 
                                             value={planFormData.label} 
                                             onChange={e => setPlanFormData({...planFormData, label: e.target.value})} 
-                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold text-gray-900 dark:text-white" 
+                                            className="w-full bg-gray-100 dark:bg-surface-input px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold text-gray-900 dark:text-white" 
                                             placeholder="EJ. Profesional"
                                         />
                                     </div>
@@ -470,7 +470,7 @@ export default function SuperAdminPanel() {
                                                 onClick={() => setPlanFormData(prev => ({...prev, [cap.id]: !prev[cap.id]}))}
                                                 className={clsx(
                                                     "px-4 py-3 rounded-xl text-xs font-bold uppercase transition-all border",
-                                                    planFormData[cap.id] ? "bg-brand-primary/10 border-brand-primary text-brand-primary" : "bg-gray-50 dark:bg-white/5 border-transparent text-gray-400"
+                                                    planFormData[cap.id] ? "bg-[#bc1b1b]/10 border-[#bc1b1b] text-[#bc1b1b]" : "bg-gray-50 dark:bg-white/5 border-transparent text-gray-400"
                                                 )}
                                             >
                                                 {cap.label}
@@ -481,7 +481,7 @@ export default function SuperAdminPanel() {
 
                                 <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex gap-4">
                                      <button type="button" onClick={() => setShowPlanModal(false)} className="flex-1 py-4 rounded-xl font-black uppercase text-xs text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">Cancelar</button>
-                                     <button type="submit" disabled={processing} className="flex-1 py-4 bg-brand-primary hover:bg-brand-dark text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-brand-primary/20 transition-all active:scale-95">Guardar Plan</button>
+                                     <button type="submit" disabled={processing} className="flex-1 py-4 bg-[#bc1b1b] hover:bg-[#991b1b] text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-[#bc1b1b]/20 transition-all active:scale-95">Guardar Plan</button>
                                 </div>
                             </form>
                         </motion.div>

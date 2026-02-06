@@ -139,7 +139,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                             <div key={voz.id_voz} className="bg-black/5 dark:bg-[#1a2035] border border-surface-border rounded-[35px] p-8 hover:border-indigo-500/30 transition-all hover:translate-y-[-4px] duration-300 shadow-xl group/card">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400 group-hover/card:bg-indigo-600 group-hover/card:text-white transition-all">
+                                        <div className="w-10 h-10 bg-[#bc1b1b]/20 rounded-2xl flex items-center justify-center text-indigo-400 group-hover/card:bg-[#bc1b1b] group-hover/card:text-white transition-all">
                                             <Music className="w-5 h-5" />
                                         </div>
                                         <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{voz.nombre_voz}</h4>
@@ -159,7 +159,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                                                 })),
                                                 initialIndex: idx
                                             })}
-                                            className="w-full flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-indigo-600 rounded-2xl transition-all group/btn border border-surface-border"
+                                            className="w-full flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 hover:bg-[#bc1b1b] rounded-2xl transition-all group/btn border border-surface-border"
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 bg-black/10 dark:bg-black/20 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover/btn:text-white transition-colors">
@@ -226,20 +226,20 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                 {/* Close Button - Always visible on top right */}
                 <button 
                     onClick={onClose} 
-                    className="absolute top-6 right-6 z-[60] p-3 bg-black/5 dark:bg-[#0f111a]/60 hover:bg-red-500/20 hover:text-red-400 backdrop-blur-md rounded-2xl text-gray-400 dark:text-white/50 hover:text-gray-900 dark:hover:text-white transition-all shadow-xl border border-surface-border group"
+                    className="absolute top-6 right-6 z-[60] p-3 bg-black/5 dark:bg-surface-base/60 hover:bg-red-500/20 hover:text-red-400 backdrop-blur-md rounded-2xl text-gray-400 dark:text-white/50 hover:text-gray-900 dark:hover:text-white transition-all shadow-xl border border-surface-border group"
                     title="Cerrar (Esc)"
                 >
                     <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
                 </button>
 
                 {/* Header Section */}
-                <div className="p-6 md:p-10 bg-gradient-to-br from-black/5 to-black/10 dark:from-[#1e253c] dark:to-[#161b2c] relative overflow-hidden shrink-0 border-b border-surface-border">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                <div className="p-6 md:p-10 bg-gradient-to-br from-black/5 to-black/10 dark:from-[#1e253c] dark:to-[#0a0a0a] relative overflow-hidden shrink-0 border-b border-surface-border">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#bc1b1b]/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
                     
                     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-4 md:gap-6 pr-12 md:pr-0">
-                            <div className="w-14 h-14 md:w-20 md:h-20 bg-indigo-600 rounded-[20px] md:rounded-[30px] flex items-center justify-center text-white shadow-2xl shadow-indigo-600/40 transform -rotate-2 hover:rotate-0 transition-transform shrink-0">
+                            <div className="w-14 h-14 md:w-20 md:h-20 bg-[#bc1b1b] rounded-[20px] md:rounded-[30px] flex items-center justify-center text-white shadow-2xl shadow-indigo-600/40 transform -rotate-2 hover:rotate-0 transition-transform shrink-0">
                                 <Music className="w-6 h-6 md:w-10 md:h-10" />
                             </div>
                             <div className="min-w-0">
@@ -320,7 +320,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                                             ))}
                                             <th className="text-center px-4 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Audio / Guía</th>
                                             {isAdmin && (
-                                                <th className="px-4 py-4 text-center text-[10px] font-black text-gray-900 dark:text-white bg-indigo-600/20 uppercase tracking-widest rounded-tr-2xl transition-colors">Gestión</th>
+                                                <th className="px-4 py-4 text-center text-[10px] font-black text-gray-900 dark:text-white bg-[#bc1b1b]/20 uppercase tracking-widest rounded-tr-2xl transition-colors">Gestión</th>
                                             )}
                                         </tr>
                                     </thead>
@@ -329,7 +329,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                                             <tr key={inst.id_instrumento} className="group">
                                                 <td className="px-6 py-4 bg-black/5 dark:bg-white/2 rounded-l-[24px] border-l border-t border-b border-surface-border transition-colors">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                        <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 group-hover:bg-[#bc1b1b] group-hover:text-white transition-all">
                                                             <Layers className="w-5 h-5" />
                                                         </div>
                                                         <div className="flex flex-col">
@@ -360,7 +360,7 @@ export default function ThemeDetailModal({ isOpen, onClose, tema, onDeleted, onA
                                                                                         })),
                                                                                         initialIndex: index
                                                                                     })}
-                                                                                    className="w-10 h-10 flex items-center justify-center bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white rounded-xl transition-all border border-indigo-500/20 shadow-lg"
+                                                                                    className="w-10 h-10 flex items-center justify-center bg-[#bc1b1b]/10 hover:bg-[#bc1b1b] text-indigo-400 hover:text-white rounded-xl transition-all border border-indigo-500/20 shadow-lg"
                                                                                     title={`Ver archivo ${index + 1}`}
                                                                                 >
                                                                                     {file.tipo === 'pdf' ? <FileText className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}

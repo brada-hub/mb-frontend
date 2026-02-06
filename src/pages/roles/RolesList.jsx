@@ -107,13 +107,13 @@ export default function RolesList() {
                         <Input 
                             icon={Search}
                             placeholder="Buscar rol..." 
-                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
+                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-[#bc1b1b]/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                     
-                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-brand-primary/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-[#bc1b1b]/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-[#bc1b1b] hover:bg-[#bc1b1b]/90 shrink-0">
                         <Plus className="w-4 h-4 mr-2" />
                         Nuevo
                     </Button>
@@ -122,12 +122,12 @@ export default function RolesList() {
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-                    <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <div className="w-12 h-12 border-4 border-[#bc1b1b] border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="text-gray-500 dark:text-gray-400 font-bold transition-colors">Cargando roles...</p>
                 </div>
             ) : error ? (
-                <div className="flex flex-col items-center justify-center py-20 bg-red-500/5 border border-dashed border-red-500/20 rounded-[32px] text-center px-4">
-                    <Shield className="w-16 h-16 text-red-500/30 mb-4" />
+                <div className="flex flex-col items-center justify-center py-20 bg-[#bc1b1b]/5 border border-dashed border-[#bc1b1b]/20 rounded-[32px] text-center px-4">
+                    <Shield className="w-16 h-16 text-[#bc1b1b]/30 mb-4" />
                     <p className="text-gray-900 dark:text-white font-bold uppercase tracking-widest text-lg transition-colors">Error de Acceso</p>
                     <p className="text-gray-400 text-sm mt-2 max-w-md">
                         {error}
@@ -144,11 +144,11 @@ export default function RolesList() {
                     {filteredRoles.map((rol) => (
                         <div 
                             key={rol.id_rol} 
-                            className="group bg-surface-card border border-surface-border rounded-[32px] p-6 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/5 flex flex-col h-full"
+                            className="group bg-surface-card border border-surface-border rounded-[32px] p-6 hover:border-[#bc1b1b]/30 transition-all duration-300 hover:shadow-2xl hover:shadow-[#bc1b1b]/5 flex flex-col h-full"
                         >
                             <div className="flex items-start justify-between mb-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 bg-brand-primary/10 rounded-2xl flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform">
+                                    <div className="w-14 h-14 bg-[#bc1b1b]/10 rounded-2xl flex items-center justify-center text-[#bc1b1b] group-hover:scale-110 transition-transform">
                                         <Shield className="w-8 h-8" />
                                     </div>
                                     <div>
@@ -158,7 +158,7 @@ export default function RolesList() {
                                 </div>
                             </div>
 
-                            <p className="text-sm text-gray-600 dark:text-indigo-200/70 mb-6 flex-grow leading-relaxed font-medium transition-colors">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 flex-grow leading-relaxed font-medium transition-colors">
                                 {rol.descripcion || 'Sin descripción detallada.'}
                             </p>
 
@@ -171,7 +171,7 @@ export default function RolesList() {
                                         </span>
                                     ))}
                                     {rol.permisos?.length > 5 && (
-                                        <span className="px-2 py-1 bg-brand-primary/10 border border-brand-primary/20 rounded-lg text-[10px] text-brand-primary font-bold">
+                                        <span className="px-2 py-1 bg-[#bc1b1b]/10 border border-[#bc1b1b]/20 rounded-lg text-[10px] text-[#bc1b1b] font-bold">
                                             +{rol.permisos.length - 5} MÁS
                                         </span>
                                     )}

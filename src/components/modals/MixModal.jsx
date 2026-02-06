@@ -57,7 +57,7 @@ function SortableTema({ id, tema, onRemove }) {
             style={style} 
             className={clsx(
                 "flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 border border-surface-border rounded-2xl mb-2 transition-all group",
-                isDragging ? "shadow-2xl scale-[1.02] bg-indigo-600/20 border-indigo-500/50" : "hover:border-brand-primary/30 dark:hover:border-surface-border"
+                isDragging ? "shadow-2xl scale-[1.02] bg-[#bc1b1b]/20 border-[#bc1b1b]/50" : "hover:border-[#bc1b1b]/30 dark:hover:border-surface-border"
             )}
         >
             <button 
@@ -226,7 +226,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                 {/* Header */}
                 <div className="flex items-center justify-between p-8 border-b border-surface-border bg-surface-card transition-colors">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                        <div className="w-12 h-12 bg-[#bc1b1b]/20 rounded-2xl flex items-center justify-center text-[#bc1b1b]">
                             <Layers className="w-6 h-6" />
                         </div>
                         <div>
@@ -251,7 +251,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                 placeholder="EJ: MIX MORENADAS 2024"
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
-                                className="h-14 bg-surface-input border-surface-border rounded-2xl text-lg font-bold uppercase focus:ring-indigo-500/50 text-gray-900 dark:text-white transition-all"
+                                className="h-14 bg-surface-input border-surface-border rounded-2xl text-lg font-bold uppercase focus:ring-[#bc1b1b]/50 text-gray-900 dark:text-white transition-all"
                             />
                         </div>
                         <div className="w-full sm:w-auto space-y-3">
@@ -288,11 +288,11 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                             />
                             <div className={clsx(
                                 "flex items-center gap-4 w-full bg-surface-input border rounded-2xl p-2 transition-all",
-                                audioFile || initialData?.audio ? "border-indigo-500/50 bg-indigo-500/5" : "border-surface-border"
+                                audioFile || initialData?.audio ? "border-[#bc1b1b]/50 bg-[#bc1b1b]/5" : "border-surface-border"
                             )}>
                                 <label 
                                     htmlFor="mix-audio-upload"
-                                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all shadow-lg shrink-0"
+                                    className="px-4 py-2.5 bg-[#bc1b1b] hover:bg-[#991b1b] text-white text-[10px] font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all shadow-lg shrink-0"
                                 >
                                     Seleccionar Archivo
                                 </label>
@@ -305,7 +305,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                                 : 'Sin archivo seleccionado'}
                                     </p>
                                     {(audioFile || initialData?.audio) && (
-                                        <p className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-0.5 transition-colors">
+                                        <p className="text-[9px] font-bold text-[#bc1b1b] uppercase tracking-widest mt-0.5 transition-colors">
                                             {audioFile ? 'Archivo listo para subir' : 'Audio actual guardado'}
                                         </p>
                                     )}
@@ -335,7 +335,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                     className={clsx(
                                         "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border",
                                         selectedGenreId === 'all' 
-                                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
+                                            ? "bg-[#bc1b1b] border-[#bc1b1b] text-white shadow-lg shadow-[#bc1b1b]/20" 
                                             : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10"
                                     )}
                                 >
@@ -348,7 +348,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                         className={clsx(
                                             "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border",
                                             parseInt(selectedGenreId) === genre.id_genero 
-                                                ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20" 
+                                                ? "bg-[#bc1b1b] border-[#bc1b1b] text-white shadow-lg shadow-[#bc1b1b]/20" 
                                                 : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10"
                                         )}
                                     >
@@ -381,7 +381,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                                                     <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{tema.nombre_tema}</p>
                                                     <p className="text-[9px] text-gray-500 dark:text-gray-500 font-bold uppercase tracking-widest transition-colors">{tema.genero?.nombre_genero}</p>
                                                 </div>
-                                                <Plus className="ml-auto w-5 h-5 text-indigo-400" />
+                                                <Plus className="ml-auto w-5 h-5 text-[#bc1b1b]" />
                                             </button>
                                         ))}
                                     </div>
@@ -440,7 +440,7 @@ export default function MixModal({ isOpen, onClose, onSuccess, initialData }) {
                     <Button 
                         onClick={handleSave}
                         disabled={loading}
-                        className="flex-[2] h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-brand-primary/20"
+                        className="flex-[2] h-16 rounded-2xl bg-[#bc1b1b] hover:bg-[#991b1b] text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-[#bc1b1b]/20"
                     >
                         {loading ? (
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

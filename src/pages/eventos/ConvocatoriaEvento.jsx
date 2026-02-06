@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
     ArrowLeft, Users, CheckCircle2, Clock, UserPlus, 
     Search, Filter, Music2, Shield, Check, X, Plus, Trash2,
-    Layers, Save, Info, BellRing, Send, LayoutGrid
+    Layers, Save, Info, BellRing, Send, LayoutGrid, ChevronRight
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -412,7 +412,7 @@ export default function ConvocatoriaEvento() {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-10 h-10 border-4 border-[#bc1b1b] border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Sincronizando escenario...</p>
                 </div>
             </div>
@@ -450,7 +450,7 @@ export default function ConvocatoriaEvento() {
                 <div className="flex gap-3">
                     <button 
                         onClick={() => navigate('/dashboard/reportes')}
-                        className="px-6 py-2.5 rounded-xl bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
+                        className="px-6 py-2.5 rounded-xl bg-[#bc1b1b]/10 text-indigo-400 border border-indigo-500/20 hover:bg-[#bc1b1b]/20 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest"
                     >
                         <LayoutGrid className="w-4 h-4" />
                         Ver Matriz
@@ -476,7 +476,7 @@ export default function ConvocatoriaEvento() {
                                     loadFormaciones();
                                     setShowFormacionesModal(true);
                                 }}
-                                className="bg-blue-600/10 text-blue-500 border-blue-600/20"
+                                className="bg-[#bc1b1b]/10 text-blue-500 border-blue-600/20"
                             >
                                 <Layers className="w-4 h-4 mr-1.5" />
                                 Importar
@@ -497,7 +497,7 @@ export default function ConvocatoriaEvento() {
                             <Button 
                                 variant="primary" 
                                 onClick={handleOpenPostular}
-                                className="shadow-lg shadow-brand-primary/20"
+                                className="shadow-lg shadow-[#bc1b1b]/20"
                             >
                                 <UserPlus className="w-4 h-4 mr-1.5" />
                                 Añadir
@@ -529,7 +529,7 @@ export default function ConvocatoriaEvento() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-surface-card border border-white/5 rounded-2xl p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-500/10 rounded-xl">
+                        <div className="p-2 bg-[#bc1b1b]/50/10 rounded-xl">
                             <Users className="w-5 h-5 text-blue-400" />
                         </div>
                         <div>
@@ -562,8 +562,8 @@ export default function ConvocatoriaEvento() {
                 </div>
                 <div className="bg-surface-card border border-white/5 rounded-2xl p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-purple-500/10 rounded-xl">
-                            <Music2 className="w-5 h-5 text-purple-400" />
+                        <div className="p-2 bg-[#ffbe0b]/10 rounded-xl">
+                            <Music2 className="w-5 h-5 text-[#ffbe0b]" />
                         </div>
                         <div>
                             <p className="text-2xl font-bold text-white">{evento?.tipo?.evento}</p>
@@ -598,7 +598,7 @@ export default function ConvocatoriaEvento() {
                                             placeholder="Buscar por nombre..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/5 rounded-2xl text-[11px] font-medium outline-none focus:border-brand-primary/50 transition-all placeholder:text-gray-600"
+                                            className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/5 rounded-2xl text-[11px] font-medium outline-none focus:border-[#bc1b1b]/50 transition-all placeholder:text-gray-600"
                                         />
                                     </div>
 
@@ -644,7 +644,7 @@ export default function ConvocatoriaEvento() {
                                                     notify(selectedInstrumento ? 'Debes completar las vacantes de esta sección primero' : 'Debes completar todas las vacantes del escenario primero', 'warning');
                                                 }
                                             }}
-                                            className={`px-4 py-2.5 bg-brand-primary text-white rounded-xl hover:bg-brand-secondary transition-all text-[9px] font-bold uppercase tracking-wider shadow-lg shadow-brand-primary/20 flex items-center gap-2 ${
+                                            className={`px-4 py-2.5 bg-[#bc1b1b] text-white rounded-xl hover:bg-[#ffbe0b] transition-all text-[9px] font-bold uppercase tracking-wider shadow-lg shadow-[#bc1b1b]/20 flex items-center gap-2 ${
                                                 (() => {
                                                     const isReady = selectedInstrumento 
                                                         ? (evento?.requerimientos?.find(r => String(r.id_instrumento) === String(selectedInstrumento))?.cantidad_necesaria <= convocatorias.filter(c => String(c.miembro?.id_instrumento) === String(selectedInstrumento)).length)
@@ -795,7 +795,7 @@ export default function ConvocatoriaEvento() {
                                                             <tr key={c.id_convocatoria} className="hover:bg-white/[0.02] transition-all group">
                                                                 <td className="px-8 py-5">
                                                                     <div className="flex items-center gap-5">
-                                                                        <div className="w-11 h-11 rounded-3xl bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center text-brand-primary font-bold text-sm border border-brand-primary/10 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                                        <div className="w-11 h-11 rounded-3xl bg-gradient-to-br from-[#bc1b1b]/20 to-[#ffbe0b]/20 flex items-center justify-center text-[#bc1b1b] font-bold text-sm border border-[#bc1b1b]/10 shadow-lg group-hover:scale-110 transition-transform duration-500">
                                                                             {c.miembro?.nombres?.charAt(0)}
                                                                         </div>
                                                                         <div>
@@ -813,7 +813,7 @@ export default function ConvocatoriaEvento() {
                                                                                 "inline-flex items-center gap-1.5 text-[9px] font-bold uppercase px-3 py-1.5 rounded-full border",
                                                                                 (c.asistencia?.estado === 'PRESENTE' || c.asistencia?.estado === 'PUNTUAL' || c.asistencia?.estado === 'RETRASO') && "text-green-500 bg-green-500/5 border-green-500/10",
                                                                                 (c.asistencia?.estado === 'FALTA' || (!c.asistencia && eventStatus.isPast)) && "text-red-500 bg-red-500/5 border-red-500/10",
-                                                                                c.asistencia?.estado === 'JUSTIFICADO' && "text-blue-500 bg-blue-500/5 border-blue-500/10"
+                                                                                c.asistencia?.estado === 'JUSTIFICADO' && "text-blue-500 bg-[#bc1b1b]/50/5 border-blue-500/10"
                                                                             )}>
                                                                                 {c.asistencia?.estado === 'PUNTUAL' || c.asistencia?.estado === 'RETRASO' ? 'PRESENTE' : (c.asistencia?.estado || 'FALTA')}
                                                                             </div>
@@ -887,7 +887,7 @@ export default function ConvocatoriaEvento() {
                                                                 <td className="px-8 py-5 text-right w-32">
                                                                     <button 
                                                                         onClick={() => handleOpenPostularConInstrumento(req.id_instrumento)}
-                                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary/5 hover:bg-brand-primary text-brand-primary hover:text-white rounded-xl text-[10px] font-bold uppercase transition-all border border-brand-primary/10"
+                                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#bc1b1b]/5 hover:bg-[#bc1b1b] text-[#bc1b1b] hover:text-white rounded-xl text-[10px] font-bold uppercase transition-all border border-[#bc1b1b]/10"
                                                                     >
                                                                         <Plus className="w-3 h-3" />
                                                                         Convocar
@@ -1018,7 +1018,7 @@ export default function ConvocatoriaEvento() {
                                             >
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm border transition-all ${
-                                                        isSelected ? 'bg-brand-primary text-white border-brand-primary/50 shadow-lg shadow-brand-primary/20' : 'bg-white/5 text-gray-500 border-white/5'
+                                                        isSelected ? 'bg-[#bc1b1b] text-white border-[#bc1b1b]/50 shadow-lg shadow-[#bc1b1b]/20' : 'bg-white/5 text-gray-500 border-white/5'
                                                     }`}>
                                                         {m.nombres.charAt(0)}
                                                     </div>
@@ -1068,7 +1068,7 @@ export default function ConvocatoriaEvento() {
                     <div className="relative w-full max-w-2xl bg-surface-card border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95">
                         <div className="p-8 border-b border-white/5 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400">
+                                <div className="w-12 h-12 bg-[#bc1b1b]/20 rounded-2xl flex items-center justify-center text-indigo-400">
                                     <Layers className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -1094,7 +1094,7 @@ export default function ConvocatoriaEvento() {
                                             className="w-full flex items-center justify-between p-6 bg-white/5 hover:bg-white/10 border border-white/5 rounded-3xl transition-all group active:scale-[0.98] disabled:opacity-50"
                                         >
                                             <div className="flex items-center gap-4 flex-1">
-                                                <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center text-indigo-400 flex-shrink-0">
+                                                <div className="w-10 h-10 bg-[#bc1b1b]/20 rounded-xl flex items-center justify-center text-indigo-400 flex-shrink-0">
                                                     <Users className="w-5 h-5" />
                                                 </div>
                                                 <div className="text-left overflow-hidden">

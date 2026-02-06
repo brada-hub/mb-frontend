@@ -31,7 +31,7 @@ export default function AnalyticsView() {
 
     if (loading) return (
         <div className="flex items-center justify-center p-12">
-            <Activity className="w-8 h-8 text-brand-primary animate-spin" />
+            <Activity className="w-8 h-8 text-[#bc1b1b] animate-spin" />
         </div>
     );
 
@@ -105,7 +105,7 @@ export default function AnalyticsView() {
                                     <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">Tasa Asistencia</p>
                                     <p className={clsx("text-3xl font-black", 
                                         stats?.monthly?.attendance_rate >= 80 ? "text-green-400" :
-                                        stats?.monthly?.attendance_rate >= 50 ? "text-yellow-400" : "text-red-400"
+                                        stats?.monthly?.attendance_rate >= 50 ? "text-[#ffbe0b]" : "text-[#bc1b1b]"
                                     )}>
                                         {stats?.monthly?.attendance_rate}%
                                     </p>
@@ -114,7 +114,7 @@ export default function AnalyticsView() {
                         </div>
                         <div className="flex flex-col justify-center">
                              <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
-                                <Activity className="w-8 h-8 text-brand-primary mb-4" />
+                                <Activity className="w-8 h-8 text-[#bc1b1b] mb-4" />
                                 <p className="text-sm font-bold text-white mb-2 uppercase tracking-tighter">Resumen del Mes</p>
                                 <p className="text-xs text-gray-500 leading-relaxed">
                                     Este mes se han realizado {stats?.monthly?.total_events} convocatorias exitosas. 
@@ -130,7 +130,7 @@ export default function AnalyticsView() {
                      <div className="relative z-10 space-y-6">
                          <div className="flex items-center justify-between">
                             <h3 className="text-xl font-black text-white uppercase tracking-tighter">Esta Semana</h3>
-                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+                            <span className="text-[10px] font-black text-[#ffbe0b] uppercase tracking-widest bg-[#ffbe0b]/10 px-3 py-1 rounded-full border border-[#ffbe0b]/20">
                                 En Vivo
                             </span>
                          </div>
@@ -157,8 +157,8 @@ export default function AnalyticsView() {
                                                  className={clsx(
                                                      "w-full rounded-full transition-all duration-1000 relative",
                                                      height >= 80 ? "bg-green-500 shadow-[0_0_20px_rgba(34,197,94,0.4)]" :
-                                                     height >= 50 ? "bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.4)]" :
-                                                     "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                                                     height >= 50 ? "bg-[#ffbe0b] shadow-[0_0_20px_rgba(255,190,11,0.4)]" :
+                                                     "bg-[#bc1b1b] shadow-[0_0_20px_rgba(188,27,27,0.4)]"
                                                  )}
                                               >
                                                   <div className="absolute top-0 left-0 right-0 h-4 bg-white/20 rounded-full blur-sm" />

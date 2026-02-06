@@ -1,11 +1,11 @@
 import { useState, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Download, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { clsx } from 'clsx';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import logoMb from '../../assets/logo_mb.png';
+import logoMb from '../../assets/logo.png';
 
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -18,7 +18,7 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
     const calendarRef = useRef(null);
 
     const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay(); // 0 = Domingo
+    const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
     const monthData = useMemo(() => {
         const year = currentDate.getFullYear();
@@ -27,20 +27,13 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
         const startDay = firstDayOfMonth(year, month);
         
         let days = [];
-        // Rellenar días vacíos antes del 1
-        for (let i = 0; i < startDay; i++) {
-            days.push(null);
-        }
-        // Días reales
-        for (let i = 1; i <= totalDays; i++) {
-            days.push(i);
-        }
+        for (let i = 0; i < startDay; i++) days.push(null);
+        for (let i = 1; i <= totalDays; i++) days.push(i);
         return days;
     }, [currentDate]);
 
     const eventosDelMes = useMemo(() => {
         return eventos.filter(e => {
-            // Failsafe: Si viene con tiempo '2026-01-02 00:00:00', tomamos solo la parte de fecha
             const fechaStr = e.fecha ? e.fecha.split(' ')[0] : '';
             const d = new Date(fechaStr + 'T12:00:00'); 
             return d.getMonth() === currentDate.getMonth() && d.getFullYear() === currentDate.getFullYear();
@@ -66,7 +59,7 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
             const dataUrl = await htmlToImage.toPng(calendarRef.current, {
                 quality: 1,
                 pixelRatio: 3,
-                backgroundColor: '#1e2330',
+                backgroundColor: '#0a0000',
                 cacheBust: true,
             });
             const link = document.createElement('a');
@@ -88,165 +81,144 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
         setCurrentDate(newDate);
     };
 
-    // Obtener URL de API limpia para imágenes
     const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace('/api', '');
 
     return (
         <div className="animate-in fade-in duration-500 w-full mb-10">
-            {/* Controles de navegación (NO SE IMPRIMEN) */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 print:hidden">
-                <div className="flex items-center gap-4 bg-white dark:bg-white/5 p-2 rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                    <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl text-gray-900 dark:text-white transition-colors">
+                <div className="flex items-center gap-4 bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-[#bc1b1b]/20">
+                    <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-[#bc1b1b]/20 rounded-xl text-white transition-colors">
                         <ChevronLeft />
                     </button>
-                    <span className="text-xl font-bold uppercase tracking-widest text-gray-900 dark:text-white w-48 text-center transition-colors">
+                    <span className="text-xl font-black uppercase tracking-[0.2em] text-white w-48 text-center drop-shadow-[0_0_10px_rgba(188,27,27,0.5)]">
                         {MESES[currentDate.getMonth()]} {currentDate.getFullYear()}
                     </span>
-                    <button onClick={() => changeMonth(1)} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl text-gray-900 dark:text-white transition-colors">
+                    <button onClick={() => changeMonth(1)} className="p-2 hover:bg-[#bc1b1b]/20 rounded-xl text-white transition-colors">
                         <ChevronRight />
                     </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Button 
-                        onClick={handleDownloadImage} 
-                        loading={downloading}
-                        className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-500 hover:to-purple-500 px-8 py-6 rounded-2xl shadow-xl shadow-purple-500/30 text-[10px] font-black uppercase tracking-widest active:scale-95"
-                    >
-                        <Download className="w-4 h-4 mr-2" />
-                        {downloading ? 'Generando...' : 'Descargar Imagen'}
-                    </Button>
-                </div>
+                <Button 
+                    onClick={handleDownloadImage} 
+                    loading={downloading}
+                    className="bg-gradient-to-r from-[#6e0d0d] to-[#ffbe0b] text-white hover:scale-105 px-8 py-6 rounded-2xl shadow-xl shadow-[#bc1b1b]/20 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all"
+                >
+                    <Download className="w-4 h-4 mr-2" />
+                    {downloading ? 'Capturando Mística...' : 'Descargar Agenda de Gala'}
+                </Button>
             </div>
 
-            {/* ÁREA IMPRIMIBLE: Estilo Sistema Dark */}
             <div 
                 ref={calendarRef}
                 id="printable-area" 
-                className="w-full bg-white dark:bg-[#1e2330] p-4 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden ring-1 ring-gray-200 dark:ring-white/5 transition-colors duration-500 print:m-0 print:p-4 print:rounded-none print:shadow-none print:w-full print:bg-white print:text-black print:ring-0"
+                className="w-full bg-[#0a0000] p-4 sm:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden border border-[#bc1b1b]/20 transition-all duration-500 print:m-0 print:p-4 print:rounded-none print:shadow-none print:w-full print:bg-[#0a0000]"
             >
-                {/* Logo Marca de Agua */}
-                <div className="absolute top-10 right-10 opacity-5 pointer-events-none print:opacity-10">
-                    <div className="w-40 h-40 bg-indigo-500 rounded-full blur-3xl"></div>
+                {/* FONDO JASPEADO ARTÍSTICO */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,_#bc1b1b_0%,_transparent_50%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,_#ffbe0b_0%,_transparent_50%)]" />
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30" />
+                </div>
+
+                {/* LOGO MB GIGANTE AL CENTRO (FONDO) - MÁS VISIBLE */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.12] pointer-events-none scale-110 md:scale-125 select-none">
+                    <div className="relative">
+                        {/* Brillo de Calor Detrás del Estampado */}
+                        <div className="absolute inset-0 blur-[100px] bg-[#bc1b1b]/20 scale-150" />
+                        <img 
+                            src={logoMb} 
+                            alt="" 
+                            className="relative w-full max-w-[500px] md:max-w-[750px] object-contain mix-blend-lighten filter drop-shadow-[0_0_30px_rgba(188,27,27,0.3)]" 
+                        />
+                    </div>
                 </div>
 
                 <div className="relative z-10">
-                    {/* Header Calendario */}
-                    <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-4 md:mb-8 border-b border-gray-200 dark:border-white/10 pb-4 print:mb-4 print:border-black/20 gap-2 md:gap-4 transition-colors">
-                        <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-between md:justify-start">
-                            {/* Logo Banda - con fallback a Monster Band */}
+                    <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-6 md:mb-10 border-b border-[#bc1b1b]/30 pb-6 gap-4">
+                        <div className="flex items-center gap-6 md:gap-10 w-full md:w-auto">
                             <img 
                                 src={user?.banda?.logo ? `${apiBaseUrl}/storage/${user.banda.logo}` : logoMb} 
                                 alt="Logo" 
                                 crossOrigin="anonymous"
-                                className="w-12 h-12 md:w-20 md:h-20 object-contain drop-shadow-lg transition-transform hover:scale-110" 
-                                onError={(e) => {
-                                    console.error("Error logo calendar:", e.target.src);
-                                    e.target.src = logoMb; 
-                                }}
+                                className="w-24 h-24 md:w-48 md:h-48 object-contain drop-shadow-[0_0_30px_rgba(255,190,11,0.3)] transition-transform hover:scale-110" 
+                                onError={(e) => { e.target.src = logoMb; }}
                             />
-                            <div className="text-right md:text-left flex-1 md:flex-none">
-                                <h1 className="text-2xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tighter print:text-black leading-none transition-colors">
+                            <div className="text-left">
+                                <h1 className="text-4xl md:text-9xl font-black text-white tracking-tighter leading-none italic uppercase bg-gradient-to-b from-white via-white to-gray-500 bg-clip-text text-transparent drop-shadow-2xl">
                                     {MESES[currentDate.getMonth()]}
                                 </h1>
-                                <p className="text-[8px] md:text-base text-indigo-500 dark:text-indigo-400 font-black uppercase tracking-[0.2em] md:tracking-[0.4em] opacity-90 print:text-gray-600">
-                                    Rol de Actividades
-                                </p>
+                                <div className="flex items-center gap-3 mt-2">
+                                    <div className="h-[2px] w-12 bg-gradient-to-r from-[#bc1b1b] to-[#ffbe0b]"></div>
+                                    <p className="text-xs md:text-xl text-[#ffbe0b] font-black uppercase tracking-[0.5em] drop-shadow-sm">
+                                        Rol de Actividades
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <div className="hidden md:block text-right">
-                            <span className="text-6xl md:text-8xl font-black text-gray-900/5 dark:text-white/5 leading-none block -mb-4 print:text-gray-200 transition-colors">
+                            <span className="text-8xl md:text-[12rem] font-black text-white/[0.03] leading-none block -mb-8 select-none">
                                 {currentDate.getFullYear()}
                             </span>
                         </div>
                     </div>
 
-                    {/* Grilla Días Header */}
-                    <div className="grid grid-cols-7 mb-1 md:mb-2 text-center">
+                    <div className="grid grid-cols-7 mb-2 text-center">
                         {DIAS_SEMANA.map(d => (
-                            <div key={d} className="py-1 md:py-3 font-black uppercase tracking-widest text-indigo-600/70 dark:text-indigo-300/70 text-[8px] md:text-xs mx-[1px] transition-colors">
-                                <span className="hidden md:inline">{d}</span>
-                                <span className="md:hidden">{d.charAt(0)}</span>
+                            <div key={d} className="py-2 md:py-4 font-black uppercase tracking-[0.3em] text-[#ffbe0b]/80 text-[9px] md:text-sm mx-[1px]">
+                                {d.charAt(0)}{d.charAt(1)}{d.charAt(2)}
                             </div>
                         ))}
                     </div>
 
-                {/* Cuerpo Calendario */}
-                    <div className="grid grid-cols-7 auto-rows-[minmax(60px,_1fr)] md:auto-rows-[minmax(140px,_1fr)] gap-[1px] bg-gray-200 dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-2xl overflow-hidden p-[1px] print:bg-gray-200 print:border-gray-300">
+                    <div className="grid grid-cols-7 auto-rows-[minmax(80px,_1fr)] md:auto-rows-[minmax(160px,_1fr)] gap-[2px] bg-[#bc1b1b]/10 border border-[#bc1b1b]/20 rounded-3xl overflow-hidden p-[2px]">
                         {monthData.map((dia, idx) => {
                             const eventsToday = getEventosPorDia(dia);
                             return (
                                 <div 
                                     key={idx} 
-                                    onClick={() => {
-                                        if (dia && onDateClick) {
-                                            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-                                            const day = dia.toString().padStart(2, '0');
-                                            const dateStr = `${currentDate.getFullYear()}-${month}-${day}`;
-                                            onDateClick(dateStr);
-                                        }
-                                    }}
+                                    onClick={() => dia && onDateClick && onDateClick(`${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`)}
                                     className={clsx(
-                                        "relative p-0.5 md:p-2 transition-all min-h-[60px] md:min-h-[140px] group overflow-hidden",
-                                        dia ? "bg-white dark:bg-[#161b2c] hover:bg-gray-50 dark:hover:bg-[#1c2236] cursor-pointer print:bg-white" : "bg-gray-50 dark:bg-[#0f111a]"
+                                        "relative p-1 md:p-3 transition-all group overflow-hidden",
+                                        dia ? "bg-black/60 backdrop-blur-sm hover:bg-[#bc1b1b]/10 cursor-pointer" : "bg-black/20"
                                     )}
                                 >
                                     {dia && (
                                         <>
                                             <div className="flex justify-between items-start">
                                                 <span className={clsx(
-                                                    "text-sm md:text-2xl font-black leading-none transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400 print:text-black",
-                                                    eventsToday.length > 0 ? "text-gray-900 dark:text-white" : "text-gray-300 dark:text-white/10"
+                                                    "text-lg md:text-3xl font-black leading-none transition-all group-hover:scale-110",
+                                                    eventsToday.length > 0 ? "text-white italic underline decoration-[#ffbe0b]/50 underline-offset-4" : "text-white/10"
                                                 )}>
                                                     {dia}
                                                 </span>
                                             </div>
                                             
-                                            <div className="mt-1 md:mt-4 space-y-0.5 md:space-y-1">
+                                            <div className="mt-2 md:mt-6 space-y-1 md:space-y-2">
                                                 {eventsToday.map(ev => {
-                                                    // Determine color based on event type
-                                                    let borderColor = 'border-indigo-500';
-                                                    let bgColor = 'bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20';
-                                                    let textColor = 'text-indigo-900 dark:text-indigo-100';
-                                                    let timeColor = 'text-indigo-600 dark:text-indigo-400';
-                                                    
                                                     const type = ev.tipo?.evento?.toUpperCase();
-                                                    if (type === 'CONTRATO') {
-                                                        borderColor = 'border-purple-500';
-                                                        bgColor = 'bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20';
-                                                        textColor = 'text-purple-900 dark:text-purple-100';
-                                                        timeColor = 'text-purple-600 dark:text-purple-400';
-                                                    } else if (type === 'BANDIN') {
-                                                        borderColor = 'border-orange-500';
-                                                        bgColor = 'bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20';
-                                                        textColor = 'text-orange-900 dark:text-orange-100';
-                                                        timeColor = 'text-orange-600 dark:text-orange-400';
-                                                    }
-
+                                                    const isContract = type === 'CONTRATO';
+                                                    
                                                     return (
                                                         <div 
                                                             key={ev.id_evento} 
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (onEventClick) onEventClick(ev);
-                                                            }}
+                                                            onClick={(e) => { e.stopPropagation(); if (onEventClick) onEventClick(ev); }}
                                                             className={clsx(
-                                                                "flex flex-col border-l-2 pl-1 md:pl-2 py-0.5 md:py-1.5 rounded-r transition-all cursor-pointer text-left",
-                                                                borderColor,
-                                                                bgColor,
-                                                                "group/event" 
+                                                                "flex flex-col pl-2 md:pl-3 py-1 md:py-2 rounded-lg border-l-4 transition-all hover:translate-x-1 shadow-lg",
+                                                                isContract 
+                                                                    ? "border-[#ffbe0b] bg-[#ffbe0b]/10 shadow-[#ffbe0b]/5" 
+                                                                    : "border-[#bc1b1b] bg-[#bc1b1b]/10 shadow-[#bc1b1b]/5"
                                                             )}
                                                         >
-                                                            <div className="flex justify-between items-baseline gap-1">
-                                                                <span className={clsx("text-[7px] md:text-[10px] font-black leading-[1.1] uppercase line-clamp-1 md:line-clamp-2 tracking-tight print:text-black", textColor)}>
-                                                                    {ev.evento}
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex flex-col mt-0.5 sm:mt-0">
-                                                                <span className={clsx("text-[6px] md:text-[9px] font-bold flex items-center gap-0.5 print:text-gray-600 whitespace-nowrap overflow-hidden", timeColor)}>
-                                                                    {ev.hora.substr(0, 5)} {ev.tipo?.evento && <span className="hidden md:inline">• {ev.tipo.evento}</span>}
-                                                                </span>
-                                                            </div>
+                                                            <span className={clsx(
+                                                                "text-[8px] md:text-xs font-black uppercase leading-tight tracking-tight",
+                                                                isContract ? "text-[#ffbe0b]" : "text-white"
+                                                            )}>
+                                                                {ev.evento}
+                                                            </span>
+                                                            <span className="text-[7px] md:text-[10px] font-bold text-gray-400 mt-1 flex items-center gap-1">
+                                                                <span className={isContract ? "text-[#ffbe0b]/80" : "text-[#bc1b1b]"}>●</span>
+                                                                {ev.hora.substr(0, 5)} {ev.tipo?.evento && <span className="opacity-50">• {ev.tipo.evento}</span>}
+                                                            </span>
                                                         </div>
                                                     );
                                                 })}
@@ -259,9 +231,9 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
                     </div>
                 </div>
 
-                <div className="mt-4 text-center print:hidden">
-                    <p className="text-xs text-gray-400 dark:text-white/60 font-medium italic">
-                        * Los eventos pasados no se muestran. Este rol está sujeto a cambios.
+                <div className="mt-6 text-center italic opacity-40">
+                    <p className="text-[10px] md:text-xs text-white uppercase tracking-[0.3em] font-bold">
+                        Elite Performance System • Monster Band Engine
                     </p>
                 </div>
             </div>
@@ -269,29 +241,13 @@ export default function CalendarioMensual({ eventos, onBack, onEventClick, onDat
             <style>
                 {`
                 @media print {
-                    @page {
-                         size: landscape;
-                         margin: 0;
-                    }
-                    body * {
-                        visibility: hidden;
-                    }
-                    #printable-area, #printable-area * {
-                        visibility: visible;
-                    }
+                    @page { size: landscape; margin: 0; }
+                    body * { visibility: hidden; }
+                    #printable-area, #printable-area * { visibility: visible; }
                     #printable-area {
-                        position: fixed;
-                        left: 0;
-                        top: 0;
-                        width: 100vw;
-                        height: 100vh;
-                        margin: 0;
-                        padding: 20px;
-                        background: linear-gradient(135deg, #4dd0e1 0%, #00838f 100%) !important;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                        border-radius: 0;
-                        box-shadow: none;
+                        position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+                        margin: 0; padding: 40px; background: #0a0000 !important;
+                        -webkit-print-color-adjust: exact; print-color-adjust: exact;
                     }
                 }
                 `}

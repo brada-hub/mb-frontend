@@ -112,7 +112,7 @@ export default function AsistenciaReporte() {
                     </button>
                     <button 
                         onClick={() => window.print()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/20"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-[#bc1b1b] hover:bg-[#7f1d1d] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[#bc1b1b]/20"
                     >
                         <Printer className="w-4 h-4" />
                         Imprimir
@@ -172,7 +172,7 @@ export default function AsistenciaReporte() {
                     <div className="relative">
                         <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
                         <select 
-                            className="w-full bg-surface-input border border-surface-border rounded-xl h-14 pl-11 pr-4 text-xs font-bold text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                            className="w-full bg-surface-input border border-surface-border rounded-xl h-14 pl-11 pr-4 text-xs font-bold text-gray-900 dark:text-white focus:outline-none focus:border-[#bc1b1b] transition-all appearance-none cursor-pointer"
                             value={filters.id_seccion}
                             onChange={(e) => setFilters(f => ({ ...f, id_seccion: e.target.value }))}
                         >
@@ -186,7 +186,7 @@ export default function AsistenciaReporte() {
                 <div className="flex gap-2">
                     <button 
                         onClick={loadData}
-                        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        className="px-6 py-3 bg-[#bc1b1b] hover:bg-[#7f1d1d] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                     >
                         Generar Reporte
                     </button>
@@ -212,7 +212,7 @@ export default function AsistenciaReporte() {
                     <input 
                         type="text"
                         placeholder="Buscar por nombre o instrumento..."
-                        className="w-full bg-surface-card border border-surface-border rounded-[2rem] py-5 px-16 text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 transition-all shadow-2xl"
+                        className="w-full bg-surface-card border border-surface-border rounded-[2rem] py-5 px-16 text-sm font-bold text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-[#bc1b1b]/50 transition-all shadow-2xl"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -236,7 +236,7 @@ export default function AsistenciaReporte() {
                                         <tr>
                                             <td colSpan="5" className="px-8 py-12 text-center text-gray-500 dark:text-gray-400">
                                                 <div className="flex flex-col items-center gap-4">
-                                                    <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                                                    <div className="w-12 h-12 border-4 border-[#bc1b1b]/20 border-t-[#bc1b1b] rounded-full animate-spin"></div>
                                                     <p className="text-[10px] font-black uppercase tracking-widest pulse">Calculando rendimientos...</p>
                                                 </div>
                                             </td>
@@ -258,13 +258,13 @@ export default function AsistenciaReporte() {
                                                 className="hover:bg-black/5 dark:hover:bg-white/[0.02] transition-colors group"
                                             >
                                                 <td className="px-8 py-6">
-                                                    <p className="text-sm font-black text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
+                                                    <p className="text-sm font-black text-gray-900 dark:text-white group-hover:text-[#bc1b1b] transition-colors uppercase tracking-tight">
                                                         {musico.nombres} {musico.apellidos}
                                                     </p>
                                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 transition-colors">{musico.instrumento}</p>
                                                 </td>
                                                 <td className="px-6 py-6">
-                                                    <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20 uppercase tracking-widest transition-colors">
+                                                    <span className="text-[10px] font-black text-[#bc1b1b] bg-[#bc1b1b]/10 px-3 py-1.5 rounded-lg border border-[#bc1b1b]/20 uppercase tracking-widest transition-colors">
                                                         {musico.seccion}
                                                     </span>
                                                 </td>

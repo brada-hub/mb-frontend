@@ -71,7 +71,7 @@ function App() {
           await StatusBar.setOverlaysWebView({ overlay: true });
           await StatusBar.setStyle({ style: 'DARK' });
           // Color transparente o que combine con el header
-          await StatusBar.setBackgroundColor({ color: '#0f111a' });
+          await StatusBar.setBackgroundColor({ color: '#000000' });
           
           // Ocultar SplashScreen después de 2 segundos
           setTimeout(async () => {

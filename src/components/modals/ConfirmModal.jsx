@@ -12,7 +12,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
                 {/* Header/Icon Area */}
                 <div className="p-8 pb-4 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-2xl ${
-                        variant === 'danger' ? 'bg-red-500/10 text-red-500 shadow-red-500/20' : 'bg-indigo-500/10 text-indigo-500 shadow-indigo-500/20'
+                        variant === 'danger' ? 'bg-[#bc1b1b]/10 text-[#bc1b1b] shadow-[#bc1b1b]/20' : 'bg-[#bc1b1b]/10 text-[#bc1b1b] shadow-[#bc1b1b]/20'
                     }`}>
                         <AlertCircle className="w-10 h-10" />
                     </div>

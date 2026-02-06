@@ -98,7 +98,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
             <div className="mb-6">
                 <div className="w-full h-72 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative flex flex-col group">
                     {/* Map Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-gray-50 dark:bg-[#1c233a] transition-colors">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-gray-50 dark:bg-[#121212] transition-colors">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-brand-primary" />
                             <span className="text-xs font-black text-gray-500 dark:text-gray-300 uppercase tracking-wider">{label}</span>
@@ -151,8 +151,8 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
 
             {/* FULL SCREEN MODAL (PORTAL) */}
             {isFullScreen && createPortal(
-                <div className="fixed inset-0 z-[10000] bg-[#0f111a] flex flex-col animate-in fade-in duration-200">
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#161b2c]">
+                <div className="fixed inset-0 z-[10000] bg-[#000000] flex flex-col animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0a0a]">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/20 rounded-xl text-indigo-400">
                                 <MapPin className="w-6 h-6" />
@@ -166,7 +166,7 @@ export default function MapPicker({ value, onChange, label = "Ubicación", radiu
                             <button 
                                 type="button"
                                 onClick={() => getCurrentLocation()}
-                                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+                                className="flex items-center gap-2 px-4 py-2 bg-[#bc1b1b] hover:bg-indigo-500 text-white rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
                             >
                                 {isLoadingLocation ? <Loader2 className="w-5 h-5 animate-spin" /> : <Crosshair className="w-5 h-5" />}
                                 <span className="font-bold text-sm hidden sm:inline">Mi Ubicación</span>

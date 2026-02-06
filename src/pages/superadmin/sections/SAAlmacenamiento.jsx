@@ -24,7 +24,7 @@ export default function SAAlmacenamiento() {
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(report.percent, 100)}%` }}
-                                className={clsx("h-full rounded-full", report.percent > 90 ? "bg-red-500" : "bg-brand-primary")}
+                                className={clsx("h-full rounded-full", report.percent > 90 ? "bg-[#bc1b1b]" : "bg-[#bc1b1b]")}
                             />
                         </div>
                     </div>

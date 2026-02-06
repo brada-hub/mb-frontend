@@ -184,7 +184,7 @@ export default function PagosAdmin() {
                             placeholder="Buscar músico..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-surface-input border border-surface-border rounded-xl py-3 pl-10 pr-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-brand-primary/50 transition-colors"
+                            className="w-full bg-surface-input border border-surface-border rounded-xl py-3 pl-10 pr-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
                         />
                     </div>
 
@@ -202,7 +202,7 @@ export default function PagosAdmin() {
                             groupedDeudas.map(([instrumento, miembros]) => (
                                 <Fragment key={instrumento}>
                                     <div className="flex items-center gap-2 px-2 py-3 sticky top-0 bg-surface-card z-10 transition-colors">
-                                        <div className="w-1 h-3 bg-brand-primary rounded-full" />
+                                        <div className="w-1 h-3 bg-[#bc1b1b] rounded-full" />
                                         <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">{instrumento} ({miembros.length})</span>
                                     </div>
                                     {miembros.map(item => (
@@ -212,7 +212,7 @@ export default function PagosAdmin() {
                                             className={clsx(
                                                 "w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group",
                                                 selectedMember?.id_miembro === item.id_miembro 
-                                                    ? "bg-brand-primary/10 border-brand-primary/50 shadow-lg shadow-brand-primary/5" 
+                                                    ? "bg-[#bc1b1b]/10 border-[#bc1b1b]/50 shadow-lg shadow-[#bc1b1b]/5" 
                                                     : "bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5"
                                             )}
                                         >
@@ -220,8 +220,8 @@ export default function PagosAdmin() {
                                                 <div className={clsx(
                                                     "w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-colors",
                                                     selectedMember?.id_miembro === item.id_miembro
-                                                        ? "bg-brand-primary text-white"
-                                                        : "bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400 group-hover:bg-brand-primary/20 group-hover:text-brand-primary"
+                                                        ? "bg-[#bc1b1b] text-white"
+                                                        : "bg-black/10 dark:bg-white/10 text-gray-500 dark:text-gray-400 group-hover:bg-[#bc1b1b]/20 group-hover:text-[#bc1b1b]"
                                                 )}>
                                                     {item.nombres.charAt(0)}
                                                 </div>
@@ -238,7 +238,7 @@ export default function PagosAdmin() {
                                             <div className="flex flex-col items-end">
                                                 <span className={clsx(
                                                     "text-lg font-black transition-colors",
-                                                    selectedMember?.id_miembro === item.id_miembro ? "text-brand-primary" : "text-gray-900 dark:text-white"
+                                                    selectedMember?.id_miembro === item.id_miembro ? "text-[#bc1b1b]" : "text-gray-900 dark:text-white"
                                                 )}>
                                                     {item.total_eventos}
                                                 </span>
@@ -260,7 +260,7 @@ export default function PagosAdmin() {
                     {selectedMember ? (
                         <div className="bg-surface-card border border-surface-border rounded-3xl overflow-hidden flex flex-col h-full animate-in slide-in-from-right duration-300 transition-colors">
                             {/* Header Detalle */}
-                            <div className="p-6 border-b border-surface-border bg-black/[0.02] dark:bg-[#161b2c] transition-colors">
+                            <div className="p-6 border-b border-surface-border bg-black/[0.02] dark:bg-surface-card transition-colors">
                                 <div className="flex items-center gap-4 mb-6">
                                     <button 
                                         onClick={() => setSelectedMember(null)}
@@ -303,15 +303,15 @@ export default function PagosAdmin() {
                                             className={clsx(
                                                 "flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all select-none group",
                                                 selection.includes(detalle.id_convocatoria)
-                                                    ? "bg-indigo-600/10 border-indigo-500/50"
+                                                    ? "bg-[#bc1b1b]/10 border-[#bc1b1b]/50"
                                                     : "bg-surface-card border-surface-border hover:border-gray-300 dark:hover:border-white/10"
                                             )}
                                         >
                                             <div className={clsx(
                                                 "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
                                                 selection.includes(detalle.id_convocatoria)
-                                                    ? "bg-brand-primary border-brand-primary shadow-sm shadow-brand-primary/50"
-                                                    : "border-white/20 group-hover:border-brand-primary/50"
+                                                    ? "bg-[#bc1b1b] border-[#bc1b1b] shadow-sm shadow-[#bc1b1b]/50"
+                                                    : "border-white/20 group-hover:border-[#bc1b1b]/50"
                                             )}>
                                                 {selection.includes(detalle.id_convocatoria) && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                                             </div>
@@ -324,7 +324,7 @@ export default function PagosAdmin() {
                                                             "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border",
                                                             detalle.tipo === 'CONTRATO' 
                                                                 ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
-                                                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                                                : "bg-[#bc1b1b]/10 text-[#bc1b1b] border-[#bc1b1b]/20"
                                                         )}>
                                                             {detalle.tipo}
                                                         </span>

@@ -68,7 +68,7 @@ export default function MisPagos() {
                         <div className="w-px h-6 sm:h-8 bg-surface-border" />
                         <div className="flex flex-col items-end">
                             <span className="text-[8px] sm:text-[9px] font-black text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-0.5">Cobrados</span>
-                            <span className="text-lg sm:text-xl font-black text-brand-primary leading-none">{data.historial_cobrado.length}</span>
+                            <span className="text-lg sm:text-xl font-black text-[#bc1b1b] leading-none">{data.historial_cobrado.length}</span>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ export default function MisPagos() {
                         onClick={() => setActiveTab('COBRAR')}
                         className={clsx(
                             "flex-1 md:min-w-[160px] px-4 sm:px-6 py-2 sm:py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-lg sm:rounded-xl transition-all",
-                            activeTab === 'COBRAR' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                            activeTab === 'COBRAR' ? "bg-[#bc1b1b] text-white shadow-lg shadow-[#bc1b1b]/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
                         Pend ({data.por_cobrar.length})
@@ -90,7 +90,7 @@ export default function MisPagos() {
                         onClick={() => setActiveTab('HISTORIAL')}
                         className={clsx(
                             "flex-1 md:min-w-[160px] px-4 sm:px-6 py-2 sm:py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-lg sm:rounded-xl transition-all",
-                            activeTab === 'HISTORIAL' ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                            activeTab === 'HISTORIAL' ? "bg-[#bc1b1b] text-white shadow-lg shadow-[#bc1b1b]/20" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
                         )}
                     >
                         Historial
@@ -99,7 +99,7 @@ export default function MisPagos() {
  
                 <div className="flex items-center gap-3 sm:gap-4 text-gray-500 w-full sm:w-auto">
                     <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest opacity-50 whitespace-nowrap">Filtrar:</p>
-                    <select className="flex-1 sm:flex-initial bg-surface-input border border-surface-border rounded-xl px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-indigo-500/50 text-gray-900 dark:text-white transition-colors cursor-pointer h-9 sm:h-10">
+                    <select className="flex-1 sm:flex-initial bg-surface-input border border-surface-border rounded-xl px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-[#bc1b1b]/50 text-gray-900 dark:text-white transition-colors cursor-pointer h-9 sm:h-10">
                         <option>EVENTOS</option>
                         <option>CONTRATOS</option>
                         <option>ENSAYOS</option>
@@ -127,10 +127,10 @@ export default function MisPagos() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05, type: 'spring', damping: 20 }}
                                     key={item.id_convocatoria}
-                                    className="bg-surface-card border border-surface-border p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col gap-4 sm:gap-6 group hover:border-indigo-500/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c] hover:shadow-2xl relative overflow-hidden"
+                                    className="bg-surface-card border border-surface-border p-4 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col gap-4 sm:gap-6 group hover:border-[#bc1b1b]/40 transition-all hover:bg-black/[0.02] dark:hover:bg-[#0a0a0a] hover:shadow-2xl relative overflow-hidden"
                                 >
                                     <div className="flex items-center justify-between gap-4">
-                                        <div className="p-3 sm:p-4 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 min-w-[60px] sm:min-w-[70px]">
+                                        <div className="p-3 sm:p-4 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center text-gray-500 shrink-0 group-hover:bg-[#bc1b1b] group-hover:text-white transition-all duration-500 min-w-[60px] sm:min-w-[70px]">
                                             <span className="text-[8px] sm:text-[10px] font-black uppercase leading-none mb-1">{new Date(item.fecha).toLocaleString('es', { month: 'short' })}</span>
                                             <span className="text-xl sm:text-2xl font-black leading-none">{new Date(item.fecha).getDate()}</span>
                                         </div>
@@ -139,7 +139,7 @@ export default function MisPagos() {
                                                 "text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border",
                                                 item.tipo === 'CONTRATO' 
                                                     ? "bg-purple-500/10 text-purple-400 border-purple-500/20" 
-                                                    : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                                    : "bg-[#bc1b1b]/10 text-[#bc1b1b] border-[#bc1b1b]/20"
                                             )}>
                                                 {item.tipo}
                                             </span>
@@ -154,11 +154,11 @@ export default function MisPagos() {
                                         <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl truncate tracking-tight mb-2 transition-colors">{item.evento}</h3>
                                         <div className="flex items-center gap-4 text-xs text-gray-500 font-bold uppercase">
                                             <div className="flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-indigo-400" />
+                                                <Clock className="w-4 h-4 text-[#ffbe0b]" />
                                                 {item.hora?.substr(0, 5)}
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-indigo-400" />
+                                                <Calendar className="w-4 h-4 text-[#ffbe0b]" />
                                                 {new Date(item.fecha).getFullYear()}
                                             </div>
                                         </div>
@@ -187,7 +187,7 @@ export default function MisPagos() {
                                 <div key={mes} className="relative">
                                     <div className="sticky top-[100px] z-20 py-2 sm:py-4 mb-4 sm:mb-6">
                                         <div className="inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2 sm:py-3 bg-surface-card border border-surface-border rounded-xl shadow-lg transition-colors">
-                                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" />
+                                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffbe0b]" />
                                             <h3 className="text-gray-900 dark:text-white text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] transition-colors">{mes}</h3>
                                         </div>
                                     </div>
@@ -195,7 +195,7 @@ export default function MisPagos() {
                                         {eventos.map(item => (
                                             <div 
                                                 key={item.id_convocatoria}
-                                                className="bg-surface-card border border-surface-border p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col gap-3 sm:gap-4 opacity-100 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#161b2c]/60 hover:scale-[1.02] group"
+                                                className="bg-surface-card border border-surface-border p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col gap-3 sm:gap-4 opacity-100 hover:opacity-100 transition-all hover:bg-black/[0.02] dark:hover:bg-[#0a0a0a]/60 hover:scale-[1.02] group"
                                             >
                                                 <div className="flex items-center gap-3 sm:gap-4">
                                                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 border border-surface-border group-hover:bg-emerald-500/10 transition-colors">

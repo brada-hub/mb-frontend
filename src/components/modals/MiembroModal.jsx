@@ -213,7 +213,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-4xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] overflow-y-auto bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
-                <div className="sticky top-0 z-[60] flex items-center justify-between p-5 md:p-6 bg-brand-primary text-white shadow-xl shadow-brand-primary/10">
+                <div className="sticky top-0 z-[60] flex items-center justify-between p-5 md:p-6 bg-[#bc1b1b] text-white shadow-xl shadow-[#bc1b1b]/10">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl">
                             <User className="w-6 h-6" />
@@ -232,7 +232,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                         
                         <section className="space-y-8 animate-in slide-up duration-500">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-4">
-                                <div className="w-1.5 h-6 bg-brand-primary rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-[#bc1b1b] rounded-full"></div>
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">Datos Personales</h3>
                             </div>
                             
@@ -363,7 +363,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
 
                         <section className="space-y-8 animate-in slide-up duration-700">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-4">
-                                <div className="w-1.5 h-6 bg-monster-purple rounded-full"></div>
+                                <div className="w-1.5 h-6 bg-[#ffbe0b] rounded-full"></div>
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-wider text-sm">Asignación Operativa</h3>
                             </div>
 
@@ -375,7 +375,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         {...register('id_seccion', { required: "Selecciona una sección" })} 
                                         className={clsx(
                                             "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all",
-                                            errors.id_seccion ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
+                                            errors.id_seccion ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-[#bc1b1b]/30"
                                         )}
                                     >
                                         <option value="" className="bg-surface-card">Sección...</option>
@@ -392,7 +392,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         disabled={!selectedSeccion}
                                         className={clsx(
                                             "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all disabled:opacity-50",
-                                            errors.id_instrumento ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
+                                            errors.id_instrumento ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-[#bc1b1b]/30"
                                         )}
                                     >
                                         <option value="" className="bg-surface-card">Instrumento...</option>
@@ -418,7 +418,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                                 {...register('id_voz', { required: "Selecciona una voz" })} 
                                                 className={clsx(
                                                     "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white active:scale-[0.99] outline-none transition-all",
-                                                    errors.id_voz ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
+                                                    errors.id_voz ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-[#bc1b1b]/30"
                                                 )}
                                             >
                                                 <option value="" className="bg-surface-card">Seleccionar Voz...</option>
@@ -438,7 +438,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         {...register('id_categoria', { required: "Selecciona una categoría" })} 
                                         className={clsx(
                                             "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white outline-none transition-all",
-                                            errors.id_categoria ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
+                                            errors.id_categoria ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-[#bc1b1b]/30"
                                         )}
                                     >
                                         <option value="" className="bg-surface-card">Categoría...</option>
@@ -453,7 +453,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                         {...register('id_rol', { required: "Selecciona un rol" })} 
                                         className={clsx(
                                             "w-full bg-surface-input border rounded-2xl h-14 px-5 text-gray-900 dark:text-white outline-none transition-all",
-                                            errors.id_rol ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-brand-primary/30"
+                                            errors.id_rol ? "border-red-500/50 ring-2 ring-red-500/20" : "border-surface-border focus:ring-2 focus:ring-[#bc1b1b]/30"
                                         )}
                                     >
                                         <option value="" className="bg-surface-card">Rol...</option>

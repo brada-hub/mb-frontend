@@ -73,7 +73,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
             <div className="relative w-full max-w-2xl bg-surface-card md:border md:border-surface-border md:rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] text-gray-900 dark:text-gray-100">
                 
                 {/* Header Premium */}
-                <div className="sticky top-0 z-50 flex items-center justify-between p-6 bg-brand-primary text-white shadow-xl shadow-brand-primary/10">
+                <div className="sticky top-0 z-50 flex items-center justify-between p-6 bg-[#bc1b1b] text-white shadow-xl shadow-[#bc1b1b]/10">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-white/20 rounded-2xl">
                             <Music className="w-6 h-6" />
@@ -109,7 +109,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                                 <Button 
                                     type="submit" 
                                     loading={loading} 
-                                    className="flex-1 h-12 rounded-2xl shadow-lg shadow-brand-primary/20 font-black uppercase tracking-widest text-xs"
+                                    className="flex-1 h-12 rounded-2xl shadow-lg shadow-[#bc1b1b]/20 font-black uppercase tracking-widest text-xs"
                                 >
                                     {editingId ? <Save className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                                     {editingId ? 'Guardar Cambios' : 'Añadir a la lista'}
@@ -131,7 +131,7 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                     {/* Lista con Estética del Sistema */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 scroll-smooth">
                         <div className="flex items-center gap-2 mb-4 px-1">
-                            <div className="w-1 h-4 bg-brand-primary rounded-full"></div>
+                            <div className="w-1 h-4 bg-[#bc1b1b] rounded-full"></div>
                             <h3 className="text-xs font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Registrados ({instruments.length})</h3>
                         </div>
 
@@ -143,9 +143,9 @@ export default function InstrumentoModal({ isOpen, onClose, seccion }) {
                         ) : (
                             <div className="grid gap-3 pb-4">
                                 {instruments.map(inst => (
-                                    <div key={inst.id_instrumento} className="group flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-[24px] border border-surface-border hover:border-brand-primary/30 hover:bg-brand-primary/5 transition-all duration-300">
+                                    <div key={inst.id_instrumento} className="group flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-[24px] border border-surface-border hover:border-[#bc1b1b]/30 hover:bg-[#bc1b1b]/5 transition-all duration-300">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-11 h-11 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform">
+                                            <div className="w-11 h-11 rounded-xl bg-[#bc1b1b]/10 flex items-center justify-center text-[#bc1b1b] group-hover:scale-110 transition-transform">
                                                 <Music className="w-5 h-5" />
                                             </div>
                                             <span className="font-bold text-gray-900 dark:text-white uppercase tracking-tight transition-colors">{inst.instrumento}</span>

@@ -12,21 +12,19 @@
     color-scheme: light;
   }
 
-  /* Dark mode - sobrescribe cuando html tiene clase 'dark' */
+  /* Dark mode - OLED True Black */
   html.dark {
-    --surface-base: #0f111a;
-    --surface-card: #161b2c;
-    --surface-input: #1d233a;
-    --surface-border: rgba(255, 255, 255, 0.08);
+    --surface-base: #000000;
+    --surface-card: #0a0a0a;
+    --surface-input: #121212;
+    --surface-border: rgba(255, 255, 255, 0.05);
     color-scheme: dark;
   }
 
   body {
     background-color: var(--surface-base);
     color: #111827; /* gray-900 */
-    transition:
-      background-color 0.3s,
-      color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -36,7 +34,7 @@
   }
 
   ::selection {
-    background-color: var(--brand-primary);
+    background-color: #bc1b1b;
     color: white;
   }
 
@@ -53,7 +51,7 @@
   }
 
   .monster-gradient {
-    @apply bg-gradient-to-br from-brand-primary via-monster-purple to-monster-pink;
+    @apply bg-gradient-to-br from-[#bc1b1b] to-[#ffbe0b];
   }
 }
 
@@ -73,7 +71,7 @@
 
 /* Leaflet Overrides for Design System */
 .leaflet-container {
-  background: #161b2c !important; /* surface-card */
+  background: #0a0a0a !important; /* surface-card */
 }
 
 /* Fix for mobile keyboard covering inputs in Safari/Android */

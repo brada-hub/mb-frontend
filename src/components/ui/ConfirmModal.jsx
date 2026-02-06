@@ -21,11 +21,11 @@ export default function ConfirmModal({
                 
                 <div className={clsx(
                     "p-6 sm:p-8 text-center space-y-4 sm:space-y-6",
-                    variant === 'danger' ? "bg-red-500/5 transition-colors" : "bg-brand-primary/5 transition-colors"
+                    variant === 'danger' ? "bg-red-500/5 transition-colors" : "bg-[#bc1b1b]/5 transition-colors"
                 )}>
                     <div className={clsx(
                         "w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6",
-                        variant === 'danger' ? "bg-red-500/20 text-red-500" : "bg-brand-primary/20 text-brand-primary"
+                        variant === 'danger' ? "bg-red-500/20 text-red-500" : "bg-[#bc1b1b]/20 text-[#bc1b1b]"
                     )}>
                         {variant === 'danger' ? <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10" /> : <Info className="w-8 h-8 sm:w-10 sm:h-10" />}
                     </div>
@@ -50,7 +50,7 @@ export default function ConfirmModal({
                             loading={loading}
                             className={clsx(
                                 "h-11 sm:h-14 rounded-xl sm:rounded-2xl font-bold active:scale-95 shadow-xl text-[11px] sm:text-sm",
-                                variant === 'danger' ? "shadow-red-500/20" : "shadow-brand-primary/25"
+                                variant === 'danger' ? "shadow-red-500/20" : "shadow-[#bc1b1b]/25"
                             )}
                         >
                             {confirmText}

@@ -59,7 +59,7 @@ function SortableItem({ id, children, disabled }) {
                     {...attributes} 
                     {...listeners}
                     className={clsx(
-                        "p-2 text-gray-500 hover:text-indigo-400 cursor-grab active:cursor-grabbing touch-none",
+                        "p-2 text-gray-500 hover:text-[#bc1b1b] cursor-grab active:cursor-grabbing touch-none",
                         disabled && "opacity-30 cursor-not-allowed"
                     )}
                     disabled={disabled}
@@ -247,7 +247,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
             <div className="relative w-full max-w-5xl bg-surface-card border border-surface-border md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-300 transition-colors">
                 
                 {/* Header */}
-                <div className="p-6 border-b border-surface-border flex items-center justify-between shrink-0 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                <div className="p-6 border-b border-surface-border flex items-center justify-between shrink-0 bg-[#bc1b1b] text-white">
                     <div className="flex items-center gap-4">
                         <div className="p-2.5 bg-white/20 rounded-2xl">
                             <Settings className="w-6 h-6" />
@@ -267,7 +267,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                     <div className="w-full md:w-1/2 p-8 border-b md:border-b-0 md:border-r border-surface-border space-y-8 overflow-y-auto custom-scrollbar transition-colors">
                         
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full transition-colors">
+                            <span className="text-[10px] font-black text-[#bc1b1b] uppercase tracking-widest bg-[#bc1b1b]/10 px-3 py-1 rounded-full transition-colors">
                                 {editingId ? 'EDITANDO GÉNERO' : 'CREAR NUEVO'}
                             </span>
                             {editingId && (
@@ -285,7 +285,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                                 placeholder="..."
                                 value={newItem.name}
                                 onChange={(e) => setNewItem({...newItem, name: e.target.value.toUpperCase()})}
-                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase font-black transition-all"
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 uppercase font-black transition-all"
                                 autoFocus
                             />
                         </div>
@@ -327,7 +327,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                             <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-2 block transition-colors">Imagen Decorativa (PNG Recomendado)</label>
                             <div 
                                 onClick={() => fileInputRef.current?.click()}
-                                className="relative h-32 cursor-pointer border-2 border-dashed border-surface-border rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-indigo-500/50 hover:bg-black/5 dark:hover:bg-white/5 transition-all group overflow-hidden"
+                                className="relative h-32 cursor-pointer border-2 border-dashed border-surface-border rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-[#bc1b1b]/50 hover:bg-black/5 dark:hover:bg-white/5 transition-all group overflow-hidden"
                             >
                                 {previewUrl ? (
                                     <>
@@ -338,7 +338,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                                     </>
                                 ) : (
                                     <>
-                                        <Upload className="w-6 h-6 text-gray-500 dark:text-gray-600 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:scale-110 transition-all" />
+                                        <Upload className="w-6 h-6 text-gray-500 dark:text-gray-600 group-hover:text-[#bc1b1b] group-hover:scale-110 transition-all" />
                                         <span className="text-[10px] font-black text-gray-500 dark:text-gray-600 uppercase tracking-widest group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Seleccionar Archivo</span>
                                     </>
                                 )}
@@ -346,7 +346,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                             </div>
                         </div>
 
-                        <Button className="w-full h-14 rounded-2xl shadow-xl shadow-indigo-600/20 uppercase font-black tracking-widest transition-all" onClick={handleSave} loading={loading}>
+                        <Button className="w-full h-14 rounded-2xl shadow-xl shadow-[#bc1b1b]/20 uppercase font-black tracking-widest transition-all" onClick={handleSave} loading={loading}>
                             {editingId ? 'Guardar Cambios' : 'Crear Nuevo Género'}
                         </Button>
                     </div>
@@ -384,7 +384,7 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                                     placeholder="Buscar género para editar..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-surface-input border border-surface-border rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                                    className="w-full bg-surface-input border border-surface-border rounded-xl pl-10 pr-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 transition-all"
                                 />
                             </div>
                         </div>
@@ -406,8 +406,8 @@ export default function MusicCatalogModal({ isOpen, onClose, editGenre }) {
                                                 className={clsx(
                                                     "group flex-1 flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer",
                                                     editingId === gen.id_genero 
-                                                        ? "bg-indigo-600/10 border-indigo-500/50" 
-                                                        : "bg-surface-card border-surface-border hover:border-indigo-500/30 hover:bg-indigo-500/5"
+                                                        ? "bg-[#bc1b1b]/10 border-[#bc1b1b]/50" 
+                                                        : "bg-surface-card border-surface-border hover:border-[#bc1b1b]/30 hover:bg-[#bc1b1b]/5"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-3 overflow-hidden">

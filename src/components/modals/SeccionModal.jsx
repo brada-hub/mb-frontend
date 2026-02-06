@@ -64,7 +64,7 @@ export default function SeccionModal({ isOpen, onClose, onSuccess, seccion = nul
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-xl bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[95vh] text-gray-900 dark:text-gray-100">
                 
-                <div className="flex items-center justify-between p-6 bg-brand-primary text-white shadow-xl">
+                <div className="flex items-center justify-between p-6 bg-[#bc1b1b] text-white shadow-xl">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl">
                             <Layers className="w-6 h-6" />

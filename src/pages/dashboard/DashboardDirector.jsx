@@ -10,9 +10,9 @@ import { useToast } from '../../context/ToastContext';
 // --- Componentes ---
 const StatCard = ({ title, value, label, icon: Icon, color, loading, onClick }) => {
     const colors = {
-        indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-        emerald: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-        amber: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20',
+        primary: 'text-[#bc1b1b] dark:text-[#bc1b1b] bg-[#bc1b1b]/10 border-[#bc1b1b]/20',
+        secondary: 'text-[#ffbe0b] dark:text-[#ffbe0b] bg-[#ffbe0b]/10 border-[#ffbe0b]/20',
+        amber: 'text-amber-600 dark:text-amber-400 bg-[#ffbe0b]/10 border-amber-500/20',
         rose: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20',
     };
 
@@ -21,7 +21,7 @@ const StatCard = ({ title, value, label, icon: Icon, color, loading, onClick }) 
             whileHover={{ y: -4 }} 
             onClick={onClick}
             className={clsx(
-                "bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all hover:shadow-xl dark:hover:shadow-none",
+                "bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all hover:shadow-xl dark:hover:shadow-none",
                 onClick && "cursor-pointer active:scale-95 transition-transform"
             )}
         >
@@ -52,7 +52,7 @@ const TopStreaksList = ({ musicians, loading }) => {
                 >
                     <div className="flex items-center gap-3">
                         <div className={clsx("w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black",
-                            idx === 0 ? "bg-amber-500 text-black rotate-2" : idx === 1 ? "bg-gray-300 text-black -rotate-2" : idx === 2 ? "bg-orange-700 text-white" : "bg-white/10 text-gray-400"
+                            idx === 0 ? "bg-[#ffbe0b] text-black rotate-2" : idx === 1 ? "bg-gray-300 text-black -rotate-2" : idx === 2 ? "bg-orange-700 text-white" : "bg-white/10 text-gray-400"
                         )}>{idx + 1}</div>
                         <div>
                             <p className="text-sm font-bold text-gray-900 dark:text-white">{m.nombres} {m.apellidos?.charAt(0)}.</p>
@@ -136,11 +136,11 @@ export default function DashboardDirector() {
     };
 
     return (
-        <div className="min-h-full bg-gray-50 dark:bg-[#0a0d14] transition-colors">
+        <div className="min-h-full bg-gray-50 dark:bg-surface-base transition-colors">
             <div className="max-w-[1600px] mx-auto px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
                 
                 {/* Hero Premium */}
-                <div className="bg-gradient-to-br from-brand-primary via-brand-dark to-purple-800 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+                <div className="bg-gradient-to-br from-[#bc1b1b] via-[#7f1d1d] to-[#ffbe0b] rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 text-white relative overflow-hidden shadow-2xl shadow-[#bc1b1b]/20">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
                     
@@ -149,7 +149,7 @@ export default function DashboardDirector() {
                             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
                                 <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-white/20 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10">{bandName}</span>
                                 {user?.is_super_admin && (
-                                    <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-amber-500/30 text-amber-200 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-amber-400/30 backdrop-blur-md">
+                                    <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[#ffbe0b]/30 text-amber-200 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest border border-amber-400/30 backdrop-blur-md">
                                         SuperAdmin
                                     </span>
                                 )}
@@ -163,16 +163,16 @@ export default function DashboardDirector() {
                         </div>
                         
                         <div className="flex gap-2 sm:gap-3">
-                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
-                                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                            <button onClick={() => navigate('/dashboard/eventos')} className="group p-3 sm:p-5 bg-white/10 hover:bg-[#ffbe0b]/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto text-[#ffbe0b]" />
                                 <p className="text-[10px] sm:text-xs font-bold text-center">Agenda</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
-                                <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                            <button onClick={() => navigate('/dashboard/miembros')} className="group p-3 sm:p-5 bg-white/10 hover:bg-[#bc1b1b]/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Users className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto text-white" />
                                 <p className="text-[10px] sm:text-xs font-bold text-center">Personal</p>
                             </button>
-                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-3 sm:p-5 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
-                                <Activity className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto" />
+                            <button onClick={() => navigate('/dashboard/asistencia')} className="group p-3 sm:p-5 bg-white/10 hover:bg-[#bc1b1b]/20 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/10 transition-all hover:-translate-y-1 active:scale-95 flex-1 sm:flex-initial">
+                                <Activity className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 group-hover:scale-110 transition-transform mx-auto text-white" />
                                 <p className="text-[10px] sm:text-xs font-bold text-center">Control</p>
                             </button>
                         </div>
@@ -181,9 +181,9 @@ export default function DashboardDirector() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard title="Miembros" value={data?.stats?.miembros?.total || 0} icon={Users} color="indigo" loading={loading} label="Staff Activo" onClick={() => navigate('/dashboard/miembros')} />
-                    <StatCard title="Asistencia" value={`${data?.stats?.asistencia?.promedio || 0}%`} icon={Activity} color="emerald" loading={loading} label="Promedio Global" onClick={() => navigate('/dashboard/asistencia')} />
-                    <StatCard title="Eventos Hoy" value={data?.stats?.eventos?.hoy || 0} icon={Calendar} color="indigo" loading={loading} label={`${data?.stats?.eventos?.proximos || 0} Esta Semana`} onClick={() => navigate('/dashboard/eventos')} />
+                    <StatCard title="Miembros" value={data?.stats?.miembros?.total || 0} icon={Users} color="secondary" loading={loading} label="Staff Activo" onClick={() => navigate('/dashboard/miembros')} />
+                    <StatCard title="Asistencia" value={`${data?.stats?.asistencia?.promedio || 0}%`} icon={Activity} color="primary" loading={loading} label="Promedio Global" onClick={() => navigate('/dashboard/asistencia')} />
+                    <StatCard title="Eventos Hoy" value={data?.stats?.eventos?.hoy || 0} icon={Calendar} color="secondary" loading={loading} label={`${data?.stats?.eventos?.proximos || 0} Esta Semana`} onClick={() => navigate('/dashboard/eventos')} />
                     <StatCard title="Listas Pendientes" value={data?.stats?.eventos?.pendientes_formacion || 0} icon={Layers} color="amber" loading={loading} label="Por armar o completar" onClick={() => navigate('/dashboard/formaciones')} />
                 </div>
 
@@ -194,12 +194,12 @@ export default function DashboardDirector() {
                     <div className="lg:col-span-8 space-y-6">
                         
                         {/* Próximos Eventos de la Semana */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
                             <div className="flex items-center justify-between mb-5">
                                 <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                    <Calendar className="w-5 h-5 text-indigo-500" /> Esta Semana
+                                    <Calendar className="w-5 h-5 text-[#bc1b1b]" /> Esta Semana
                                 </h2>
-                                <button onClick={() => navigate('/dashboard/eventos')} className="text-xs font-bold text-indigo-500 uppercase tracking-wider hover:text-indigo-400">
+                                <button onClick={() => navigate('/dashboard/eventos')} className="text-xs font-bold text-[#bc1b1b] uppercase tracking-wider hover:text-[#bc1b1b]">
                                     Ver Agenda →
                                 </button>
                             </div>
@@ -219,7 +219,7 @@ export default function DashboardDirector() {
                                             className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-all group cursor-pointer"
                                             onClick={() => navigate('/dashboard/eventos')}
                                         >
-                                            <div className="p-3 bg-indigo-500/10 rounded-xl text-indigo-500">
+                                            <div className="p-3 bg-[#bc1b1b]/10 rounded-xl text-[#bc1b1b]">
                                                 <Calendar className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1">
@@ -229,10 +229,10 @@ export default function DashboardDirector() {
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-indigo-500">{ev.hora?.substring(0, 5)}</p>
+                                                <p className="text-lg font-black text-[#bc1b1b]">{ev.hora?.substring(0, 5)}</p>
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase">{ev.tipo?.evento}</p>
                                             </div>
-                                            <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                                            <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-[#bc1b1b] transition-colors" />
                                         </motion.div>
                                     ))}
                                 </div>
@@ -240,7 +240,7 @@ export default function DashboardDirector() {
                                 <div className="text-center py-10 text-gray-400">
                                     <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                     <p className="text-sm font-bold">Sin eventos esta semana</p>
-                                    <button onClick={() => navigate('/dashboard/eventos')} className="mt-3 px-4 py-2 bg-indigo-500/10 text-indigo-500 rounded-lg text-xs font-bold hover:bg-indigo-500/20 transition-colors">
+                                    <button onClick={() => navigate('/dashboard/eventos')} className="mt-3 px-4 py-2 bg-[#bc1b1b]/10 text-[#bc1b1b] rounded-lg text-xs font-bold hover:bg-[#bc1b1b]/20 transition-colors">
                                         + Crear Evento
                                     </button>
                                 </div>
@@ -250,13 +250,13 @@ export default function DashboardDirector() {
                         {/* Resumen Rápido */}
                         <div className="grid grid-cols-2 gap-4">
                             {/* Asistencia del Mes - Simple */}
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
                                 <div className="flex items-center justify-between mb-4">
                                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Asistencia del Mes</p>
-                                    <Activity className="w-4 h-4 text-emerald-500" />
+                                    <Activity className="w-4 h-4 text-[#bc1b1b]" />
                                 </div>
                                 <div className="flex items-end gap-3">
-                                    <span className={clsx("text-4xl font-black", (data?.stats?.asistencia?.promedio_mes || 0) >= 80 ? "text-emerald-500" : (data?.stats?.asistencia?.promedio_mes || 0) >= 50 ? "text-amber-500" : "text-red-500")}>
+                                    <span className={clsx("text-4xl font-black", (data?.stats?.asistencia?.promedio_mes || 0) >= 80 ? "text-[#bc1b1b]" : (data?.stats?.asistencia?.promedio_mes || 0) >= 50 ? "text-[#ffbe0b]" : "text-red-500")}>
                                         {data?.stats?.asistencia?.promedio_mes || 0}%
                                     </span>
                                     <span className="text-[10px] text-gray-400 font-bold uppercase mb-1">promedio</span>
@@ -265,16 +265,16 @@ export default function DashboardDirector() {
                                     <motion.div 
                                         initial={{ width: 0 }} 
                                         animate={{ width: `${data?.stats?.asistencia?.promedio_mes || 0}%` }}
-                                        className={clsx("h-full", (data?.stats?.asistencia?.promedio_mes || 0) >= 80 ? "bg-emerald-500" : (data?.stats?.asistencia?.promedio_mes || 0) >= 50 ? "bg-amber-500" : "bg-red-500")} 
+                                        className={clsx("h-full", (data?.stats?.asistencia?.promedio_mes || 0) >= 80 ? "bg-[#bc1b1b]" : (data?.stats?.asistencia?.promedio_mes || 0) >= 50 ? "bg-[#ffbe0b]" : "bg-red-500")} 
                                     />
                                 </div>
                             </div>
                             
                             {/* Eventos Completados */}
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl p-5 transition-colors">
                                 <div className="flex items-center justify-between mb-4">
                                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Actividad Reciente</p>
-                                    <TrendingUp className="w-4 h-4 text-indigo-500" />
+                                    <TrendingUp className="w-4 h-4 text-[#bc1b1b]" />
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div>
@@ -295,32 +295,32 @@ export default function DashboardDirector() {
                     <div className="lg:col-span-4 space-y-6">
                         
                         {/* Acciones Rápidas */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
                             <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4">
                                 Acciones Rápidas
                             </h3>
                             <div className="space-y-3">
-                                <button onClick={() => navigate('/dashboard/miembros')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group">
-                                    <Users className="w-5 h-5 text-indigo-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Gestionar Miembros</span>
+                                <button onClick={() => navigate('/dashboard/miembros')} className="w-full flex items-center gap-4 p-4 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 hover:bg-[#bc1b1b]/5 dark:hover:bg-[#bc1b1b]/10 hover:border-[#bc1b1b]/20 dark:hover:border-[#bc1b1b]/20 rounded-xl transition-all group shadow-sm hover:shadow-md">
+                                    <Users className="w-5 h-5 text-[#bc1b1b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#bc1b1b] dark:group-hover:text-[#bc1b1b]">Gestionar Miembros</span>
                                 </button>
-                                <button onClick={() => navigate('/dashboard/eventos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all group">
-                                    <Calendar className="w-5 h-5 text-amber-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Crear Evento</span>
+                                <button onClick={() => navigate('/dashboard/eventos')} className="w-full flex items-center gap-4 p-4 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 hover:bg-[#ffbe0b]/5 dark:hover:bg-[#ffbe0b]/10 hover:border-[#ffbe0b]/20 dark:hover:border-[#ffbe0b]/20 rounded-xl transition-all group shadow-sm hover:shadow-md">
+                                    <Calendar className="w-5 h-5 text-[#ffbe0b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#ffbe0b] dark:group-hover:text-[#ffbe0b]">Crear Evento</span>
                                 </button>
-                                <button onClick={() => navigate('/dashboard/reportes')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group">
-                                    <TrendingUp className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Ver Reportes</span>
+                                <button onClick={() => navigate('/dashboard/reportes')} className="w-full flex items-center gap-4 p-4 bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 hover:bg-[#bc1b1b]/5 dark:hover:bg-[#bc1b1b]/10 hover:border-[#bc1b1b]/20 dark:hover:border-[#bc1b1b]/20 rounded-xl transition-all group shadow-sm hover:shadow-md">
+                                    <TrendingUp className="w-5 h-5 text-[#bc1b1b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#bc1b1b] dark:group-hover:text-[#bc1b1b]">Ver Reportes</span>
                                 </button>
-                                <button onClick={() => setIsBroadcastModalOpen(true)} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group border-2 border-dashed border-blue-500/20">
-                                    <Send className="w-5 h-5 text-blue-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">Enviar Comunicado</span>
+                                <button onClick={() => setIsBroadcastModalOpen(true)} className="w-full flex items-center gap-4 p-4 bg-white dark:bg-white/[0.02] border border-dashed border-[#ffbe0b]/40 dark:border-[#ffbe0b]/20 hover:bg-[#ffbe0b]/5 dark:hover:bg-[#ffbe0b]/10 rounded-xl transition-all group shadow-sm hover:shadow-md">
+                                    <Send className="w-5 h-5 text-[#ffbe0b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#ffbe0b] dark:group-hover:text-[#ffbe0b]">Enviar Comunicado</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Top Streaks */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
                             <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-2 mb-4">
                                 <Flame className="w-5 h-5 text-orange-500" /> Wall of Fame
                             </h3>
@@ -328,7 +328,7 @@ export default function DashboardDirector() {
                         </div>
 
                         {/* Control de Asistencia */}
-                        <button onClick={() => navigate('/dashboard/asistencia')} className="w-full p-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl flex items-center justify-between transition-all shadow-lg shadow-indigo-600/20 active:scale-[0.98]">
+                        <button onClick={() => navigate('/dashboard/asistencia')} className="w-full p-5 bg-[#bc1b1b] hover:bg-[#991b1b] text-white rounded-2xl flex items-center justify-between transition-all shadow-lg shadow-[#bc1b1b]/20 active:scale-[0.98]">
                             <div className="flex items-center gap-3">
                                 <Activity className="w-5 h-5" />
                                 <span className="text-sm font-bold uppercase tracking-wide">Control de Asistencia</span>
@@ -337,10 +337,10 @@ export default function DashboardDirector() {
                         </button>
 
                         {/* Recent Broadcasts tracking */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-3xl p-6 transition-colors">
                             <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4 flex items-center justify-between">
                                 Comunicados Recientes
-                                <Send className="w-4 h-4 text-blue-500" />
+                                <Send className="w-4 h-4 text-[#bc1b1b]" />
                             </h3>
                             <div className="space-y-3">
                                 {recentBroadcasts.length > 0 ? (
@@ -352,7 +352,7 @@ export default function DashboardDirector() {
                                             </div>
                                             <button 
                                                 onClick={() => handleViewTracking(b.id_referencia, 'broadcast')}
-                                                className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition-all"
+                                                className="p-2 bg-[#bc1b1b]/10 text-[#bc1b1b] rounded-lg hover:bg-[#bc1b1b]/20 transition-all"
                                                 title="Ver quién leyó"
                                             >
                                                 <Eye className="w-4 h-4" />
@@ -369,19 +369,19 @@ export default function DashboardDirector() {
 
                 {/* Eventos de Hoy */}
                 {data?.mis_eventos?.length > 0 && (
-                    <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-3xl p-8 transition-colors">
+                    <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-3xl p-8 transition-colors">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                <Clock className="w-5 h-5 text-amber-500" /> Eventos de Hoy
+                                <Clock className="w-5 h-5 text-[#ffbe0b]" /> Eventos de Hoy
                             </h2>
-                            <button onClick={() => navigate('/dashboard/eventos')} className="text-xs font-bold text-indigo-500 uppercase tracking-wider hover:text-indigo-400">
+                            <button onClick={() => navigate('/dashboard/eventos')} className="text-xs font-bold text-[#bc1b1b] uppercase tracking-wider hover:text-[#bc1b1b]">
                                 Ver todos →
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {data.mis_eventos.slice(0, 4).map(ev => (
                                 <div key={ev.id_evento} className="p-5 bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 rounded-2xl">
-                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{ev.tipo?.evento} • {ev.hora?.substring(0, 5)}</p>
+                                    <p className="text-[10px] font-black text-[#bc1b1b] uppercase tracking-widest">{ev.tipo?.evento} • {ev.hora?.substring(0, 5)}</p>
                                     <p className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight mt-1">{ev.evento}</p>
                                     <p className="text-xs text-gray-400 flex items-center gap-1 mt-2">
                                         <MapPin className="w-3 h-3" /> {ev.direccion || 'Por confirmar'}
@@ -396,8 +396,8 @@ export default function DashboardDirector() {
             {/* Modal de Broadcast */}
             {isBroadcastModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-[#161b2c] w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                        <div className="p-6 border-b border-white/5 bg-brand-primary text-white">
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-surface-card w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                        <div className="p-6 border-b border-white/5 bg-[#bc1b1b] text-white">
                             <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
                                 <Send className="w-6 h-6" /> Enviar Comunicado
                             </h3>
@@ -411,7 +411,7 @@ export default function DashboardDirector() {
                                     type="text" 
                                     value={broadcastForm.titulo}
                                     onChange={e => setBroadcastForm({...broadcastForm, titulo: e.target.value})}
-                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold"
+                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold"
                                     placeholder="Ej: Ensayo General Cancelado"
                                 />
                             </div>
@@ -422,13 +422,13 @@ export default function DashboardDirector() {
                                     value={broadcastForm.mensaje}
                                     onChange={e => setBroadcastForm({...broadcastForm, mensaje: e.target.value})}
                                     rows={4}
-                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-brand-primary outline-none font-bold"
+                                    className="w-full bg-gray-100 dark:bg-white/5 px-4 py-3 rounded-xl border border-transparent focus:border-[#bc1b1b] outline-none font-bold"
                                     placeholder="Escribe el mensaje para los músicos..."
                                 />
                             </div>
                             <div className="flex gap-3 pt-4">
                                 <button type="button" onClick={() => setIsBroadcastModalOpen(false)} className="flex-1 py-3 bg-gray-100 dark:bg-white/5 text-gray-500 rounded-xl font-black uppercase tracking-widest text-xs">Cancelar</button>
-                                <button type="submit" disabled={sending} className="flex-[2] py-3 bg-brand-primary text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-brand-primary/20 disabled:opacity-50">
+                                <button type="submit" disabled={sending} className="flex-[2] py-3 bg-[#bc1b1b] text-white rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-[#bc1b1b]/20 disabled:opacity-50">
                                     {sending ? 'Enviando...' : 'Enviar Ahora'}
                                 </button>
                             </div>
@@ -440,11 +440,11 @@ export default function DashboardDirector() {
             {/* Modal de Seguimiento */}
             {showTracking && (
                 <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-[#161b2c] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[80vh]">
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white dark:bg-surface-card w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[80vh]">
                         <div className="p-6 border-b border-white/5 bg-gray-50 dark:bg-white/5 flex items-center justify-between">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3 text-gray-900 dark:text-white">
-                                    <Eye className="w-6 h-6 text-blue-500" /> Seguimiento de Lectura
+                                    <Eye className="w-6 h-6 text-[#bc1b1b]" /> Seguimiento de Lectura
                                 </h3>
                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-1">Conoce quién ha visto el mensaje</p>
                             </div>
@@ -460,7 +460,7 @@ export default function DashboardDirector() {
                                 trackingData.map((t, idx) => (
                                     <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-100 dark:border-white/5">
                                         <div className="flex items-center gap-3">
-                                            <div className={clsx("w-8 h-8 rounded-full flex items-center justify-center font-black text-xs", t.leido ? "bg-emerald-500/20 text-emerald-500" : "bg-gray-500/20 text-gray-500")}>
+                                            <div className={clsx("w-8 h-8 rounded-full flex items-center justify-center font-black text-xs", t.leido ? "bg-[#bc1b1b]/20 text-[#bc1b1b]" : "bg-gray-500/20 text-gray-500")}>
                                                 {t.nombre.charAt(0)}
                                             </div>
                                             <div>
@@ -471,7 +471,7 @@ export default function DashboardDirector() {
                                         <div className="text-right">
                                             {t.leido ? (
                                                 <div className="flex flex-col items-end">
-                                                    <span className="text-[10px] font-black text-emerald-500 uppercase flex items-center gap-1">
+                                                    <span className="text-[10px] font-black text-[#bc1b1b] uppercase flex items-center gap-1">
                                                         <CheckCircle2 className="w-3 h-3" /> Visto
                                                     </span>
                                                     <span className="text-[9px] text-gray-400 font-bold">{t.fecha_lectura}</span>
@@ -488,7 +488,7 @@ export default function DashboardDirector() {
                         </div>
                         
                         <div className="p-6 bg-gray-50 dark:bg-black/20 border-t border-white/5">
-                            <button onClick={() => setShowTracking(false)} className="w-full py-3 bg-brand-primary text-white rounded-xl font-black uppercase tracking-widest text-xs">Cerrar</button>
+                            <button onClick={() => setShowTracking(false)} className="w-full py-3 bg-[#bc1b1b] text-white rounded-xl font-black uppercase tracking-widest text-xs">Cerrar</button>
                         </div>
                     </motion.div>
                 </div>

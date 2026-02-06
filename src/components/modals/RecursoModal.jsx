@@ -60,7 +60,7 @@ function SortableItem({ id, children }) {
                     type="button"
                     {...attributes} 
                     {...listeners}
-                    className="p-2 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors"
+                    className="p-2 text-gray-400 dark:text-gray-500 hover:text-[#bc1b1b] cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors"
                 >
                     <GripVertical className="w-5 h-5" />
                 </button>
@@ -314,7 +314,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
             <div className="relative w-full max-w-2xl bg-surface-card border border-surface-border md:rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] transition-colors">
                 
                 {/* Header */}
-                <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-between text-white shrink-0">
+                <div className="p-6 bg-[#bc1b1b] flex items-center justify-between text-white shrink-0">
                     <div className="flex items-center gap-4">
                         <div className="p-2.5 bg-white/20 rounded-2xl">
                             <Upload className="w-6 h-6" />
@@ -341,7 +341,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                             <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest ml-2 transition-colors">Asignación de Tema</label>
                             <select 
                                 {...register('id_genero', { required: true })}
-                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 transition-colors"
                             >
                                 <option value="" className="bg-surface-card">Seleccionar Género...</option>
                                 {catalogs.generos.map(g => <option key={g.id_genero} value={g.id_genero} className="bg-surface-card">{g.nombre_genero}</option>)}
@@ -350,10 +350,11 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                             <select 
                                 {...register('id_tema', { required: true })}
                                 disabled={!selectedGenero}
-                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+                                disabled={!selectedGenero}
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 disabled:opacity-50 transition-all"
                             >
                                 <option value="" className="bg-surface-card">Seleccionar Tema...</option>
-                                <option value="NEW" className="bg-surface-card text-indigo-600 dark:text-indigo-400 font-bold">+ NUEVO TEMA (Escribir nombre)</option>
+                                <option value="NEW" className="bg-surface-card text-[#bc1b1b] font-bold">+ NUEVO TEMA (Escribir nombre)</option>
                                 {catalogs.temas.filter(t => String(t.id_genero) === String(selectedGenero)).map(t => (
                                     <option key={t.id_tema} value={t.id_tema} className="bg-surface-card">{t.nombre_tema}</option>
                                 ))}
@@ -361,11 +362,11 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
 
                             {selectedTema === 'NEW' && (
                                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                                    <label className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest ml-2 transition-colors">Nombre del Nuevo Tema</label>
+                                    <label className="text-[10px] font-black text-[#bc1b1b] uppercase tracking-widest ml-2 transition-colors">Nombre del Nuevo Tema</label>
                                     <input 
                                         {...register('nuevo_tema_nombre', { required: selectedTema === 'NEW' })}
                                         placeholder="EJ: LA MARIPOSA..."
-                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
+                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 transition-colors"
                                     />
                                 </div>
                             )}
@@ -378,7 +379,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                             <div className="grid grid-cols-2 gap-2">
                                 <select 
                                     {...register('id_seccion', { required: true })}
-                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
+                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 transition-colors"
                                 >
                                     <option value="" className="bg-surface-card">Sección...</option>
                                     {catalogs.secciones.map(s => <option key={s.id_seccion} value={s.id_seccion} className="bg-surface-card">{s.seccion}</option>)}
@@ -387,7 +388,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                 <select 
                                     {...register('id_instrumento', { required: true })}
                                     disabled={!selectedSeccion || availableInstruments.length === 0}
-                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+                                    className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 disabled:opacity-50 transition-all"
                                 >
                                     <option value="" className="bg-surface-card">Instrumento...</option>
                                     {availableInstruments.map(i => <option key={i.id_instrumento} value={i.id_instrumento} className="bg-surface-card">{i.instrumento}</option>)}
@@ -408,7 +409,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                     <select 
                                         {...register('id_voz')}
                                         disabled={!selectedInstrumento || isValidatingVoice}
-                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 transition-all"
+                                        className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 disabled:opacity-50 transition-all"
                                     >
                                         <option value="" className="bg-surface-card">
                                             {isValidatingVoice ? 'Validando disponibilidad...' : 'Seleccionar Voz...'}
@@ -441,9 +442,9 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                     "flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
                                     fileList.length > 0
                                         ? "bg-emerald-500/10 border-emerald-500/50 hover:bg-emerald-500/20" 
-                                        : "bg-surface-input border-surface-border hover:border-indigo-500/50 hover:bg-indigo-500/5"
+                                        : "bg-surface-input border-surface-border hover:border-[#bc1b1b]/50 hover:bg-[#bc1b1b]/5"
                                 )}>
-                                    <div className="flex gap-2 text-indigo-600 dark:text-indigo-400">
+                                    <div className="flex gap-2 text-[#bc1b1b]">
                                         <FileText className="w-8 h-8" />
                                         <ImageIcon className="w-8 h-8" />
                                     </div>
@@ -474,8 +475,8 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
 
                          {/* FILE LIST PREVIEW & REORDER */}
                          {fileList.length > 0 && (
-                             <div className="space-y-3 bg-black/5 dark:bg-[#0f111a]/50 p-4 rounded-3xl border border-surface-border transition-colors">
-                                 <h4 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest px-2 transition-colors">Orden de Partituras</h4>
+                             <div className="space-y-3 bg-black/5 dark:bg-surface-base/50 p-4 rounded-3xl border border-surface-border transition-colors">
+                                 <h4 className="text-[10px] font-black text-[#bc1b1b] uppercase tracking-widest px-2 transition-colors">Orden de Partituras</h4>
                                  <div className="space-y-2">
                                      <DndContext 
                                         sensors={sensors} 
@@ -496,7 +497,7 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                                                                 type: item.fileType,
                                                                 title: item.name
                                                             })}
-                                                            className="w-12 h-12 bg-indigo-500/10 rounded-xl overflow-hidden flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 hover:ring-2 hover:ring-indigo-500 transition-all cursor-zoom-in"
+                                                            className="w-12 h-12 bg-[#bc1b1b]/10 rounded-xl overflow-hidden flex items-center justify-center text-[#bc1b1b] shrink-0 hover:ring-2 hover:ring-[#bc1b1b] transition-all cursor-zoom-in"
                                                         >
                                                             {item.fileType === 'pdf' ? (
                                                                 <FileText className="w-6 h-6" />

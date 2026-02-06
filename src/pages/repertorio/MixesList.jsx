@@ -142,7 +142,7 @@ export default function MixesList() {
                                     className={clsx(
                                         "h-8 sm:h-9 px-2.5 sm:px-3 rounded-lg flex items-center gap-1.5 transition-all duration-300 font-black text-[9px] uppercase tracking-widest border",
                                         editMode 
-                                            ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                            ? "bg-[#bc1b1b]/20 border-[#bc1b1b] text-[#bc1b1b]" 
                                             : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                                     )}
                                 >
@@ -154,7 +154,7 @@ export default function MixesList() {
                                 placeholder="Buscar..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-8 sm:h-9 w-28 sm:w-32 bg-[#161b2c] border-white/5 rounded-lg text-[10px] sm:text-xs focus:ring-brand-primary/50"
+                                className="h-8 sm:h-9 w-28 sm:w-32 bg-[#0a0a0a] border-white/5 rounded-lg text-[10px] sm:text-xs focus:ring-[#bc1b1b]/50"
                             />
                             {canManage && (
                                 <button 
@@ -162,7 +162,7 @@ export default function MixesList() {
                                         setMixToEdit(null);
                                         setIsMixModalOpen(true);
                                     }}
-                                    className="h-8 sm:h-9 px-2.5 sm:px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-brand-primary hover:bg-brand-dark text-white"
+                                    className="h-8 sm:h-9 px-2.5 sm:px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-[#bc1b1b] hover:bg-[#991b1b] text-white"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                 </button>
@@ -172,7 +172,7 @@ export default function MixesList() {
 
                     {loading && mixes.length === 0 ? (
                         <div className="py-20 text-center animate-pulse">
-                            <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                            <div className="w-12 h-12 border-4 border-[#bc1b1b] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Cargando repertorios...</p>
                         </div>
                     ) : (
@@ -184,7 +184,7 @@ export default function MixesList() {
                                     className={clsx(
                                         "group relative flex flex-col rounded-2xl transition-all duration-300 overflow-hidden shadow-lg cursor-pointer border-2",
                                         selectedMix?.id_mix === mix.id_mix 
-                                            ? "border-brand-primary bg-brand-primary/5" 
+                                            ? "border-[#bc1b1b] bg-[#bc1b1b]/5" 
                                             : "border-white/5 bg-surface-card hover:border-white/20",
                                         !mix.activo && "opacity-60 saturate-50"
                                     )}
@@ -194,8 +194,8 @@ export default function MixesList() {
                                             <div className={clsx(
                                                 "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all",
                                                 selectedMix?.id_mix === mix.id_mix 
-                                                    ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/30" 
-                                                    : "bg-white/5 text-gray-400 group-hover:bg-brand-primary/20 group-hover:text-brand-primary"
+                                                    ? "bg-[#bc1b1b] text-white shadow-lg shadow-[#bc1b1b]/30" 
+                                                    : "bg-white/5 text-gray-400 group-hover:bg-[#bc1b1b]/20 group-hover:text-[#bc1b1b]"
                                             )}>
                                                 <Layers className="w-5 h-5 sm:w-6 sm:h-6" />
                                             </div>
@@ -211,7 +211,7 @@ export default function MixesList() {
                                                             <EyeOff className="w-3 h-3" /> OCULTO
                                                         </span>
                                                     ) : (
-                                                        <span className="text-[9px] sm:text-[10px] text-brand-primary font-bold uppercase tracking-widest">
+                                                        <span className="text-[9px] sm:text-[10px] text-[#bc1b1b] font-bold uppercase tracking-widest">
                                                             LISTO
                                                         </span>
                                                     )}
@@ -230,14 +230,14 @@ export default function MixesList() {
                                                             initialIndex: 0
                                                         });
                                                     }}
-                                                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white flex items-center justify-center transition-all"
+                                                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#bc1b1b]/20 text-[#bc1b1b] hover:bg-[#bc1b1b] hover:text-white flex items-center justify-center transition-all"
                                                 >
                                                     <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                                                 </button>
                                             )}
                                             <ChevronRight className={clsx(
                                                 "w-5 h-5 sm:w-6 sm:h-6 transition-all",
-                                                selectedMix?.id_mix === mix.id_mix ? "text-brand-primary translate-x-1" : "text-gray-700"
+                                                selectedMix?.id_mix === mix.id_mix ? "text-[#bc1b1b] translate-x-1" : "text-gray-700"
                                             )} />
                                         </div>
                                     </div>
@@ -301,7 +301,7 @@ export default function MixesList() {
                         <div className="lg:hidden flex items-center gap-2 px-1 py-1 mb-1">
                             <button 
                                 onClick={() => setMobileView('list')}
-                                className="p-2 text-brand-primary bg-brand-primary/5 rounded-lg active:scale-95"
+                                className="p-2 text-[#bc1b1b] bg-[#bc1b1b]/5 rounded-lg active:scale-95"
                             >
                                 <ArrowLeft className="w-5 h-5" />
                             </button>
@@ -321,7 +321,7 @@ export default function MixesList() {
                                         }],
                                         initialIndex: 0
                                     })}
-                                    className="p-2 rounded-lg bg-purple-600 text-white"
+                                    className="p-2 rounded-lg bg-[#bc1b1b] text-white"
                                 >
                                     <Play className="w-4 h-4 fill-current" />
                                 </button>
@@ -337,7 +337,7 @@ export default function MixesList() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <div className="w-2 h-8 bg-brand-primary rounded-full" />
+                                                <div className="w-2 h-8 bg-[#bc1b1b] rounded-full" />
                                                 <h2 className="text-2xl font-black text-white uppercase tracking-tight">
                                                     {selectedMix.nombre}
                                                 </h2>
@@ -356,7 +356,7 @@ export default function MixesList() {
                                                     }],
                                                     initialIndex: 0
                                                 })}
-                                                className="h-12 px-6 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-3 transition-all shadow-lg shadow-purple-600/20 font-black text-[11px] uppercase tracking-widest"
+                                                className="h-12 px-6 rounded-2xl bg-[#ffbe0b] hover:bg-[#ffbe0b]/90 text-white flex items-center gap-3 transition-all shadow-lg shadow-[#ffbe0b]/20 font-black text-[11px] uppercase tracking-widest"
                                             >
                                                 <Play className="w-5 h-5 fill-current" />
                                                 Reproducir Guía Mix
@@ -433,15 +433,15 @@ export default function MixesList() {
                                         return (
                                             <div 
                                                 key={`${tema.id_tema}-${index}`}
-                                                className="relative group bg-surface-card border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:border-brand-primary/30 transition-all duration-300 shadow-xl overflow-hidden"
+                                                className="relative group bg-surface-card border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:border-[#bc1b1b]/30 transition-all duration-300 shadow-xl overflow-hidden"
                                             >
                                                 {/* Number Indicator - Posicionado arriba a la izquierda para no estorbar */}
                                                 <div className="absolute top-4 left-6 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                                                    <span className="text-5xl sm:text-6xl font-black italic tracking-tighter text-brand-primary">{index + 1}</span>
+                                                    <span className="text-5xl sm:text-6xl font-black italic tracking-tighter text-[#bc1b1b]">{index + 1}</span>
                                                 </div>
 
                                                 <div className="relative z-10 flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6 pl-1 sm:pl-2">
-                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-primary/10 border border-brand-primary/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-brand-primary font-black text-lg sm:text-xl shrink-0 shadow-inner">
+                                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#bc1b1b]/10 border border-[#bc1b1b]/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-[#bc1b1b] font-black text-lg sm:text-xl shrink-0 shadow-inner">
                                                         {index + 1}
                                                     </div>
                                                     <div className="pt-0.5 sm:pt-1">
@@ -457,7 +457,7 @@ export default function MixesList() {
                                                         className={clsx(
                                                             "flex-[3] flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] transition-all active:scale-95 shadow-lg",
                                                             hasVisuals
-                                                                ? "bg-brand-primary hover:bg-brand-dark text-white shadow-brand-primary/20" 
+                                                                ? "bg-[#bc1b1b] hover:bg-[#991b1b] text-white shadow-[#bc1b1b]/20" 
                                                                 : "bg-surface-card border border-white/5 text-gray-600 cursor-not-allowed"
                                                         )}
                                                     >
@@ -474,7 +474,7 @@ export default function MixesList() {
                                                                 })),
                                                                 initialIndex: 0
                                                             })}
-                                                            className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white border border-purple-500/20 transition-all active:scale-95"
+                                                            className="flex-1 flex items-center justify-center gap-2 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-[#ffbe0b]/20 hover:bg-[#ffbe0b] text-[#ffbe0b] hover:text-white border border-[#ffbe0b]/20 transition-all active:scale-95"
                                                             title="Escuchar guía de audio"
                                                         >
                                                             <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
@@ -488,7 +488,7 @@ export default function MixesList() {
                             </>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-32 bg-white/2 border-2 border-dashed border-white/5 rounded-[40px] text-center px-10">
-                                <div className="w-24 h-24 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary mb-8 animate-bounce">
+                                <div className="w-24 h-24 bg-[#bc1b1b]/10 rounded-full flex items-center justify-center text-[#bc1b1b] mb-8 animate-bounce">
                                     <Layers className="w-12 h-12" />
                                 </div>
                                 <h3 className="text-2xl font-black text-white mb-3 uppercase tracking-tight">Selecciona un Repertorio</h3>

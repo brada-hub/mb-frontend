@@ -92,14 +92,14 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                 </button>
 
                 <div className="flex flex-col items-center text-center mb-8">
-                    <div className="w-16 h-16 bg-indigo-600/20 rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4 shadow-xl shadow-indigo-600/10">
+                    <div className="w-16 h-16 bg-[#bc1b1b]/20 rounded-3xl flex items-center justify-center text-[#bc1b1b] mb-4 shadow-xl shadow-[#bc1b1b]/10">
                         <Music className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">
                         {initialData ? 'EDITAR TEMA' : 'NUEVO TEMA'}
                     </h2>
                     <p className="text-[10px] text-gray-500 dark:text-gray-500 font-bold uppercase tracking-[0.2em] mt-2 transition-colors">
-                        Categoría: <span className="text-indigo-600 dark:text-indigo-400">{nombreGenero}</span>
+                        Categoría: <span className="text-[#bc1b1b]">{nombreGenero}</span>
                     </p>
                 </div>
 
@@ -111,7 +111,7 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                             placeholder="EJ: AZUL Y AMARILLO..."
                             value={formData.nombre_tema}
                             onChange={(e) => setFormData({...formData, nombre_tema: e.target.value})}
-                            className="w-full bg-surface-input border border-surface-border rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase font-bold placeholder:text-gray-400 dark:placeholder:text-gray-700 transition-all"
+                            className="w-full bg-surface-input border border-surface-border rounded-2xl px-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 uppercase font-bold placeholder:text-gray-400 dark:placeholder:text-gray-700 transition-all"
                             autoFocus
                         />
                     </div>
@@ -128,11 +128,11 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                             />
                             <div className={clsx(
                                 "flex items-center gap-4 w-full bg-surface-input border rounded-2xl p-2 transition-all",
-                                formData.audio_file || initialData?.audio ? "border-indigo-500/50 bg-indigo-500/5" : "border-surface-border"
+                                formData.audio_file || initialData?.audio ? "border-[#bc1b1b]/50 bg-[#bc1b1b]/5" : "border-surface-border"
                             )}>
                                 <label 
                                     htmlFor="audio-upload"
-                                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all shadow-lg shrink-0"
+                                    className="px-4 py-2.5 bg-[#bc1b1b] hover:bg-[#991b1b] text-white text-[10px] font-black uppercase tracking-widest rounded-xl cursor-pointer transition-all shadow-lg shrink-0"
                                 >
                                     Seleccionar Archivo
                                 </label>
@@ -145,7 +145,7 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                                                 : 'Sin archivo seleccionado'}
                                     </p>
                                     {(formData.audio_file || initialData?.audio) && (
-                                        <p className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-0.5 transition-colors">
+                                        <p className="text-[9px] font-bold text-[#bc1b1b] uppercase tracking-widest mt-0.5 transition-colors">
                                             {formData.audio_file ? 'Archivo listo para subir' : 'Audio actual guardado'}
                                         </p>
                                     )}
@@ -172,7 +172,7 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                                 placeholder="YouTube, Drive, etc (Opcional)..."
                                 value={formData.url_video}
                                 onChange={(e) => setFormData({...formData, url_video: e.target.value})}
-                                className="w-full bg-surface-input border border-surface-border rounded-2xl pl-12 pr-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-gray-400 dark:placeholder:text-gray-700 font-medium transition-all"
+                                className="w-full bg-surface-input border border-surface-border rounded-2xl pl-12 pr-5 py-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 placeholder:text-gray-400 dark:placeholder:text-gray-700 font-medium transition-all"
                             />
                         </div>
                     </div>
@@ -180,7 +180,7 @@ export default function TemaModal({ isOpen, onClose, idGenero, nombreGenero, onS
                     <div className="flex flex-col gap-3 pt-2">
                         <Button 
                             type="submit"
-                            className="w-full h-14 rounded-2xl shadow-xl shadow-indigo-600/20 uppercase font-black tracking-widest"
+                            className="w-full h-14 rounded-2xl shadow-xl shadow-[#bc1b1b]/20 uppercase font-black tracking-widest"
                             loading={loading}
                         >
                             {initialData ? <Check className="w-5 h-5 mr-1" /> : <Plus className="w-5 h-5 mr-1" />}

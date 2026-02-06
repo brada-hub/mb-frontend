@@ -64,7 +64,7 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="relative w-full max-w-xl bg-surface-card border border-surface-border rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] text-gray-900 dark:text-gray-100">
                 
-                <div className="flex items-center justify-between p-6 bg-brand-primary text-white">
+                <div className="flex items-center justify-between p-6 bg-[#bc1b1b] text-white">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-white/20 rounded-xl">
                             <Shield className="w-6 h-6" />
@@ -95,14 +95,14 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
                                     className={clsx(
                                         "flex items-center justify-between p-4 rounded-2xl border transition-all text-left",
                                         isSelected 
-                                            ? "bg-brand-primary/10 border-brand-primary/30 text-gray-900 dark:text-white" 
-                                            : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-400 hover:border-brand-primary/30"
+                                            ? "bg-[#bc1b1b]/10 border-[#bc1b1b]/30 text-gray-900 dark:text-white" 
+                                            : "bg-black/5 dark:bg-white/5 border-surface-border text-gray-500 dark:text-gray-400 hover:border-[#bc1b1b]/30"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className={clsx(
                                             "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                                            isSelected ? "bg-brand-primary text-white" : "bg-black/10 dark:bg-white/5 text-gray-400 dark:text-gray-500"
+                                            isSelected ? "bg-[#bc1b1b] text-white" : "bg-black/10 dark:bg-white/5 text-gray-400 dark:text-gray-500"
                                         )}>
                                             <ShieldCheck className="w-5 h-5" />
                                         </div>
@@ -111,7 +111,7 @@ export default function MiembroPermisosModal({ isOpen, onClose, onSuccess, miemb
                                         </span>
                                     </div>
                                     {isSelected ? (
-                                        <CheckCircle2 className="w-6 h-6 text-brand-primary" />
+                                        <CheckCircle2 className="w-6 h-6 text-[#bc1b1b]" />
                                     ) : (
                                         <Circle className="w-6 h-6 text-gray-300 dark:text-gray-700" />
                                     )}

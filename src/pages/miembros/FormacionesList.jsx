@@ -71,7 +71,7 @@ export default function FormacionesList() {
                 <div className="flex flex-wrap items-center gap-4">
                     <button 
                         onClick={() => navigate('/dashboard/reportes')}
-                        className="px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-indigo-400 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95"
+                        className="px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-[#bc1b1b] hover:text-white hover:bg-white/10 transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest active:scale-95"
                     >
                         <LayoutGrid className="w-4 h-4" />
                         Ver Matriz
@@ -82,7 +82,7 @@ export default function FormacionesList() {
             {/* Content Display - Listas por Evento */}
             <div className="space-y-6">
                 <div className="relative group max-w-2xl">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition-colors" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-[#bc1b1b] transition-colors" />
                     <Input 
                         placeholder="Buscar evento o contrato..."
                         value={searchTerm}
@@ -112,7 +112,7 @@ export default function FormacionesList() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.05 }}
                                 onClick={() => navigate(`/dashboard/eventos/${evento.id_evento}/convocatoria`)}
-                                className="group relative bg-surface-card border border-white/5 hover:border-indigo-500/30 transition-all duration-500 rounded-[2.5rem] p-6 cursor-pointer overflow-hidden"
+                                className="group relative bg-surface-card border border-white/5 hover:border-[#bc1b1b]/30 transition-all duration-500 rounded-[2.5rem] p-6 cursor-pointer overflow-hidden"
                             >
                                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
                                     <Calendar className="w-24 h-24" />
@@ -120,7 +120,7 @@ export default function FormacionesList() {
 
                                 <div className="relative z-10 flex flex-col h-full">
                                     <div className="flex justify-between items-start mb-4">
-                                        <div className="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-[9px] font-black uppercase tracking-widest border border-indigo-500/20">
+                                        <div className="px-3 py-1 bg-[#bc1b1b]/10 text-[#bc1b1b] rounded-full text-[9px] font-black uppercase tracking-widest border border-[#bc1b1b]/20">
                                             {evento.tipo?.evento}
                                         </div>
                                         <p className="text-[10px] font-black text-gray-500 uppercase flex items-center gap-1">
@@ -128,7 +128,7 @@ export default function FormacionesList() {
                                         </p>
                                     </div>
 
-                                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-indigo-400 transition-colors">
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2 group-hover:text-[#bc1b1b] transition-colors">
                                         {evento.evento}
                                     </h3>
                                     
@@ -166,7 +166,7 @@ export default function FormacionesList() {
                                                 animate={{ width: `${evento.meta_formacion?.porcentaje}%` }}
                                                 className={clsx(
                                                     "h-full rounded-full transition-all",
-                                                    evento.meta_formacion?.completado ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                                                    evento.meta_formacion?.completado ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-[#bc1b1b] shadow-lg shadow-[#bc1b1b]/30"
                                                 )}
                                             />
                                         </div>
@@ -175,7 +175,7 @@ export default function FormacionesList() {
                                             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
                                                 {evento.fecha && new Date(evento.fecha + 'T12:00:00').toLocaleDateString('es-BO', { day: '2-digit', month: 'short' })}
                                             </span>
-                                            <div className="flex items-center gap-1 text-indigo-400 text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                                            <div className="flex items-center gap-1 text-[#bc1b1b] text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
                                                 Armar Lista <ArrowRight className="w-3 h-3" />
                                             </div>
                                         </div>

@@ -10,7 +10,7 @@ export default function SAPlanes() {
             <div className="flex justify-end">
                 <button 
                     onClick={() => handleOpenPlanModal()}
-                    className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-dark text-white text-xs font-black uppercase rounded-2xl transition-all shadow-lg shadow-brand-primary/20"
+                    className="flex items-center gap-2 px-6 py-3 bg-[#bc1b1b] hover:bg-[#991b1b] text-white text-xs font-black uppercase rounded-2xl transition-all shadow-lg shadow-[#bc1b1b]/20"
                 >
                     <Plus className="w-5 h-5" /> Nuevo Plan
                 </button>
@@ -22,13 +22,13 @@ export default function SAPlanes() {
                         onClick={() => handleOpenPlanModal(plan)}
                         className={clsx(
                             "bg-white dark:bg-surface-card border-2 rounded-[2.5rem] p-8 transition-all hover:scale-[1.02] cursor-pointer group relative overflow-hidden shadow-sm hover:shadow-xl",
-                            plan.nombre === 'PRO' ? 'border-amber-500/50 hover:border-amber-500' : 
-                            plan.nombre === 'PREMIUM' ? 'border-brand-primary/50 hover:border-brand-primary' : 'border-gray-200 dark:border-white/10 hover:border-gray-400'
+                            plan.nombre === 'PRO' ? 'border-[#ffbe0b]/50 hover:border-[#ffbe0b]' : 
+                            plan.nombre === 'PREMIUM' ? 'border-[#bc1b1b]/50 hover:border-[#bc1b1b]' : 'border-gray-200 dark:border-white/10 hover:border-gray-400'
                         )}
                     >
                         <div className="flex justify-between items-start mb-8 relative z-10">
                             <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center">
-                                <Crown className={clsx("w-8 h-8", plan.nombre === 'PRO' ? 'text-amber-500' : plan.nombre === 'PREMIUM' ? 'text-brand-primary' : 'text-gray-400')} />
+                                <Crown className={clsx("w-8 h-8", plan.nombre === 'PRO' ? 'text-[#ffbe0b]' : plan.nombre === 'PREMIUM' ? 'text-[#bc1b1b]' : 'text-gray-400')} />
                             </div>
                             <h3 className="text-xl font-black uppercase text-gray-900 dark:text-white">{plan.label}</h3>
                         </div>

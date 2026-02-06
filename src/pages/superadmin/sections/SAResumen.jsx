@@ -11,9 +11,9 @@ export default function SAResumen() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                     { label: 'Ingresos MRR', value: `$${stats?.ingresos_proyectados || 0}`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                    { label: 'Bandas Activas', value: stats?.total_bandas || 0, icon: Building2, color: 'text-brand-primary', bg: 'bg-brand-primary/10' },
-                    { label: 'Usuarios Totales', value: stats?.total_miembros || 0, icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                    { label: 'Nuevos (Mes)', value: `+${stats?.metricas_crecimiento?.nuevas_bandas_mes || 0}`, icon: Calendar, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+                    { label: 'Bandas Activas', value: stats?.total_bandas || 0, icon: Building2, color: 'text-[#bc1b1b]', bg: 'bg-[#bc1b1b]/10' },
+                    { label: 'Usuarios Totales', value: stats?.total_miembros || 0, icon: Users, color: 'text-[#ffbe0b]', bg: 'bg-[#ffbe0b]/10' },
+                    { label: 'Nuevos (Mes)', value: `+${stats?.metricas_crecimiento?.nuevas_bandas_mes || 0}`, icon: Calendar, color: 'text-[#ffbe0b]', bg: 'bg-[#ffbe0b]/10' },
                 ].map((stat, idx) => (
                     <motion.div
                         key={stat.label}
@@ -33,9 +33,9 @@ export default function SAResumen() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white dark:bg-surface-card border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="w-24 h-24 bg-brand-primary/10 rounded-full flex items-center justify-center mb-8 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                        <Activity className="w-10 h-10 text-brand-primary" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#bc1b1b]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="w-24 h-24 bg-[#bc1b1b]/10 rounded-full flex items-center justify-center mb-8 relative z-10 group-hover:scale-110 transition-transform duration-500">
+                        <Activity className="w-10 h-10 text-[#bc1b1b]" />
                     </div>
                     <h3 className="text-2xl font-black uppercase tracking-tight mb-3 text-gray-900 dark:text-white relative z-10">Sistema Operativo</h3>
                     <p className="text-sm text-gray-500 font-medium max-w-sm relative z-10 leading-relaxed">
@@ -45,7 +45,7 @@ export default function SAResumen() {
                 
                 <div className="bg-white dark:bg-surface-card border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8">
                     <div className="flex items-center gap-3 mb-8">
-                        <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
+                        <div className="p-2 bg-[#bc1b1b]/10 rounded-xl text-[#bc1b1b]">
                             <Crown className="w-5 h-5" />
                         </div>
                         <h3 className="text-lg font-black uppercase tracking-tight text-gray-900 dark:text-white">Salud de Suscripciones</h3>
@@ -56,7 +56,7 @@ export default function SAResumen() {
                                 <div className="flex items-center gap-4">
                                     <div className={clsx(
                                         "w-3 h-3 rounded-full shadow-sm",
-                                        plan.nombre === 'PRO' ? 'bg-amber-500' : plan.nombre === 'PREMIUM' ? 'bg-brand-primary' : 'bg-gray-400'
+                                        plan.nombre === 'PRO' ? 'bg-[#ffbe0b]' : plan.nombre === 'PREMIUM' ? 'bg-[#bc1b1b]' : 'bg-gray-400'
                                     )} />
                                     <span className="text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300">{plan.label}</span>
                                 </div>

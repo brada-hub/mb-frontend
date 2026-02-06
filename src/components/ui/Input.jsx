@@ -29,16 +29,16 @@ const Input = forwardRef(({
                 <div className="flex items-center gap-2.5 mb-2.5 px-1 cursor-pointer" onClick={() => document.getElementById(inputId)?.focus()}>
                     {Icon && <Icon className={clsx(
                         "w-5 h-5 transition-colors",
-                        error ? "text-red-400" : "text-gray-500 dark:text-gray-400 group-focus-within:text-brand-primary"
+                        error ? "text-red-400" : "text-gray-500 dark:text-gray-400 group-focus-within:text-[#bc1b1b]"
                     )} />}
                     <label 
                         htmlFor={inputId}
                         className={clsx(
                             "text-sm font-bold tracking-tight transition-colors cursor-pointer",
-                            error ? "text-red-400" : "text-gray-700 dark:text-gray-300 group-focus-within:text-brand-primary"
+                            error ? "text-red-400" : "text-gray-700 dark:text-gray-300 group-focus-within:text-[#bc1b1b]"
                         )}
                     >
-                        {label} {props.required && <span className="text-brand-primary">*</span>}
+                        {label} {props.required && <span className="text-[#bc1b1b]">*</span>}
                     </label>
                 </div>
             )}
@@ -66,7 +66,7 @@ const Input = forwardRef(({
                         isPassword && 'pr-12',
                         error 
                             ? 'border-red-500/50 ring-2 ring-red-500/20 focus:ring-red-500/40' 
-                            : 'border-surface-border focus:ring-brand-primary/30 hover:border-gray-300 dark:hover:border-white/10 focus:border-brand-primary/50',
+                            : 'border-surface-border focus:ring-[#bc1b1b]/30 hover:border-gray-300 dark:hover:border-white/10 focus:border-[#bc1b1b]/50',
                         className
                     )}
                     {...props}

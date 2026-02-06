@@ -184,8 +184,8 @@ export default function MiembrosList() {
 
         const rate = stat.rate;
         const color = rate >= 80 ? 'bg-green-500/10 text-green-500 border-green-500/20' : 
-                      rate >= 50 ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 
-                      'bg-red-500/10 text-red-500 border-red-500/20';
+                      rate >= 50 ? 'bg-[#ffbe0b]/10 text-[#ffbe0b] border-[#ffbe0b]/20' : 
+                      'bg-[#bc1b1b]/10 text-[#bc1b1b] border-[#bc1b1b]/20';
         
         return (
             <div className={clsx("flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border", color)}>
@@ -203,7 +203,7 @@ export default function MiembrosList() {
             className={clsx(
                 "w-11 h-11 flex items-center justify-center rounded-xl transition-all active:scale-90 shadow-sm",
                 variant === 'sos' 
-                    ? "bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/10" 
+                    ? "bg-[#bc1b1b]/10 hover:bg-[#bc1b1b]/20 text-[#bc1b1b] border border-[#bc1b1b]/10" 
                     : "bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/10"
             )}
             title={variant === 'sos' ? `SOS: Contactar a ${name}` : `Contactar a ${name}`}
@@ -245,7 +245,7 @@ export default function MiembrosList() {
                     href={mapsUrl} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="w-11 h-11 flex items-center justify-center bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-all active:scale-90 border border-blue-500/10 shadow-sm"
+                    className="w-11 h-11 flex items-center justify-center bg-[#bc1b1b]/10 hover:bg-[#bc1b1b]/20 text-[#bc1b1b] rounded-xl transition-all active:scale-90 border border-[#bc1b1b]/10 shadow-sm"
                     title="Ver en Google Maps"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -255,7 +255,7 @@ export default function MiembrosList() {
                     href={whatsappShare} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="w-11 h-11 flex items-center justify-center bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 rounded-xl transition-all active:scale-90 border border-indigo-500/10 shadow-sm"
+                    className="w-11 h-11 flex items-center justify-center bg-[#bc1b1b]/10 hover:bg-[#bc1b1b]/20 text-[#bc1b1b] rounded-xl transition-all active:scale-90 border border-[#bc1b1b]/10 shadow-sm"
                     title="Compartir Info Completa (Dirección + SOS)"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -278,7 +278,7 @@ export default function MiembrosList() {
                     className={clsx(
                         "w-11 h-11 flex items-center justify-center rounded-xl transition-all active:scale-90 border shadow-lg sm:shadow-none",
                         isOpen 
-                            ? "bg-indigo-600 text-white border-indigo-600 shadow-indigo-600/20" 
+                            ? "bg-[#bc1b1b] text-white border-[#bc1b1b] shadow-[#bc1b1b]/20" 
                             : "bg-black/5 dark:bg-white/5 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10 border-surface-border"
                     )}
                 >
@@ -295,15 +295,15 @@ export default function MiembrosList() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <button onClick={() => handleViewProfile(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
-                                <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Ver Perfil Completo
+                                <User className="w-4 h-4 text-[#bc1b1b]" /> Ver Perfil Completo
                             </button>
                             <button onClick={() => handleEdit(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
-                                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Editar Información
+                                <Briefcase className="w-4 h-4 text-[#ffbe0b]" /> Editar Información
                             </button>
                             {/* Solo SuperAdmin puede gestionar permisos */}
                             {isSuperAdmin && (
                                 <button onClick={() => handleOpenPermissions(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left uppercase tracking-widest">
-                                    <Shield className="w-4 h-4 text-monster-purple" /> Gestionar Permisos
+                                    <Shield className="w-4 h-4 text-[#bc1b1b]" /> Gestionar Permisos
                                 </button>
                             )}
                         </motion.div>
@@ -352,7 +352,7 @@ export default function MiembrosList() {
             <div className="fixed bottom-6 right-6 z-[60] md:hidden">
                 <Button 
                     onClick={handleAdd} 
-                    className="w-14 h-14 rounded-full shadow-2xl bg-brand-primary flex items-center justify-center p-0 border-4 border-[#121625]"
+                    className="w-14 h-14 rounded-full shadow-2xl bg-[#bc1b1b] flex items-center justify-center p-0 border-4 border-[#121625]"
                 >
                     <Plus className="w-6 h-6 text-white" />
                 </Button>
@@ -365,7 +365,7 @@ export default function MiembrosList() {
                         <div>
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight transition-colors">Miembros</h1>
-                                <span className="bg-brand-primary/20 text-brand-primary text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border border-brand-primary/30">
+                                <span className="bg-[#bc1b1b]/20 text-[#bc1b1b] text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border border-[#bc1b1b]/30">
                                     {miembros.length}
                                 </span>
                             </div>
@@ -393,7 +393,7 @@ export default function MiembrosList() {
                                         <div 
                                             className={clsx(
                                                 "h-full transition-all duration-1000",
-                                                (catalogs.suscripcion.uso_miembros / catalogs.suscripcion.max_miembros) >= 0.9 ? "bg-red-500" : "bg-brand-primary"
+                                                (catalogs.suscripcion.uso_miembros / catalogs.suscripcion.max_miembros) >= 0.9 ? "bg-red-500" : "bg-[#bc1b1b]"
                                             )}
                                             style={{ width: `${Math.min(100, (catalogs.suscripcion.uso_miembros / catalogs.suscripcion.max_miembros) * 100)}%` }}
                                         />
@@ -409,7 +409,7 @@ export default function MiembrosList() {
                                         "h-10 px-5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
                                         catalogs.suscripcion?.uso_miembros >= catalogs.suscripcion?.max_miembros 
                                             ? "bg-gray-800 text-gray-500 cursor-not-allowed grayscale" 
-                                            : "bg-brand-primary hover:bg-brand-primary/90"
+                                            : "bg-[#bc1b1b] hover:bg-[#bc1b1b]/90"
                                     )}
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
@@ -427,7 +427,7 @@ export default function MiembrosList() {
                                 <input 
                                     type="text"
                                     placeholder="BUSCAR..."
-                                    className="w-full bg-surface-input border border-surface-border rounded-xl py-2.5 sm:py-3 pl-11 pr-4 text-[9px] sm:text-[10px] font-bold text-gray-900 dark:text-white uppercase placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-brand-primary/50 transition-all h-10 sm:h-12"
+                                    className="w-full bg-surface-input border border-surface-border rounded-xl py-2.5 sm:py-3 pl-11 pr-4 text-[9px] sm:text-[10px] font-bold text-gray-900 dark:text-white uppercase placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-[#bc1b1b]/50 transition-all h-10 sm:h-12"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                 />
@@ -437,7 +437,7 @@ export default function MiembrosList() {
                         {/* Filtros - 20% approx */}
                         <div className="flex lg:flex-[3] gap-2">
                              <select 
-                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
                                 value={filterInstrument}
                                 onChange={(e) => setFilterInstrument(e.target.value)}
                             >
@@ -448,7 +448,7 @@ export default function MiembrosList() {
                             </select>
  
                             <select 
-                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-brand-primary/50 transition-colors"
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
                             >
@@ -475,7 +475,7 @@ export default function MiembrosList() {
                                 animate={{ opacity: 1 }}
                                 className="py-20 text-center text-gray-500 border border-surface-border rounded-[40px] bg-black/5 dark:bg-white/5 border-dashed mx-4 transition-colors"
                             >
-                                <Search className="w-12 h-12 mx-auto mb-4 opacity-50 text-brand-primary" />
+                                <Search className="w-12 h-12 mx-auto mb-4 opacity-50 text-[#bc1b1b]" />
                                 <p className="text-xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight transition-colors">Sin resultados</p>
                                 <p className="text-[10px] font-bold uppercase tracking-widest">No encontramos miembros con esos filtros</p>
                             </motion.div>
@@ -524,12 +524,12 @@ export default function MiembrosList() {
                                                     <div className="flex items-center gap-4">
                                                         <div className={clsx(
                                                             "w-12 h-12 md:w-11 md:h-11 rounded-2xl flex items-center justify-center font-black text-sm transition-all group-hover:scale-110",
-                                                            isInactive ? "bg-red-500/10 text-red-500" : "bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 shadow-xl shadow-indigo-600/10"
+                                                            isInactive ? "bg-[#bc1b1b]/10 text-[#bc1b1b]" : "bg-[#bc1b1b]/20 text-[#bc1b1b] shadow-xl shadow-[#bc1b1b]/10"
                                                         )}>
                                                             {miembro.nombres.charAt(0)}{miembro.apellidos.charAt(0)}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-none mb-1 truncate">
+                                                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-[#bc1b1b] transition-colors leading-none mb-1 truncate">
                                                                 {miembro.nombres}
                                                             </p>
                                                             <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest opacity-60 truncate transition-colors">
@@ -548,7 +548,7 @@ export default function MiembrosList() {
                                                             <select
                                                                 value={miembro.id_rol}
                                                                 onChange={(e) => handleRoleChange(e.target.value)}
-                                                                className="bg-black/10 dark:bg-black/30 border-surface-border border rounded-lg h-8 px-2 text-[9px] font-black uppercase text-indigo-600 dark:text-indigo-400 focus:ring-1 focus:ring-indigo-500/50 outline-none w-full cursor-pointer transition-colors"
+                                                                className="bg-black/10 dark:bg-black/30 border-surface-border border rounded-lg h-8 px-2 text-[9px] font-black uppercase text-[#bc1b1b] focus:ring-1 focus:ring-[#bc1b1b]/50 outline-none w-full cursor-pointer transition-colors"
                                                             >
                                                                 {catalogs.roles?.map(r => (
                                                                     <option key={r.id_rol} value={r.id_rol} className="bg-surface-card">{r.rol}</option>
@@ -569,7 +569,7 @@ export default function MiembrosList() {
 
                                                         {/* S.O.S */}
                                                         <div className="flex flex-col md:items-center gap-2 p-3 bg-black/5 dark:bg-white/5 md:bg-transparent rounded-2xl md:p-0 transition-colors">
-                                                            <span className="md:hidden text-[9px] font-black text-red-500/70 uppercase tracking-widest">S.O.S:</span>
+                                                            <span className="md:hidden text-[9px] font-black text-[#bc1b1b]/70 uppercase tracking-widest">S.O.S:</span>
                                                             {emergencyContact ? (
                                                                 <WhatsAppButton phone={emergencyContact.celular} name={emergencyContact.nombres_apellidos} variant="sos" />
                                                             ) : (
@@ -579,7 +579,7 @@ export default function MiembrosList() {
 
                                                         {/* Ubicación (GPS) */}
                                                         <div className="flex flex-col md:items-center gap-2 p-3 bg-black/5 dark:bg-white/5 md:bg-transparent rounded-2xl md:p-0 transition-colors">
-                                                            <span className="md:hidden text-[9px] font-black text-blue-500/70 uppercase tracking-widest">Gps:</span>
+                                                            <span className="md:hidden text-[9px] font-black text-[#bc1b1b]/70 uppercase tracking-widest">Gps:</span>
                                                             <LocationButton miembro={miembro} />
                                                         </div>
 

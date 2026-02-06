@@ -96,7 +96,7 @@ export default function FormacionModal({ isOpen, onClose, onSuccess, formacionTo
                 {/* Header */}
                 <div className="p-8 border-b border-white/5 flex items-center justify-between shrink-0 bg-surface-card/50 backdrop-blur-xl">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center text-indigo-400">
+                        <div className="w-12 h-12 bg-[#bc1b1b]/20 rounded-2xl flex items-center justify-center text-[#bc1b1b]">
                             <Users className="w-6 h-6" />
                         </div>
                         <div>
@@ -134,7 +134,7 @@ export default function FormacionModal({ isOpen, onClose, onSuccess, formacionTo
                                         placeholder="Detalles sobre cuándo usar esta formación..."
                                         value={formData.descripcion}
                                         onChange={e => setFormData({...formData, descripcion: e.target.value})}
-                                        className="w-full bg-white/5 border border-white/5 rounded-[2rem] p-6 text-sm font-bold text-white outline-none focus:border-indigo-500/50 transition-all min-h-[120px]"
+                                        className="w-full bg-white/5 border border-white/5 rounded-[2rem] p-6 text-sm font-bold text-white outline-none focus:border-[#bc1b1b]/50 transition-all min-h-[120px]"
                                     />
                                 </div>
                             </div>
@@ -149,7 +149,7 @@ export default function FormacionModal({ isOpen, onClose, onSuccess, formacionTo
                                             placeholder="Buscar músico..."
                                             value={searchMember}
                                             onChange={e => setSearchMember(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/5 rounded-full py-1.5 pl-8 pr-4 text-[10px] text-white outline-none focus:border-indigo-500/50"
+                                            className="w-full bg-white/5 border border-white/5 rounded-full py-1.5 pl-8 pr-4 text-[10px] text-white outline-none focus:border-[#bc1b1b]/50"
                                         />
                                     </div>
                                 </div>
@@ -166,7 +166,7 @@ export default function FormacionModal({ isOpen, onClose, onSuccess, formacionTo
                                                     className={clsx(
                                                         "w-full flex items-center justify-between p-3 rounded-2xl transition-all group",
                                                         isSelected 
-                                                            ? "bg-indigo-600 text-white" 
+                                                            ? "bg-[#bc1b1b] text-white" 
                                                             : "hover:bg-white/5 text-gray-400 hover:text-white"
                                                     )}
                                                 >
@@ -189,7 +189,7 @@ export default function FormacionModal({ isOpen, onClose, onSuccess, formacionTo
                                                     </div>
                                                     <div className={clsx(
                                                         "w-5 h-5 rounded-full border flex items-center justify-center transition-all",
-                                                        isSelected ? "bg-white border-white text-indigo-600 scale-110" : "border-white/10 text-transparent"
+                                                        isSelected ? "bg-white border-white text-[#bc1b1b] scale-110" : "border-white/10 text-transparent"
                                                     )}>
                                                         <Check className="w-3 h-3 stroke-[4]" />
                                                     </div>

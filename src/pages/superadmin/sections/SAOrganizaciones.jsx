@@ -1,5 +1,5 @@
 import { Building2, Plus, Eye, Settings, Crown, Users } from 'lucide-react';
-import logoMb from '../../../assets/logo_mb.png';
+import logoMb from '../../../assets/logo.png';
 import { useOutletContext } from 'react-router-dom';
 
 export default function SAOrganizaciones() {
@@ -11,7 +11,7 @@ export default function SAOrganizaciones() {
                 <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight pl-2">Organizaciones</h2>
                 <button
                     onClick={handleOpenCreate}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-brand-primary hover:bg-brand-dark text-white text-[10px] sm:text-xs font-black uppercase rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-brand-primary/20 active:scale-95"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-[#bc1b1b] hover:bg-[#991b1b] text-white text-[10px] sm:text-xs font-black uppercase rounded-xl sm:rounded-2xl transition-all shadow-lg shadow-[#bc1b1b]/20 active:scale-95"
                 >
                     <Plus className="w-3.5 h-3.5 sm:w-4 h-4" />
                     Nueva Org
@@ -31,7 +31,7 @@ export default function SAOrganizaciones() {
                             <div className="min-w-0">
                                 <h3 className="text-gray-900 dark:text-white font-black text-sm sm:text-lg truncate flex items-center gap-2 leading-tight">
                                     {banda.nombre}
-                                    {!banda.estado && <span className="px-1.5 py-0.5 bg-red-500 text-white text-[8px] rounded-md">OFF</span>}
+                                    {!banda.estado && <span className="px-1.5 py-0.5 bg-[#bc1b1b] text-white text-[8px] rounded-md">OFF</span>}
                                 </h3>
                                 <div className="flex items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1 text-gray-500 dark:text-gray-400">
                                     <span className="flex items-center gap-1 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider bg-gray-100 dark:bg-white/5 px-1.5 py-0.5 rounded-md text-gray-600 dark:text-gray-300">
@@ -46,7 +46,7 @@ export default function SAOrganizaciones() {
                         <div className="flex items-center gap-1 sm:gap-2">
                             <button
                                 onClick={() => handleImpersonate(banda.id_banda)}
-                                className="p-2 sm:p-3 hover:bg-brand-primary/10 hover:text-brand-primary rounded-lg sm:rounded-xl transition-colors text-gray-400"
+                                className="p-2 sm:p-3 hover:bg-[#bc1b1b]/10 hover:text-[#bc1b1b] rounded-lg sm:rounded-xl transition-colors text-gray-400"
                                 title="Ingresar como Admin"
                             >
                                 <Eye className="w-4 h-4 sm:w-5 sm:h-5" />

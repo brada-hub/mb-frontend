@@ -39,11 +39,11 @@ function PasswordChangeSection() {
 
     return (
         <div className="bg-surface-card/60 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-amber-500/20 transition-colors duration-700" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#ffbe0b]/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-[#ffbe0b]/20 transition-colors duration-700" />
             
             <div className="flex items-center justify-between mb-6 relative z-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-500">
+                    <div className="p-3 bg-[#ffbe0b]/10 rounded-2xl text-[#ffbe0b]">
                         <Key className="w-5 h-5" />
                     </div>
                     <div>
@@ -54,7 +54,7 @@ function PasswordChangeSection() {
                 {!isOpen && (
                     <Button 
                         onClick={() => setIsOpen(true)}
-                        className="bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[9px] px-4 h-9 rounded-xl shadow-lg shadow-amber-500/20"
+                        className="bg-[#ffbe0b] hover:bg-[#e0a800] text-black font-black uppercase tracking-widest text-[9px] px-4 h-9 rounded-xl shadow-lg shadow-[#ffbe0b]/20"
                     >
                         Cambiar
                     </Button>
@@ -81,7 +81,7 @@ function PasswordChangeSection() {
                             <button 
                                 type="button" 
                                 onClick={() => setShowPass(!showPass)}
-                                className="absolute right-4 top-[38px] text-gray-400 hover:text-brand-primary transition-colors"
+                                className="absolute right-4 top-[38px] text-gray-400 hover:text-[#bc1b1b] transition-colors"
                             >
                                 {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -120,7 +120,7 @@ function PasswordChangeSection() {
                             </Button>
                             <Button 
                                 loading={loading}
-                                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-widest text-[9px] h-11 rounded-xl shadow-xl shadow-amber-500/20"
+                                className="flex-1 bg-[#ffbe0b] hover:bg-[#e0a800] text-black font-black uppercase tracking-widest text-[9px] h-11 rounded-xl shadow-xl shadow-[#ffbe0b]/20"
                             >
                                 Actualizar
                             </Button>
@@ -216,7 +216,7 @@ export default function ProfilePage() {
             {/* New Header Section */}
             <div className="relative group">
                 <div className="h-44 md:h-64 rounded-[2.5rem] overflow-hidden relative shadow-2xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-brand-dark to-purple-900 animate-gradient-slow shadow-inner" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#bc1b1b] via-[#000000] to-[#991b1b] animate-gradient-slow shadow-inner" />
                     <div className="absolute inset-0 bg-[url('/patterns/topography.svg')] opacity-[0.03]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     
@@ -234,14 +234,14 @@ export default function ProfilePage() {
                                 <>
                                     <button 
                                         onClick={() => { setEditMode(false); reset(); }}
-                                        className="bg-red-500/20 hover:bg-red-500/30 text-red-100 border border-red-500/30 font-black uppercase tracking-widest text-[10px] h-10 px-5 rounded-2xl transition-all flex items-center gap-2"
+                                        className="bg-[#bc1b1b]/20 hover:bg-[#bc1b1b]/30 text-white border border-[#bc1b1b]/30 font-black uppercase tracking-widest text-[10px] h-10 px-5 rounded-2xl transition-all flex items-center gap-2"
                                     >
                                         Cancelar
                                     </button>
                                     <button 
                                         onClick={handleSubmit(onSubmit)}
                                         disabled={loading}
-                                        className="bg-indigo-500 hover:bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-2xl shadow-xl shadow-indigo-500/30 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50"
+                                        className="bg-[#bc1b1b] hover:bg-[#991b1b] text-white font-black uppercase tracking-widest text-[10px] h-10 px-6 rounded-2xl shadow-xl shadow-[#bc1b1b]/30 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50"
                                     >
                                         <Save className="w-4 h-4" /> <span>{loading ? 'Guardando...' : 'Guardar'}</span>
                                     </button>
@@ -254,17 +254,17 @@ export default function ProfilePage() {
                 {/* Profile Identity Card */}
                 <div className="relative -mt-16 md:-mt-20 px-6 md:px-12 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8">
                     <div className="relative group/avatar">
-                        <div className="w-32 h-32 md:w-44 md:h-44 rounded-[3rem] bg-indigo-600 p-1 shadow-2xl ring-8 ring-black/40 overflow-hidden transform transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-2">
+                        <div className="w-32 h-32 md:w-44 md:h-44 rounded-[3rem] bg-[#bc1b1b] p-1 shadow-2xl ring-8 ring-black/40 overflow-hidden transform transition-all duration-500 group-hover/avatar:scale-105 group-hover/avatar:rotate-2">
                              {user?.miembro?.foto ? (
                                 <img src={user.miembro.foto} alt="Profile" className="w-full h-full object-cover rounded-[2.8rem]" />
                             ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-5xl font-black text-white rounded-[2.8rem]">
+                                <div className="w-full h-full bg-gradient-to-br from-[#bc1b1b] to-[#ffbe0b] flex items-center justify-center text-5xl font-black text-white rounded-[2.8rem]">
                                     {user?.miembro?.nombres?.charAt(0)}
                                 </div>
                             )}
                         </div>
                         {editMode && canEditView && (
-                            <button className="absolute bottom-1 right-1 p-3 bg-brand-primary text-white rounded-2xl shadow-2xl hover:scale-110 active:scale-90 transition-all border-4 border-black/20">
+                            <button className="absolute bottom-1 right-1 p-3 bg-[#bc1b1b] text-white rounded-2xl shadow-2xl hover:scale-110 active:scale-90 transition-all border-4 border-black/20">
                                 <Camera className="w-5 h-5" />
                             </button>
                         )}
@@ -273,13 +273,13 @@ export default function ProfilePage() {
                     <div className="text-center md:text-left pb-4 space-y-3">
                         <div className="space-y-1">
                             <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
-                                {user?.miembro?.nombres} <span className="text-indigo-400">{user?.miembro?.apellidos}</span>
+                                {user?.miembro?.nombres} <span className="text-[#ffbe0b]">{user?.miembro?.apellidos}</span>
                             </h1>
                             <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px]">Información de la cuenta</p>
                         </div>
                         
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                            <span className="px-4 py-1.5 bg-indigo-500/20 backdrop-blur-md rounded-full text-[10px] font-black text-indigo-300 border border-indigo-500/20 uppercase tracking-widest shadow-lg">
+                            <span className="px-4 py-1.5 bg-[#bc1b1b]/20 backdrop-blur-md rounded-full text-[10px] font-black text-[#bc1b1b] border border-[#bc1b1b]/20 uppercase tracking-widest shadow-lg">
                                 {user?.miembro?.rol?.rol || 'Miembro'}
                             </span>
                             <span className="px-4 py-1.5 bg-white/5 backdrop-blur-md rounded-full text-[10px] font-black text-gray-300 border border-white/5 uppercase tracking-widest shadow-lg">
@@ -298,16 +298,16 @@ export default function ProfilePage() {
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { icon: Smartphone, label: 'Celular', value: user?.miembro?.celular || '---', color: 'indigo' },
-                    { icon: Music2, label: 'Instrumento', value: user?.miembro?.instrumento?.instrumento || 'No asignado', color: 'purple' },
-                    { icon: Calendar, label: 'Nacimiento', value: user?.miembro?.fecha ? new Date(user.miembro.fecha).toLocaleDateString() : '---', color: 'blue' },
+                    { icon: Smartphone, label: 'Celular', value: user?.miembro?.celular || '---', color: 'red' },
+                    { icon: Music2, label: 'Instrumento', value: user?.miembro?.instrumento?.instrumento || 'No asignado', color: 'gold' },
+                    { icon: Calendar, label: 'Nacimiento', value: user?.miembro?.fecha ? new Date(user.miembro.fecha).toLocaleDateString() : '---', color: 'gray' },
                     { icon: Layout, label: 'Categoría', value: user?.miembro?.categoria?.categoria || 'ESTÁNDAR', color: 'emerald' }
                 ].map((item, i) => (
                     <div key={i} className="bg-surface-card/40 backdrop-blur-xl border border-white/5 p-5 rounded-3xl shadow-xl flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                         <div className={clsx("p-3 rounded-2xl mb-3 shadow-lg transition-transform group-hover:scale-110", {
-                            'bg-indigo-500/10 text-indigo-500': item.color === 'indigo',
-                            'bg-purple-500/10 text-purple-500': item.color === 'purple',
-                            'bg-blue-500/10 text-blue-500': item.color === 'blue',
+                            'bg-[#bc1b1b]/10 text-[#bc1b1b]': item.color === 'red',
+                            'bg-[#ffbe0b]/10 text-[#ffbe0b]': item.color === 'gold',
+                            'bg-gray-500/10 text-gray-500': item.color === 'gray',
                             'bg-emerald-500/10 text-emerald-500': item.color === 'emerald'
                         })}>
                             <item.icon className="w-5 h-5" />
@@ -322,10 +322,10 @@ export default function ProfilePage() {
                 <div className="lg:col-span-2 space-y-8">
                     {/* Datos Personales */}
                     <div className="bg-surface-card border border-white/5 rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl backdrop-blur-md">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-3xl rounded-full -mr-32 -mt-32" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#bc1b1b]/5 blur-3xl rounded-full -mr-32 -mt-32" />
                         
                         <div className="flex items-center gap-4 mb-10 relative">
-                            <div className="p-3 bg-brand-primary/10 rounded-2xl text-brand-primary shadow-inner">
+                            <div className="p-3 bg-[#bc1b1b]/10 rounded-2xl text-[#bc1b1b] shadow-inner">
                                 <User className="w-6 h-6" />
                             </div>
                             <div>
@@ -415,12 +415,12 @@ export default function ProfilePage() {
                     <PasswordChangeSection />
 
                     {/* Contacto de Emergencia */}
-                    <div className="bg-red-500/5 border border-red-500/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-32 h-32 bg-red-500/5 blur-3xl rounded-full -ml-16 -mt-16 group-hover:bg-red-500/10 transition-colors duration-700" />
+                    <div className="bg-[#bc1b1b]/5 border border-[#bc1b1b]/10 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 w-32 h-32 bg-[#bc1b1b]/5 blur-3xl rounded-full -ml-16 -mt-16 group-hover:bg-[#bc1b1b]/10 transition-colors duration-700" />
                         
                         <div className="flex items-center justify-between mb-10 relative z-10">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-red-500/10 rounded-2xl text-red-500 shadow-inner">
+                                <div className="p-3 bg-[#bc1b1b]/10 rounded-2xl text-[#bc1b1b] shadow-inner">
                                     <AlertCircle className="w-6 h-6" />
                                 </div>
                                 <div>
@@ -435,7 +435,7 @@ export default function ProfilePage() {
                                     {...register('has_emergency_contact')} 
                                     className="sr-only peer" 
                                 />
-                                <div className="w-12 h-6 bg-white/5 border border-white/10 rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500 transition-colors shadow-inner"></div>
+                                <div className="w-12 h-6 bg-white/5 border border-white/10 rounded-full peer peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#bc1b1b] transition-colors shadow-inner"></div>
                             </label>
                         </div>
 
@@ -444,14 +444,14 @@ export default function ProfilePage() {
                                 label="Nombre de Contacto" 
                                 disabled={!editMode || !hasEmergencyContact}
                                 onInput={filterLetters}
-                                className={clsx("uppercase font-black bg-white/5 border-white/10", !editMode && "border-transparent bg-transparent pl-0 text-xl text-red-500")}
+                                className={clsx("uppercase font-black bg-white/5 border-white/10", !editMode && "border-transparent bg-transparent pl-0 text-xl text-[#bc1b1b]")}
                                 {...register('contacto_nombre', { required: hasEmergencyContact })} 
                             />
                             <Input 
                                 label="Celular de Contacto" 
                                 disabled={!editMode || !hasEmergencyContact}
                                 onInput={filterNumbers}
-                                className={clsx("font-black bg-white/5 border-white/10", !editMode && "border-transparent bg-transparent pl-0 text-xl text-red-500")}
+                                className={clsx("font-black bg-white/5 border-white/10", !editMode && "border-transparent bg-transparent pl-0 text-xl text-[#bc1b1b]")}
                                 {...register('contacto_celular', { required: hasEmergencyContact })} 
                             />
                         </div>

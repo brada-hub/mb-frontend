@@ -131,7 +131,7 @@ export default function BibliotecaList() {
                                 className={clsx(
                                     "h-10 sm:h-12 px-3 sm:px-4 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 border shrink-0",
                                     editMode 
-                                        ? "bg-brand-primary/20 border-brand-primary text-brand-primary" 
+                                        ? "bg-[#bc1b1b]/20 border-[#bc1b1b] text-[#bc1b1b]" 
                                         : "bg-surface-card border-surface-border text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10"
                                 )}
                             >
@@ -153,7 +153,7 @@ export default function BibliotecaList() {
                                     setGenreToEdit(null);
                                     setIsCatalogModalOpen(true);
                                 }}
-                                className="h-10 sm:h-11 px-4 sm:px-5 rounded-xl shrink-0 z-50 shadow-lg bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center gap-2 active:scale-95 transition-all text-white"
+                                className="h-10 sm:h-11 px-4 sm:px-5 rounded-xl shrink-0 z-50 shadow-lg bg-[#bc1b1b] hover:bg-[#991b1b] flex items-center justify-center gap-2 active:scale-95 transition-all text-white"
                             >
                                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
                                 <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest hidden sm:inline">AÑADIR</span>
@@ -175,7 +175,7 @@ export default function BibliotecaList() {
                                     className={clsx(
                                         "relative flex flex-col rounded-2xl sm:rounded-[32px] transition-all duration-500 group overflow-hidden shadow-xl shrink-0 cursor-pointer border-2",
                                         selectedGenero?.id_genero === gen.id_genero
-                                            ? "border-brand-primary bg-brand-primary/5 sm:scale-[1.02] z-10"
+                                            ? "border-[#bc1b1b] bg-[#bc1b1b]/5 sm:scale-[1.02] z-10"
                                             : "border-surface-border hover:border-gray-300 dark:hover:border-white/20"
                                     )}
                                 >
@@ -214,7 +214,7 @@ export default function BibliotecaList() {
                                                     setGenreToEdit(gen);
                                                     setIsCatalogModalOpen(true);
                                                 }}
-                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-blue-500/10 text-blue-600 dark:text-blue-500/50 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-blue-500/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
+                                                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-[#ffbe0b]/10 text-[#ffbe0b] dark:text-[#ffbe0b]/50 hover:text-[#ffbe0b] dark:hover:text-[#ffbe0b] hover:bg-[#ffbe0b]/10 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95"
                                             >
                                                 <Edit className="w-4 h-4" /> <span className="hidden sm:inline">EDITAR</span>
                                             </button>
@@ -247,7 +247,7 @@ export default function BibliotecaList() {
                     {mobileView === 'themes' && (
                         <button 
                             onClick={() => setMobileView('genres')}
-                            className="lg:hidden flex items-center gap-2 mb-2 sm:mb-4 text-indigo-400 font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] bg-indigo-400/10 w-full justify-center py-2.5 sm:py-4 rounded-xl sm:rounded-2xl border border-indigo-500/20 active:scale-95 transition-all"
+                            className="lg:hidden flex items-center gap-2 mb-2 sm:mb-4 text-[#bc1b1b] font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] bg-[#bc1b1b]/10 w-full justify-center py-2.5 sm:py-4 rounded-xl sm:rounded-2xl border border-[#bc1b1b]/20 active:scale-95 transition-all"
                         >
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" /> Volver a Géneros
                         </button>
@@ -277,7 +277,7 @@ export default function BibliotecaList() {
                                     setEditTemaInitialData(null);
                                     setIsTemaModalOpen(true);
                                 }} 
-                                className="h-10 sm:h-12 px-4 sm:px-5 rounded-xl sm:rounded-2xl shrink-0 z-50 shadow-lg bg-brand-primary hover:bg-indigo-500 flex items-center justify-center gap-2 active:scale-95 transition-all text-white w-auto"
+                                className="h-10 sm:h-12 px-4 sm:px-5 rounded-xl sm:rounded-2xl shrink-0 z-50 shadow-lg bg-[#bc1b1b] hover:bg-[#991b1b] flex items-center justify-center gap-2 active:scale-95 transition-all text-white w-auto"
                             >
                                 <Plus className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={3} />
                                 <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest hidden sm:inline">AÑADIR</span>
@@ -296,23 +296,23 @@ export default function BibliotecaList() {
                                         onClick={authorized ? () => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`) : undefined}
                                         className={clsx(
                                             "group bg-surface-card border border-surface-border rounded-2xl sm:rounded-3xl p-3 sm:p-6 transition-all duration-300 hover:shadow-2xl",
-                                            authorized ? "hover:border-indigo-500/30 sm:hover:-translate-y-1 cursor-pointer" : "cursor-default"
+                                            authorized ? "hover:border-[#bc1b1b]/30 sm:hover:-translate-y-1 cursor-pointer" : "cursor-default"
                                         )}
                                     >
                                         <div className="flex items-start justify-between mb-2 sm:mb-4">
                                             <div className="flex items-center gap-3 sm:gap-4 text-left">
-                                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover:bg-indigo-600/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors shrink-0">
+                                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-black/5 dark:bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover:bg-[#bc1b1b]/20 group-hover:text-[#bc1b1b] transition-colors shrink-0">
                                                     <Music className="w-5 h-5 sm:w-6 sm:h-6" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-gray-900 dark:text-white font-black text-base sm:text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors uppercase tracking-tight leading-tight line-clamp-2">
+                                                    <h4 className="text-gray-900 dark:text-white font-black text-base sm:text-lg group-hover:text-[#bc1b1b] transition-colors uppercase tracking-tight leading-tight line-clamp-2">
                                                         {tema.nombre_tema}
                                                     </h4>
                                                     <p className="text-[9px] sm:text-[10px] text-gray-500 font-black uppercase tracking-widest truncate transition-colors">{selectedGenero?.nombre_genero}</p>
                                                 </div>
                                             </div>
                                             {authorized && (
-                                                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-lg sm:rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all flex items-center justify-center shrink-0 shadow-lg active:scale-90">
+                                                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-lg sm:rounded-xl group-hover:bg-[#bc1b1b] group-hover:text-white transition-all flex items-center justify-center shrink-0 shadow-lg active:scale-90">
                                                     <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                                                 </div>
                                             )}
@@ -349,7 +349,7 @@ export default function BibliotecaList() {
                                                         <span className="truncate">{displayPartituras} <span className="hidden sm:inline">PARTITURAS</span><span className="sm:hidden">PART.</span></span>
                                                     </div>
                                                     <div className="w-px h-2.5 sm:h-3 bg-surface-border shrink-0"></div>
-                                                    <div className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400/60 flex-1 justify-center min-w-0 transition-colors">
+                                                    <div className="flex items-center gap-1 text-[#ffbe0b] dark:text-[#ffbe0b]/80 flex-1 justify-center min-w-0 transition-colors">
                                                         <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" />
                                                         <span className="truncate">{displayGuias} <span className="hidden sm:inline">GUÍAS</span><span className="sm:hidden">GUÍA</span></span>
                                                     </div>
@@ -437,7 +437,7 @@ export default function BibliotecaList() {
                                                     {visualFiles.length > 0 && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setViewerData({ files: visualFiles, initialIndex: 0 }); }}
-                                                            className="flex-[2] flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-indigo-600 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/30 active:scale-95"
+                                                            className="flex-[2] flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-[#bc1b1b] text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-[#991b1b] transition-all shadow-xl shadow-[#bc1b1b]/30 active:scale-95"
                                                         >
                                                             <FileText className="w-4 h-4 sm:w-5 sm:h-5" /> ESTUDIAR
                                                         </button>
@@ -456,7 +456,7 @@ export default function BibliotecaList() {
                                                                         initialIndex: 0 
                                                                     }); 
                                                                 }}
-                                                                className="flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                                                                className="flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-[#ffbe0b]/20 text-[#ffbe0b] hover:bg-[#ffbe0b] hover:text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                                                             >
                                                                 <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                                                             </button>

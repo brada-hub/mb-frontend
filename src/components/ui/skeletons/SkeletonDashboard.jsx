@@ -10,7 +10,7 @@ const Skeleton = ({ className = "", style = {} }) => {
 };
 
 export const SkeletonCard = () => (
-    <div className="p-6 bg-[#1a1b26] rounded-2xl border border-white/5 space-y-4">
+    <div className="p-6 bg-[#0a0a0a] rounded-2xl border border-white/5 space-y-4">
         <div className="flex justify-between items-start">
             <Skeleton className="h-10 w-10 rounded-full" />
             <Skeleton className="h-4 w-12" />
@@ -45,7 +45,7 @@ export const SkeletonDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Chart Area */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-[#1a1b26] rounded-3xl p-6 border border-white/5 h-[400px] flex flex-col space-y-6">
+                    <div className="bg-[#0a0a0a] rounded-3xl p-6 border border-white/5 h-[400px] flex flex-col space-y-6">
                          <div className="flex justify-between">
                             <Skeleton className="h-6 w-48" />
                             <Skeleton className="h-8 w-24" />
@@ -53,7 +53,7 @@ export const SkeletonDashboard = () => {
                          <Skeleton className="flex-1 w-full rounded-xl" />
                     </div>
                     
-                    <div className="bg-[#1a1b26] rounded-3xl p-6 border border-white/5 h-[300px]">
+                    <div className="bg-[#0a0a0a] rounded-3xl p-6 border border-white/5 h-[300px]">
                         <Skeleton className="h-6 w-48 mb-6" />
                         <div className="space-y-4">
                             {[...Array(3)].map((_, i) => (
@@ -65,7 +65,7 @@ export const SkeletonDashboard = () => {
 
                 {/* Side Panel */}
                 <div className="space-y-6">
-                    <div className="bg-[#1a1b26] rounded-3xl p-6 border border-white/5 h-[350px]">
+                    <div className="bg-[#0a0a0a] rounded-3xl p-6 border border-white/5 h-[350px]">
                         <Skeleton className="h-6 w-32 mb-6" />
                         <div className="grid grid-cols-2 gap-4">
                             {[...Array(4)].map((_, i) => (
@@ -74,7 +74,7 @@ export const SkeletonDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="bg-[#1a1b26] rounded-3xl p-6 border border-white/5 h-[350px]">
+                    <div className="bg-[#0a0a0a] rounded-3xl p-6 border border-white/5 h-[350px]">
                         <Skeleton className="h-6 w-40 mb-6" />
                         <div className="space-y-4">
                              {[...Array(4)].map((_, i) => (

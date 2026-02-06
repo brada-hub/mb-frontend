@@ -1,0 +1,7 @@
+src/pages/asistencias/AsistenciasList.jsx:            return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+src/pages/asistencias/AsistenciasList.jsx:                                        className="w-full h-32 bg-black/20 border border-white/5 rounded-2xl p-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all resize-none mb-6"
+src/pages/asistencias/components/MemberHistory.jsx:                                {event.estado === 'JUSTIFICADO' && <span className="text-[8px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-1 rounded-lg font-black uppercase tracking-tighter">Permiso</span>}
+src/pages/eventos/ConvocatoriaEvento.jsx:                                                                                c.asistencia?.estado === 'JUSTIFICADO' && "text-blue-500 bg-blue-500/5 border-blue-500/10"
+src/pages/miembros/MiembrosList.jsx:                    className="w-11 h-11 flex items-center justify-center bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-all active:scale-90 border border-blue-500/10 shadow-sm"
+src/pages/pagos/MisPagos.jsx:                                                    : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+src/pages/pagos/PagosAdmin.jsx:                                                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"

@@ -60,9 +60,9 @@ export const SkeletonCalendar = () => (
         </div>
 
         {/* Panel Principal */}
-        <div className="bg-[#1a1b26] rounded-[32px] overflow-hidden border border-white/5 relative min-h-[700px] flex flex-col shadow-2xl">
+        <div className="bg-[#0a0a0a] rounded-[32px] overflow-hidden border border-white/5 relative min-h-[700px] flex flex-col shadow-2xl">
             {/* Banner Mes */}
-            <div className="p-10 pb-6 flex justify-between items-end border-b border-white/5 bg-gradient-to-r from-brand-primary/5 to-transparent">
+            <div className="p-10 pb-6 flex justify-between items-end border-b border-white/5 bg-gradient-to-r from-[#bc1b1b]/5 to-transparent">
                  <div className="space-y-4">
                       <div className="flex items-center gap-6">
                            <Skeleton variant="rectangle" width="100px" height="60px" className="rounded-2xl opacity-50" />
@@ -88,7 +88,7 @@ export const SkeletonCalendar = () => (
                          <Skeleton variant="text" width="20px" className="mb-2 opacity-30" />
                          {(i === 4 || i === 12 || i === 18 || i === 25) && (
                              <div className="mt-4">
-                                <Skeleton variant="rectangle" width="100%" height="60px" className="opacity-40 bg-brand-primary/20" />
+                                <Skeleton variant="rectangle" width="100%" height="60px" className="opacity-40 bg-[#bc1b1b]/20" />
                              </div>
                          )}
                     </div>
@@ -100,7 +100,7 @@ export const SkeletonCalendar = () => (
 
 // --- SECCIONES (Cards) ------------------------------------------------------
 export const SkeletonSectionCard = () => (
-    <div className="bg-[#1a1b26] border border-white/5 rounded-[40px] p-8 flex flex-col h-[400px] relative overflow-hidden">
+    <div className="bg-[#0a0a0a] border border-white/5 rounded-[40px] p-8 flex flex-col h-[400px] relative overflow-hidden">
         {/* Header Card */}
         <div className="flex items-center gap-5 mb-8">
             <Skeleton variant="rectangle" width="64px" height="64px" className="rounded-3xl shrink-0" />
@@ -159,7 +159,7 @@ export const MemberRowSkeleton = () => (
 
 // Tabla completa (Wrapper)
 export const SkeletonMemberTable = ({ rows = 8 }) => (
-    <div className="bg-[#1a1b26] rounded-3xl border border-white/5 overflow-hidden pb-4">
+    <div className="bg-[#0a0a0a] rounded-3xl border border-white/5 overflow-hidden pb-4">
         {/* Header */}
         <div className="hidden md:grid grid-cols-[1fr_1fr_100px_100px_90px_80px_80px_60px] gap-4 px-8 py-4 border-b border-white/5 bg-white/5">
             {[...Array(8)].map((_, i) => <Skeleton key={i} variant="text" width="100%" className="opacity-30" />)}
@@ -186,7 +186,7 @@ export const SkeletonMemberTable = ({ rows = 8 }) => (
 export const SkeletonGenreList = () => (
     <div className="flex flex-col gap-3 animate-in fade-in duration-300">
         {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-32 rounded-[32px] bg-[#1a1b26] border border-white/5 relative p-6 flex flex-col justify-center overflow-hidden">
+            <div key={i} className="h-32 rounded-[32px] bg-[#0a0a0a] border border-white/5 relative p-6 flex flex-col justify-center overflow-hidden">
                 <div className="space-y-3 relative z-10 w-[60%]">
                     <Skeleton variant="text" width="80%" height="24px" />
                     <Skeleton variant="rectangle" width="80px" height="20px" className="rounded-full opacity-50" />
@@ -204,7 +204,7 @@ export const SkeletonGenreList = () => (
 export const SkeletonRepertoireGrid = () => (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 px-1">
         {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-[#1a1b26] border border-white/5 rounded-3xl p-6 h-[160px] flex flex-col justify-between">
+            <div key={i} className="bg-[#0a0a0a] border border-white/5 rounded-3xl p-6 h-[160px] flex flex-col justify-between">
                  {/* Top: Icon + Title + Arrow */}
                  <div className="flex items-start justify-between">
                      <div className="flex items-center gap-4 w-full">
@@ -238,7 +238,7 @@ export const SkeletonAsistencia = () => (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
             <div className="xl:col-span-4 space-y-4">
                 {[...Array(3)].map((_, i) => (
-                    <div key={i} className="bg-[#1a1b26] border border-white/5 rounded-[2rem] p-5 h-[140px] flex flex-col justify-between relative overflow-hidden">
+                    <div key={i} className="bg-[#0a0a0a] border border-white/5 rounded-[2rem] p-5 h-[140px] flex flex-col justify-between relative overflow-hidden">
                         <div className="flex justify-between items-start">
                              <Skeleton variant="rectangle" width="60px" height="20px" className="rounded-md opacity-30" />
                              <Skeleton variant="rectangle" width="50px" height="16px" className="rounded opacity-20" />
@@ -259,7 +259,7 @@ export const SkeletonAsistencia = () => (
                 ))}
             </div>
             <div className="xl:col-span-8">
-                <div className="bg-[#1a1b26] border border-white/5 rounded-3xl h-[400px] flex flex-col items-center justify-center p-8 text-center opacity-50">
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-3xl h-[400px] flex flex-col items-center justify-center p-8 text-center opacity-50">
                     <Skeleton variant="rectangle" width="80px" height="80px" className="rounded-3xl opacity-10 mb-6" />
                     <Skeleton variant="text" width="60%" height="24px" className="opacity-20 mb-2" />
                     <Skeleton variant="text" width="40%" height="16px" className="opacity-10" />
@@ -273,7 +273,7 @@ export const SkeletonAsistencia = () => (
 export const SkeletonList = ({ items = 5 }) => (
     <div className="space-y-4">
         {[...Array(items)].map((_, i) => (
-            <div key={i} className="bg-[#1a1b26] p-4 rounded-2xl border border-white/5 flex items-center space-x-4">
+            <div key={i} className="bg-[#0a0a0a] p-4 rounded-2xl border border-white/5 flex items-center space-x-4">
                 <Skeleton variant="rectangle" width="48px" height="48px" className="rounded-xl" />
                 <div className="flex-1 space-y-2">
                     <Skeleton variant="text" width="40%" />
@@ -287,7 +287,7 @@ export const SkeletonList = ({ items = 5 }) => (
 
 // --- FORMACIONES (Event Cards) ----------------------------------------------
 export const SkeletonFormacionCard = () => (
-    <div className="bg-[#1a1b26] border border-white/5 rounded-[2.5rem] p-6 h-[320px] flex flex-col justify-between relative overflow-hidden">
+    <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] p-6 h-[320px] flex flex-col justify-between relative overflow-hidden">
         {/* Top: Badges & Title */}
         <div>
             <div className="flex justify-between items-start mb-6">

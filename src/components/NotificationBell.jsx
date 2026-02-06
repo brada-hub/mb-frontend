@@ -147,7 +147,7 @@ export default function NotificationBell() {
         if (tipo === 'asistencia') return <AlertTriangle className={`${iconClasses} text-amber-400`} />;
         const t = titulo.toLowerCase();
         if (t.includes('pago')) return <CheckCircle2 className={`${iconClasses} text-emerald-400`} />;
-        return <Bell className={`${iconClasses} text-indigo-400`} />;
+        return <Bell className={`${iconClasses} text-[#bc1b1b]`} />;
     };
 
     return (
@@ -163,16 +163,16 @@ export default function NotificationBell() {
                 }}
                 className="p-1.5 sm:p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all relative active:scale-95 group"
             >
-                <Bell className={clsx("w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:rotate-12", isOpen && "text-indigo-400")} />
+                <Bell className={clsx("w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:rotate-12", isOpen && "text-[#bc1b1b]")} />
                 {unreadCount > 0 && (
                     <span className="absolute top-1.5 right-1.5 flex h-4 w-4 sm:h-5 sm:w-5">
                         <span className={clsx(
                             "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                            hasPriorityNotifications ? "bg-amber-400" : "bg-red-400"
+                            hasPriorityNotifications ? "bg-amber-400" : "bg-[#bc1b1b]"
                         )}></span>
                         <span className={clsx(
-                            "relative inline-flex rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-[#0f111a] items-center justify-center",
-                            hasPriorityNotifications ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" : "bg-red-500"
+                            "relative inline-flex rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-[#000000] items-center justify-center",
+                            hasPriorityNotifications ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" : "bg-[#bc1b1b]"
                         )}>
                             <span className="text-[8px] sm:text-[10px] font-black text-white">{unreadCount > 9 ? '+9' : unreadCount}</span>
                         </span>
@@ -186,7 +186,7 @@ export default function NotificationBell() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="fixed sm:absolute right-4 sm:right-0 top-[calc(84px+env(safe-area-inset-top))] sm:top-auto sm:mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-[#161b2c] border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-[110] overflow-hidden backdrop-blur-2xl"
+                        className="fixed sm:absolute right-4 sm:right-0 top-[calc(84px+env(safe-area-inset-top))] sm:top-auto sm:mt-4 w-[calc(100vw-32px)] sm:w-[400px] bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-[110] overflow-hidden backdrop-blur-2xl"
                     >
                         {view === 'list' ? (
                             <>
@@ -194,7 +194,7 @@ export default function NotificationBell() {
                                     <div className="flex items-center gap-2">
                                         <h3 className="text-sm font-black text-white uppercase tracking-widest">Notificaciones</h3>
                                         {unreadCount > 0 && (
-                                            <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-400 text-[10px] font-black rounded-full">
+                                            <span className="px-2 py-0.5 bg-[#bc1b1b]/20 text-[#bc1b1b] text-[10px] font-black rounded-full">
                                                 {unreadCount} NUEVAS
                                             </span>
                                         )}
@@ -202,7 +202,7 @@ export default function NotificationBell() {
                                     <div className="flex items-center gap-3">
                                         <button 
                                             onClick={markAllAsRead}
-                                            className="text-[10px] font-black text-gray-500 hover:text-indigo-400 uppercase tracking-widest transition-colors"
+                                            className="text-[10px] font-black text-gray-500 hover:text-[#bc1b1b] uppercase tracking-widest transition-colors"
                                         >
                                             Leer todo
                                         </button>
@@ -218,7 +218,7 @@ export default function NotificationBell() {
                                 <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                                     {loading && notifications.length === 0 ? (
                                         <div className="p-10 flex flex-col items-center justify-center gap-3">
-                                            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                                            <div className="w-8 h-8 border-2 border-[#bc1b1b] border-t-transparent rounded-full animate-spin" />
                                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Sincronizando...</p>
                                         </div>
                                     ) : notifications.length === 0 ? (
@@ -235,13 +235,13 @@ export default function NotificationBell() {
                                                     onClick={() => handleNotificationClick(n)}
                                                     className={clsx(
                                                         "p-4 flex gap-4 transition-all duration-300 cursor-pointer group relative active:scale-[0.99]",
-                                                        !n.leido ? "bg-indigo-500/[0.03] hover:bg-indigo-500/[0.07]" : "hover:bg-white/[0.02]"
+                                                        !n.leido ? "bg-[#bc1b1b]/[0.03] hover:bg-[#bc1b1b]/[0.07]" : "hover:bg-white/[0.02]"
                                                     )}
                                                 >
                                                     <div className={clsx(
                                                         "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border transition-all",
                                                         !n.leido 
-                                                            ? "bg-indigo-500/10 border-indigo-500/20 shadow-lg shadow-indigo-500/10" 
+                                                            ? "bg-[#bc1b1b]/10 border-[#bc1b1b]/20 shadow-lg shadow-[#bc1b1b]/10" 
                                                             : "bg-white/5 border-white/5 grayscale opacity-50"
                                                     )}>
                                                         {getIcon(n.tipo, n.titulo)}
@@ -253,7 +253,7 @@ export default function NotificationBell() {
                                                                 !n.leido ? "text-white" : "text-gray-500"
                                                             )}>
                                                                 {n.titulo}
-                                                                {n.ruta && <MousePointer2 className="w-3 h-3 text-indigo-400 hidden group-hover:block" />}
+                                                                {n.ruta && <MousePointer2 className="w-3 h-3 text-[#bc1b1b] hidden group-hover:block" />}
                                                             </h4>
                                                             <span className="text-[8px] font-bold text-gray-600 uppercase flex items-center gap-1">
                                                                 <Clock className="w-2.5 h-2.5" />
@@ -269,7 +269,7 @@ export default function NotificationBell() {
                                                         
                                                         {!n.leido && n.tipo === 'convocatoria' && (
                                                             <div className="mt-3 flex items-center gap-2">
-                                                                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                                                                <span className="w-1.5 h-1.5 bg-[#bc1b1b]/50 rounded-full animate-pulse" />
                                                                 <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Actividad Programada</span>
                                                             </div>
                                                         )}
@@ -336,7 +336,7 @@ export default function NotificationBell() {
                                                 </span>
                                             </div>
                                             {preferences[pref.id] ? (
-                                                <div className="w-10 h-5 bg-indigo-500 rounded-full relative p-1 transition-colors">
+                                                <div className="w-10 h-5 bg-[#bc1b1b] rounded-full relative p-1 transition-colors">
                                                     <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full" />
                                                     <Volume2 className="w-2 h-2 text-white/50 absolute left-2 top-1.5" />
                                                 </div>

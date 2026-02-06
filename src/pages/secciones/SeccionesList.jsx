@@ -122,12 +122,12 @@ export default function SeccionesList() {
                         <Input 
                             icon={Search}
                             placeholder="Buscar sección..." 
-                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-brand-primary/50"
+                            className="h-10 sm:h-12 w-full text-xs sm:text-sm bg-surface-input border-surface-border rounded-xl focus:ring-[#bc1b1b]/50"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-brand-primary/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-brand-primary hover:bg-brand-primary/90 shrink-0">
+                    <Button onClick={handleAdd} className="h-10 sm:h-12 px-5 sm:px-6 shadow-lg shadow-[#bc1b1b]/10 text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-xl bg-[#bc1b1b] hover:bg-[#bc1b1b]/90 shrink-0">
                         <Plus className="w-4 h-4 mr-2" />
                         Nuevo
                     </Button>
@@ -145,11 +145,11 @@ export default function SeccionesList() {
                         {filtered.map((s) => (
                             <div 
                                 key={s.id_seccion} 
-                                className="group bg-surface-card border border-surface-border rounded-3xl sm:rounded-[40px] p-5 sm:p-8 hover:border-brand-primary/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
+                                className="group bg-surface-card border border-surface-border rounded-3xl sm:rounded-[40px] p-5 sm:p-8 hover:border-[#bc1b1b]/20 transition-all duration-500 hover:shadow-2xl flex flex-col h-full relative"
                             >
                                 {/* Top Info */}
                                 <div className="flex items-center gap-4 sm:gap-5 mb-4 sm:mb-8">
-                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black/5 dark:bg-[#1e2330] rounded-2xl sm:rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-500 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-black/5 dark:bg-[#1e2330] rounded-2xl sm:rounded-3xl flex items-center justify-center text-[#bc1b1b] shadow-inner group-hover:scale-110 transition-transform duration-500">
                                         <Layers className="w-6 h-6 sm:w-8 sm:h-8" />
                                     </div>
                                     <div className="flex-1">
@@ -168,7 +168,7 @@ export default function SeccionesList() {
                                             setSelectedSeccion(s);
                                             setIsInstrumentModalOpen(true);
                                         }}
-                                        className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-[#1e2330] flex items-center justify-center text-indigo-600 dark:text-indigo-400 hover:bg-brand-primary hover:text-white transition-all shadow-lg active:scale-95"
+                                        className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-[#1e2330] flex items-center justify-center text-[#bc1b1b] hover:bg-[#bc1b1b] hover:text-white transition-all shadow-lg active:scale-95"
                                     >
                                         <Music className="w-5 h-5" />
                                     </button>
@@ -208,7 +208,7 @@ export default function SeccionesList() {
                                             setSelectedSeccion(s);
                                             setIsInstrumentModalOpen(true);
                                         }}
-                                        className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] transition-all border border-indigo-500/20 shadow-lg active:scale-[0.98]"
+                                        className="w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-[#bc1b1b]/10 text-[#bc1b1b] hover:bg-[#bc1b1b] hover:text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] transition-all border border-[#bc1b1b]/20 shadow-lg active:scale-[0.98]"
                                     >
                                         Gestionar Instrumentos
                                     </button>

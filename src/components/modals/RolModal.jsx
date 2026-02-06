@@ -109,7 +109,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                 animate={{ y: 0 }}
                 className="relative w-full max-w-3xl bg-surface-card sm:border sm:border-surface-border sm:rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] text-gray-900 dark:text-gray-100"
             >
-                <div className="sticky top-0 z-10 flex items-center justify-between p-5 sm:p-6 bg-indigo-600 text-white shadow-xl">
+                <div className="sticky top-0 z-10 flex items-center justify-between p-5 sm:p-6 bg-[#bc1b1b] text-white shadow-xl">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-white/20 rounded-xl">
                             <Shield className="w-6 h-6" />
@@ -188,7 +188,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                                 return (
                                     <div key={cat} className="space-y-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-4 w-1 bg-indigo-600 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.5)]"></div>
+                                            <div className="h-4 w-1 bg-[#bc1b1b] rounded-full shadow-[0_0_10px_rgba(79,70,229,0.5)]"></div>
                                             <h4 className="text-[10px] font-black text-indigo-300 uppercase tracking-widest opacity-80">{cat}</h4>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
@@ -204,7 +204,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                                                         className={clsx(
                                                             "flex items-center justify-between p-4.5 rounded-2xl border transition-all text-left group active:scale-[0.98]",
                                                             isSelected 
-                                                                ? "bg-indigo-600/10 border-indigo-500/30 ring-1 ring-indigo-500/10" 
+                                                                ? "bg-[#bc1b1b]/10 border-indigo-500/30 ring-1 ring-indigo-500/10" 
                                                                 : "bg-black/5 dark:bg-[#1a2035]/50 border-surface-border text-gray-500 dark:text-gray-400 hover:border-brand-primary/30",
                                                             isProtected && "cursor-default opacity-80"
                                                         )}
@@ -214,7 +214,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, rol = null }) {
                                                         </span>
                                                         <div className={clsx(
                                                             "w-6 h-6 rounded-full flex items-center justify-center transition-all",
-                                                            isSelected ? "bg-indigo-600 text-white" : "border-2 border-surface-border text-transparent"
+                                                            isSelected ? "bg-[#bc1b1b] text-white" : "border-2 border-surface-border text-transparent"
                                                         )}>
                                                             <CheckCircle2 className="w-4 h-4" />
                                                         </div>

@@ -33,11 +33,11 @@ export default function DashboardJefeSeccion() {
     };
 
     return (
-        <div className="min-h-full bg-gray-50 dark:bg-[#0a0d14] transition-colors">
+        <div className="min-h-full bg-gray-50 dark:bg-surface-base transition-colors">
             <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
                 
                 {/* Header con Badge de Jefe */}
-                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden">
+                <div className="bg-gradient-to-br from-[#bc1b1b] to-[#7f1d1d] rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 text-white relative overflow-hidden shadow-xl shadow-[#bc1b1b]/20">
                     <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     
                     <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
@@ -77,12 +77,12 @@ export default function DashboardJefeSeccion() {
                     <div className="lg:col-span-2 space-y-6">
                         
                         {/* Miembros de Mi Sección */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                    <Users className="w-5 h-5 text-purple-500" /> Mi Sección
+                                    <Users className="w-5 h-5 text-[#bc1b1b]" /> Mi Sección
                                 </h2>
-                                <span className="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-xs font-bold">
+                                <span className="px-3 py-1 bg-[#bc1b1b]/10 text-[#bc1b1b] rounded-full text-xs font-bold">
                                     {miembrosSeccion.length} músicos
                                 </span>
                             </div>
@@ -95,7 +95,7 @@ export default function DashboardJefeSeccion() {
                                 <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                                     {miembrosSeccion.map(m => (
                                         <div key={m.id_miembro} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] rounded-xl border border-gray-100 dark:border-white/5">
-                                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 font-black text-sm">
+                                            <div className="w-10 h-10 rounded-xl bg-[#bc1b1b]/10 flex items-center justify-center text-[#bc1b1b] font-black text-sm">
                                                 {m.nombres?.charAt(0)}{m.apellidos?.charAt(0)}
                                             </div>
                                             <div className="flex-1">
@@ -119,22 +119,22 @@ export default function DashboardJefeSeccion() {
 
                         {/* Stats de la Sección */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
-                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-500 mb-1 sm:mb-2" />
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#bc1b1b] mb-1 sm:mb-2" />
                                 <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.hoy || 0}</p>
                                 <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Eventos Hoy</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
-                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 mb-1 sm:mb-2" />
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#ffbe0b] mb-1 sm:mb-2" />
                                 <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.eventos?.proximos || 0}</p>
                                 <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Esta Semana</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
                                 <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mb-1 sm:mb-2" />
                                 <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.mi_racha || 0}</p>
                                 <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Mi Racha</p>
                             </div>
-                            <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
+                            <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-xl p-3 sm:p-4 transition-colors">
                                 <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mb-1 sm:mb-2" />
                                 <p className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data?.stats?.asistencia?.promedio || 0}%</p>
                                 <p className="text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase">Asist. Sección</p>
@@ -146,47 +146,47 @@ export default function DashboardJefeSeccion() {
                     <div className="space-y-6">
                         
                         {/* Accesos Rápidos */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors shadow-sm">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors shadow-sm">
                             <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4 uppercase">Área de Gestión</h2>
                             <div className="space-y-3">
-                                <button onClick={() => navigate('/dashboard/formaciones')} className="w-full flex items-center gap-4 p-4 bg-amber-500/5 hover:bg-amber-500/10 rounded-xl transition-all group border border-amber-500/10 hover:border-amber-500/30">
-                                    <div className="p-2 bg-amber-500/20 rounded-lg text-amber-500">
+                                <button onClick={() => navigate('/dashboard/formaciones')} className="w-full flex items-center gap-4 p-4 bg-[#ffbe0b]/5 hover:bg-[#ffbe0b]/10 rounded-xl transition-all group border border-[#ffbe0b]/10 hover:border-[#ffbe0b]/30">
+                                    <div className="p-2 bg-[#ffbe0b]/20 rounded-lg text-[#ffbe0b]">
                                         <Layers className="w-5 h-5 shrink-0" />
                                     </div>
                                     <div className="text-left">
-                                        <span className="text-sm font-black text-amber-500 block uppercase tracking-tight leading-none mb-1">Armar Mis Listas</span>
+                                        <span className="text-sm font-black text-[#ffbe0b] block uppercase tracking-tight leading-none mb-1">Armar Mis Listas</span>
                                         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{data?.stats?.eventos?.pendientes_formacion || 0} Pendientes</span>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-amber-500/40 ml-auto group-hover:translate-x-1 transition-transform" />
+                                    <ChevronRight className="w-4 h-4 text-[#ffbe0b]/40 ml-auto group-hover:translate-x-1 transition-transform" />
                                 </button>
 
-                                <button onClick={() => navigate('/dashboard/eventos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group">
-                                    <Calendar className="w-5 h-5 text-indigo-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Mi Agenda</span>
+                                <button onClick={() => navigate('/dashboard/eventos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-[#bc1b1b]/5 dark:hover:bg-[#bc1b1b]/10 rounded-xl transition-all group">
+                                    <Calendar className="w-5 h-5 text-[#bc1b1b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#bc1b1b] dark:group-hover:text-[#bc1b1b]">Mi Agenda</span>
                                     <ChevronRight className="w-4 h-4 text-gray-300 ml-auto" />
                                 </button>
-                                <button onClick={() => navigate('/dashboard/repertorio')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group">
-                                    <Music className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Repertorio</span>
+                                <button onClick={() => navigate('/dashboard/repertorio')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-[#bc1b1b]/10 dark:hover:bg-[#bc1b1b]/20 rounded-xl transition-all group">
+                                    <Music className="w-5 h-5 text-[#bc1b1b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#bc1b1b] dark:group-hover:text-[#bc1b1b]">Repertorio</span>
                                     <ChevronRight className="w-4 h-4 text-gray-300 ml-auto" />
                                 </button>
-                                <button onClick={() => navigate('/dashboard/partituras')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl transition-all group">
-                                    <BookOpen className="w-5 h-5 text-purple-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">Partituras</span>
+                                <button onClick={() => navigate('/dashboard/partituras')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-[#ffbe0b]/5 dark:hover:bg-[#ffbe0b]/10 rounded-xl transition-all group">
+                                    <BookOpen className="w-5 h-5 text-[#ffbe0b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#ffbe0b] dark:group-hover:text-[#ffbe0b]">Partituras</span>
                                     <ChevronRight className="w-4 h-4 text-gray-300 ml-auto" />
                                 </button>
-                                <button onClick={() => navigate('/dashboard/pagos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-xl transition-all group">
-                                    <DollarSign className="w-5 h-5 text-amber-500" />
-                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">Mis Pagos</span>
+                                <button onClick={() => navigate('/dashboard/pagos')} className="w-full flex items-center gap-4 p-4 bg-gray-50 dark:bg-white/[0.02] hover:bg-[#ffbe0b]/10 dark:hover:bg-[#ffbe0b]/20 rounded-xl transition-all group">
+                                    <DollarSign className="w-5 h-5 text-[#ffbe0b]" />
+                                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-[#ffbe0b] dark:group-hover:text-[#ffbe0b]">Mis Pagos</span>
                                     <ChevronRight className="w-4 h-4 text-gray-300 ml-auto" />
                                 </button>
                             </div>
                         </div>
 
                         {/* Próximos Eventos */}
-                        <div className="bg-white dark:bg-[#161b2c] border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors">
+                        <div className="bg-white dark:bg-surface-card border border-gray-200 dark:border-white/5 rounded-2xl p-6 transition-colors">
                             <h2 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight mb-4 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-amber-500" /> Próximos
+                                <Clock className="w-4 h-4 text-[#ffbe0b]" /> Próximos
                             </h2>
                             {data?.mis_eventos?.length > 0 ? (
                                 <div className="space-y-3">

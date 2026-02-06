@@ -120,7 +120,7 @@ export default function MultimediaViewerModal({
                             {title || 'Visor Multimedia'}
                         </h3>
                         {files.length > 1 && (
-                            <p className="text-[9px] sm:text-[10px] text-indigo-400 font-black uppercase tracking-widest leading-none mt-1">
+                            <p className="text-[9px] sm:text-[10px] text-[#bc1b1b] font-black uppercase tracking-widest leading-none mt-1">
                                 {currentIndex + 1} / {files.length}
                             </p>
                         )}
@@ -192,13 +192,13 @@ export default function MultimediaViewerModal({
                     }}
                 >
                     {isAudio ? (
-                        <div className="w-full max-w-lg px-8 py-12 bg-[#161b2c] rounded-[40px] border border-white/10 shadow-2xl flex flex-col items-center gap-8 animate-in zoom-in-95 duration-500" onClick={(e) => e.stopPropagation()}>
-                            <div className="w-24 h-24 bg-brand-primary/20 rounded-full flex items-center justify-center text-brand-primary animate-pulse">
+                        <div className="w-full max-w-lg px-8 py-12 bg-[#0a0a0a] rounded-[40px] border border-white/10 shadow-2xl flex flex-col items-center gap-8 animate-in zoom-in-95 duration-500" onClick={(e) => e.stopPropagation()}>
+                            <div className="w-24 h-24 bg-[#bc1b1b]/20 rounded-full flex items-center justify-center text-[#bc1b1b] animate-pulse">
                                 <Play className="w-10 h-10 fill-current ml-1" />
                             </div>
                             <div className="text-center">
                                 <h4 className="text-white font-black uppercase tracking-tight text-xl mb-2">{title}</h4>
-                                <p className="text-indigo-400/60 text-[10px] font-black uppercase tracking-[0.3em]">Reproductor de Audio</p>
+                                <p className="text-[#bc1b1b]/60 text-[10px] font-black uppercase tracking-[0.3em]">Reproductor de Audio</p>
                             </div>
                             <audio 
                                 controls 

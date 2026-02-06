@@ -1,0 +1,4 @@
+src/pages/asistencias/AsistenciasList.jsx:            return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+src/pages/miembros/MiembrosList.jsx:                                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Editar Información
+src/pages/reportes/ReportesHome.jsx:                                                        <td className="p-6 text-center font-medium text-blue-600 dark:text-blue-400 transition-colors uppercase tabular-nums tracking-tighter bg-blue-500/5">{row.justified_count}</td>
+src/pages/reportes/ReportesHome.jsx:                                                                        isPermission ? "bg-blue-500/10 text-blue-600 border border-blue-600/20" :

@@ -129,7 +129,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
             <div className="relative w-full max-w-2xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
                 {/* Header / Banner */}
-                <div className="relative h-32 bg-gradient-to-r from-brand-primary to-monster-purple group">
+                <div className="relative h-32 bg-gradient-to-r from-[#bc1b1b] to-[#7f1d1d] group">
                     <button 
                         onClick={() => { setActiveTab('profile'); onClose(); }} 
                         className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all"
@@ -145,7 +145,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         <div className="flex gap-2 pointer-events-auto bg-surface-card/80 backdrop-blur-md p-1 rounded-2xl border border-surface-border shadow-lg">
                              <button
                                 onClick={() => setActiveTab('profile')}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'profile' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'profile' ? 'bg-[#bc1b1b] text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                              >
                                 <User className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                 Perfil
@@ -154,7 +154,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                              {isSuperAdmin && (
                                  <button
                                     onClick={() => setActiveTab('security')}
-                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'security' ? 'bg-monster-purple text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'security' ? 'bg-[#bc1b1b] text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                                  >
                                     <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
                                     Seguridad
@@ -195,7 +195,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         {/* Personal Details */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-2">
-                                <Shield className="w-4 h-4 text-brand-primary" />
+                                <Shield className="w-4 h-4 text-[#bc1b1b]" />
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Información Personal</h3>
                             </div>
                             
@@ -210,7 +210,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         {/* Operational Details */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-2">
-                                <Music className="w-4 h-4 text-brand-primary" />
+                                <Music className="w-4 h-4 text-[#bc1b1b]" />
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Asignación Band</h3>
                             </div>
                             
@@ -229,7 +229,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         {/* Location Details */}
                         <div className="md:col-span-2 space-y-6 pt-4">
                             <div className="flex items-center gap-2 border-b border-surface-border pb-2">
-                                <MapPin className="w-4 h-4 text-brand-primary" />
+                                <MapPin className="w-4 h-4 text-[#bc1b1b]" />
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest transition-colors">Ubicación y Vivienda</h3>
                             </div>
                             <div className="flex flex-col md:flex-row gap-6">
@@ -241,14 +241,14 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                         href={googleMapsUrl} 
                                         target="_blank" 
                                         rel="noreferrer"
-                                        className="flex items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl hover:bg-blue-500/20 transition-all group"
+                                        className="flex items-center gap-3 p-4 bg-[#bc1b1b]/10 border border-[#bc1b1b]/20 rounded-2xl hover:bg-[#bc1b1b]/20 transition-all group"
                                     >
-                                        <div className="p-2 bg-blue-500/20 rounded-xl group-hover:scale-110 transition-transform">
-                                            <Map className="w-5 h-5 text-blue-400" />
+                                        <div className="p-2 bg-[#bc1b1b]/20 rounded-xl group-hover:scale-110 transition-transform">
+                                            <Map className="w-5 h-5 text-[#bc1b1b]" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest transition-colors">GPS Disponible</p>
-                                            <p className="text-sm font-bold text-blue-700 dark:text-white transition-colors">Ver en Google Maps</p>
+                                            <p className="text-[10px] font-bold text-[#bc1b1b] dark:text-[#bc1b1b] uppercase tracking-widest transition-colors">GPS Disponible</p>
+                                            <p className="text-sm font-bold text-[#bc1b1b] dark:text-white transition-colors">Ver en Google Maps</p>
                                         </div>
                                     </a>
                                 )}
@@ -277,7 +277,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                                      <div>
                                          <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
-                                             <Smartphone className="w-5 h-5 text-brand-primary" />
+                                             <Smartphone className="w-5 h-5 text-[#bc1b1b]" />
                                              Control de Dispositivos Móviles
                                          </h3>
                                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors">
@@ -293,7 +293,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                                  max="10" 
                                                  value={deviceLimit}
                                                  onChange={(e) => setDeviceLimit(parseInt(e.target.value))}
-                                                 className="w-20 h-8 bg-surface-input text-center text-gray-900 dark:text-white font-bold rounded-lg border border-surface-border focus:border-brand-primary outline-none transition-colors"
+                                                 className="w-20 h-8 bg-surface-input text-center text-gray-900 dark:text-white font-bold rounded-lg border border-surface-border focus:border-[#bc1b1b] outline-none transition-colors"
                                              />
                                          </div>
                                          <Button onClick={handleUpdateLimit} size="sm" className="h-8">
@@ -331,9 +331,9 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                         <div className="text-center py-8 text-gray-500">Cargando...</div>
                                     ) : devices.length > 0 ? (
                                         devices.map(device => (
-                                            <div key={device.id_dispositivo} className="flex items-center justify-between p-4 bg-surface-card rounded-2xl border border-surface-border hover:border-brand-primary/20 transition-all">
+                                            <div key={device.id_dispositivo} className="flex items-center justify-between p-4 bg-surface-card rounded-2xl border border-surface-border hover:border-[#bc1b1b]/20 transition-all">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                                                    <div className="w-10 h-10 rounded-xl bg-[#bc1b1b]/10 flex items-center justify-center text-[#bc1b1b]">
                                                         <Smartphone className="w-5 h-5" />
                                                     </div>
                                                     <div>
@@ -364,7 +364,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-blue-500/5 text-blue-700 dark:text-blue-200 text-sm rounded-2xl border border-blue-500/10 flex gap-3 transition-colors">
+                            <div className="p-4 bg-[#bc1b1b]/5 text-[#bc1b1b] dark:text-[#bc1b1b]/80 text-sm rounded-2xl border border-[#bc1b1b]/10 flex gap-3 transition-colors">
                                 <AlertCircle className="w-5 h-5 shrink-0" />
                                 <p>Nota: Al eliminar un dispositivo, el usuario deberá iniciar sesión nuevamente para registrar el nuevo teléfono. Si superan el límite establecido, el sistema les impedirá entrar.</p>
                             </div>
@@ -377,7 +377,7 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
                         <Button 
                             variant="secondary" 
                             onClick={shareInfo}
-                            className="bg-monster-purple/20 hover:bg-monster-purple/30 text-monster-purple-light border-monster-purple/20"
+                            className="bg-[#ffbe0b]/10 hover:bg-[#ffbe0b]/20 text-[#ffbe0b] border border-[#ffbe0b]/20"
                         >
                             <Share2 className="w-4 h-4 mr-2" />
                             Compartir Perfil
