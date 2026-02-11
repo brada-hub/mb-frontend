@@ -1,32 +1,33 @@
 /**
- * getCleanUrl - Normaliza URLs de archivos dinámicos (imágenes, PDFs, audios)
- * para que siempre apunten al backend correcto, ya sea en local o producción.
+ * getCleanUrl - Versión de Producción Final.
+ * Maneja tanto archivos nuevos (Subidos por App) como viejos (Movidos a storage/recursos).
  */
 export const getCleanUrl = (url) => {
     if (!url) return '';
     
-    // Si la URL ya empieza con la base actual del backend, no hacemos nada
-    const apiBase = import.meta.env.VITE_API_URL || '';
-    const backendBase = apiBase.endsWith('/api') ? apiBase.replace('/api', '') : apiBase;
+    const backendDomain = 'https://api.simba.xpertiaplus.com';
 
-    // Extraer solo el path si es una URL absoluta (posiblemente con dominio viejo/incorrecto)
-    let path = '';
-    try {
-        if (url.startsWith('http')) {
-            const urlObj = new URL(url);
-            path = urlObj.pathname + urlObj.search;
-        } else {
-            // Ya es un path relativo
-            path = url.startsWith('/') ? url : '/' + url;
-        }
-    } catch (e) {
-        path = url;
+    // 1. Limpieza de dominios y duplicados
+    let path = url
+        .replace(/https?:\/\/simba\.xpertiaplus\.com/g, '')
+        .replace(/https?:\/\/api\.simba\.xpertiaplus\.com\/api/g, '')
+        .replace(/https?:\/\/api\.simba\.xpertiaplus\.com/g, '')
+        .replace('http://localhost:8000', '')
+        .replace(/^\/?public\//, '/')
+        .trim();
+
+    // 2. MAPEO DE LEGACY (Traductor de carpetas)
+    // Si la DB pide la ruta vieja, la mandamos a la carpeta física oficial en storage
+    if (path.includes('partituras/caporal')) {
+        path = path.replace('/partituras/caporal', '/storage/recursos');
     }
 
-    // Prevenir duplicación si el path ya incluye la base
-    if (backendBase && path.startsWith(backendBase)) {
-        return path;
-    }
+    // 3. Normalizar el prefijo /api/storage/ que a veces Laravel guarda
+    path = path.replace('/api/storage/', '/storage/');
 
-    return backendBase + path;
+    // Aseguramos que empiece con una sola barra
+    if (!path.startsWith('/')) path = '/' + path;
+
+    // Retornamos URL absoluta para evitar que el navegador use el dominio del frontend
+    return backendDomain + path;
 };

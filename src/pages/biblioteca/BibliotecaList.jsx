@@ -61,9 +61,9 @@ export default function BibliotecaList() {
     };
 
     const userRole = (user?.role || user?.miembro?.rol?.rol || '').toUpperCase();
-    // Bloqueo estricto: Solo ADMIN y DIRECTOR gestionan. Jefes y Miembros solo ven/estudian.
-    const authorized = userRole === 'ADMIN' || userRole === 'DIRECTOR' || !!user?.is_super_admin;
-    const canManage = authorized && editMode;
+    // Gestión: Solo ADMIN y DIRECTOR. Pero TODOS pueden ver.
+    const isManager = userRole === 'ADMIN' || userRole === 'DIRECTOR' || !!user?.is_super_admin;
+    const canManage = isManager && editMode;
 
     const loadData = useCallback(async () => {
         setLoading(true);
@@ -124,7 +124,7 @@ export default function BibliotecaList() {
                     </div>
 
                     <div className="sticky top-0 z-30 bg-white/95 dark:bg-[#090b14]/95 backdrop-blur-md -mx-2 px-3 py-2 sm:py-3 mb-2 sm:mb-4 border-b border-surface-border flex items-center gap-2 transition-colors">
-                        {authorized && (
+                        {isManager && (
                             <button
                                 onClick={toggleEditMode}
                                 title={editMode ? "Desactivar Edición" : "Activar Edición"}
@@ -293,11 +293,8 @@ export default function BibliotecaList() {
                                 {filteredTemas.map((tema) => (
                                     <div 
                                         key={tema.id_tema}
-                                        onClick={authorized ? () => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`) : undefined}
-                                        className={clsx(
-                                            "group bg-surface-card border border-surface-border rounded-2xl sm:rounded-3xl p-3 sm:p-6 transition-all duration-300 hover:shadow-2xl",
-                                            authorized ? "hover:border-[#bc1b1b]/30 sm:hover:-translate-y-1 cursor-pointer" : "cursor-default"
-                                        )}
+                                        onClick={() => navigate(`/dashboard/biblioteca/${tema.id_tema}/detalle`)}
+                                        className="group bg-surface-card border border-surface-border rounded-2xl sm:rounded-3xl p-3 sm:p-6 transition-all duration-300 hover:shadow-2xl hover:border-[#bc1b1b]/30 sm:hover:-translate-y-1 cursor-pointer"
                                     >
                                         <div className="flex items-start justify-between mb-2 sm:mb-4">
                                             <div className="flex items-center gap-3 sm:gap-4 text-left">
@@ -311,11 +308,9 @@ export default function BibliotecaList() {
                                                     <p className="text-[9px] sm:text-[10px] text-gray-500 font-black uppercase tracking-widest truncate transition-colors">{selectedGenero?.nombre_genero}</p>
                                                 </div>
                                             </div>
-                                            {authorized && (
-                                                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-lg sm:rounded-xl group-hover:bg-[#bc1b1b] group-hover:text-white transition-all flex items-center justify-center shrink-0 shadow-lg active:scale-90">
-                                                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                                                </div>
-                                            )}
+                                            <div className="w-9 h-9 sm:w-11 sm:h-11 bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 rounded-lg sm:rounded-xl group-hover:bg-[#bc1b1b] group-hover:text-white transition-all flex items-center justify-center shrink-0 shadow-lg active:scale-90">
+                                                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                                            </div>
                                         </div>
 
                                         {(() => {
