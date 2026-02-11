@@ -287,7 +287,13 @@ export default function ProfilePage() {
                             </span>
                             {user?.miembro?.categoria && (
                                 <span className="px-4 py-1.5 bg-emerald-500/20 backdrop-blur-md rounded-full text-[10px] font-black text-emerald-300 border border-emerald-500/20 uppercase tracking-widest shadow-lg">
-                                    CAT. {user.miembro.categoria.categoria}
+                                    {
+                                        user?.miembro?.categoria?.nombre_categoria === 'A' ? 'EXPERTO' :
+                                        user?.miembro?.categoria?.nombre_categoria === 'B' ? 'MEDIO' :
+                                        user?.miembro?.categoria?.nombre_categoria === 'C' ? 'BAJO' :
+                                        user?.miembro?.categoria?.nombre_categoria === 'N' ? 'INICIAL' : 
+                                        'ESTÁNDAR'
+                                    }
                                 </span>
                             )}
                         </div>
@@ -301,7 +307,14 @@ export default function ProfilePage() {
                     { icon: Smartphone, label: 'Celular', value: user?.miembro?.celular || '---', color: 'red' },
                     { icon: Music2, label: 'Instrumento', value: user?.miembro?.instrumento?.instrumento || 'No asignado', color: 'gold' },
                     { icon: Calendar, label: 'Nacimiento', value: user?.miembro?.fecha ? new Date(user.miembro.fecha).toLocaleDateString() : '---', color: 'gray' },
-                    { icon: Layout, label: 'Categoría', value: user?.miembro?.categoria?.categoria || 'ESTÁNDAR', color: 'emerald' }
+                    { icon: Layout, label: 'Categoría', value: 
+                        user?.miembro?.categoria?.nombre_categoria === 'A' ? 'EXPERTO' :
+                        user?.miembro?.categoria?.nombre_categoria === 'B' ? 'MEDIO' :
+                        user?.miembro?.categoria?.nombre_categoria === 'C' ? 'BAJO' :
+                        user?.miembro?.categoria?.nombre_categoria === 'N' ? 'INICIAL' : 
+                        'ESTÁNDAR', 
+                        color: 'emerald' 
+                    }
                 ].map((item, i) => (
                     <div key={i} className="bg-surface-card/40 backdrop-blur-xl border border-white/5 p-5 rounded-3xl shadow-xl flex flex-col items-center text-center group hover:-translate-y-1 transition-all duration-300">
                         <div className={clsx("p-3 rounded-2xl mb-3 shadow-lg transition-transform group-hover:scale-110", {
