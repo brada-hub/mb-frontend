@@ -4,11 +4,7 @@ import { clsx } from 'clsx';
 import { createPortal } from 'react-dom';
 import { Button } from '../ui/Button';
 
-const getCleanUrl = (url) => {
-    if (!url) return '';
-    // Convert full URLs to relative paths so they work through the Vite proxy (dev) or same-origin (prod)
-    return url.replace(/^https?:\/\/[^/]+/, '');
-};
+import { getCleanUrl } from '../../utils/url';
 
 export default function MultimediaViewerModal({ 
     isOpen, 

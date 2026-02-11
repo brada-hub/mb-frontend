@@ -30,12 +30,10 @@ import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RecursoModal from '../../components/modals/RecursoModal';
 import TemaModal from '../../components/modals/TemaModal';
 import { useAuth } from '../../context/AuthContext';
+import { clsx } from 'clsx';
 import { SkeletonDetail } from '../../components/ui/skeletons/Skeletons';
 
-const getCleanUrl = (url) => {
-    if (!url) return '';
-    return url.replace(/^https?:\/\/[^/]+/, '');
-};
+import { getCleanUrl } from '../../utils/url';
 
 export default function ThemeDetailView() {
     const { id } = useParams();

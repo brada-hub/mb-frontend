@@ -20,19 +20,18 @@ export const VAPID_KEY = "BCGv8FDOgIzcZAwgOhB3sFOm21vlo3IfXMPXXb63nhHoNIA1K9kImF
 
 export const requestForToken = async () => {
   if (!('serviceWorker' in navigator)) {
-    console.log('El navegador no soporta Service Workers.');
     return null;
   }
 
   try {
+    // Si ya está denegado, no insistir ni loguear error ruidoso
     if (Notification.permission === 'denied') {
-      console.warn('FCM: Las notificaciones están bloqueadas por el usuario.');
       return null;
     }
 
+    // Solo intentar si es default o granted
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      // Registrar el service worker explícitamente para mayor estabilidad en localhost
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       
       const currentToken = await getToken(messaging, { 
@@ -41,17 +40,14 @@ export const requestForToken = async () => {
       });
 
       if (currentToken) {
-        console.log('Token FCM:', currentToken);
         return currentToken;
-      } else {
-        console.log('No se pudo obtener el token. Revisa la configuración de Firebase.');
       }
     }
   } catch (err) {
-    if (err.name === 'AbortError') {
-      console.warn('FCM: El servicio de push del navegador no respondió. Esto es común en localhost o redes restringidas.');
+    if (err.name === 'AbortError' || err.name === 'NotAllowedError') {
+      // Silencioso para errores esperados en desarrollo/bloqueo
     } else {
-      console.error('Error al obtener el token Push:', err);
+      console.warn('FCM registration skipped:', err.message);
     }
   }
   return null;

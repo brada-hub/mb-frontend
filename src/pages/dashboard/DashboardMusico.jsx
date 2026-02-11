@@ -6,6 +6,7 @@ import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from '../../components/ui/skeletons/Skeletons';
+import { Shirt } from 'lucide-react';
 
 export default function DashboardMusico() {
     const navigate = useNavigate();
@@ -66,6 +67,8 @@ export default function DashboardMusico() {
         if (pct >= 50) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
         return 'text-red-500 bg-red-500/10 border-red-500/20';
     };
+
+
 
     return (
         <div className="min-h-full bg-gray-50 dark:bg-surface-base transition-colors">
@@ -189,6 +192,32 @@ export default function DashboardMusico() {
                                 <Navigation className="w-4 h-4" /> Desplegar Ruta
                             </a>
                         </div>
+
+                        {data.mis_eventos.find(ev => ev.es_hoy)?.uniforme && (() => {
+                            const hoyEvento = data.mis_eventos.find(ev => ev.es_hoy);
+                            const uni = hoyEvento.uniforme;
+                            return (
+                                <div className="mt-8 pt-8 border-t border-white/5">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Shirt className="w-4 h-4 text-[#bc1b1b]" />
+                                        <span className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em]">Indumentaria para hoy</span>
+                                    </div>
+                                    <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase truncate mb-3">{uni.nombre}</h3>
+                                    {uni.descripcion && <p className="text-xs text-gray-500 mb-3">{uni.descripcion}</p>}
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                        {uni.items?.map((item, i) => (
+                                            <div key={i} className="flex items-center gap-3 px-3 py-2 bg-white/5 rounded-xl border border-white/5">
+                                                <div className="w-5 h-5 rounded-lg shadow-inner border border-white/10 flex-shrink-0" style={{ backgroundColor: item.color }} />
+                                                <div className="min-w-0">
+                                                    <p className="text-[10px] font-black text-white uppercase truncate">{item.tipo}</p>
+                                                    <p className="text-[8px] text-gray-500 truncate">{item.detalle || item.color}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </motion.div>
                 )}
 

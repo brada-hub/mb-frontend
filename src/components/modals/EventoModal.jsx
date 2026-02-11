@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { X, Calendar, Clock, MapPin, Navigation, AlignLeft, Hash, Home, Plus, ChevronDown, Activity, Shield, DollarSign, LayoutList } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Navigation, AlignLeft, Hash, Home, Plus, ChevronDown, Activity, Shield, DollarSign, LayoutList, Shirt, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
@@ -19,6 +19,7 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
     const [tipos, setTipos] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [miembrosPorInstrumento, setMiembrosPorInstrumento] = useState({});
+    const [uniformes, setUniformes] = useState([]);
     
     // Quick Add Type State
     const [showNewTypeForm, setShowNewTypeForm] = useState(false);
@@ -72,7 +73,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
         minutos_cierre: 60,
         remunerado: false,
         monto_sugerido: 0,
-        requerimientos: []
+        requerimientos: [],
+        uniforme_id: null
     });
 
     const handleSetLugar = (lugar) => {
@@ -105,7 +107,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 requerimientos: eventoToEdit.requerimientos?.map(r => ({
                     id_instrumento: r.id_instrumento,
                     cantidad_necesaria: r.cantidad_necesaria
-                })) || []
+                })) || [],
+                uniforme_id: eventoToEdit.uniforme_id || null
             });
         } else if (isOpen) {
             setFormData({
@@ -121,7 +124,8 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 minutos_cierre: 60,
                 remunerado: false,
                 monto_sugerido: 0,
-                requerimientos: []
+                requerimientos: [],
+                uniforme_id: null
             });
         }
     }, [isOpen, eventoToEdit, defaultDate]);
@@ -172,6 +176,12 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
             res.data.forEach(m => { if (m.id_instrumento) counts[m.id_instrumento] = (counts[m.id_instrumento] || 0) + 1; });
             setMiembrosPorInstrumento(counts);
         } catch (error) { console.error(error); }
+        // Cargar uniformes disponibles
+        try {
+            const res = await api.get('/uniformes');
+            setUniformes(Array.isArray(res.data) ? res.data : []);
+        } catch (error) { console.error(error); }
+
         setLoading(false);
     };
 
@@ -345,6 +355,30 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                     <MapPicker staticView label="Mapa" value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} radius={formData.radio} />
                                 </div>
                             </div>
+                            {/* Indumentaria asignada (Vista Solo Lectura) */}
+                            {eventoToEdit?.uniforme && (
+                                <div className="bg-surface-input border border-surface-border p-5 rounded-2xl space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <Shirt className="w-5 h-5 text-[#bc1b1b]" />
+                                        <div>
+                                            <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">Indumentaria</span>
+                                            <span className="font-black text-gray-900 dark:text-white uppercase">{eventoToEdit.uniforme.nombre}</span>
+                                        </div>
+                                    </div>
+                                    {eventoToEdit.uniforme.descripcion && (
+                                        <p className="text-xs text-gray-500">{eventoToEdit.uniforme.descripcion}</p>
+                                    )}
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {eventoToEdit.uniforme.items?.map((item, i) => (
+                                            <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/5">
+                                                <div className="w-4 h-4 rounded-md shadow-inner border border-white/10" style={{ backgroundColor: item.color }} />
+                                                <span className="text-[10px] font-bold text-gray-300 uppercase">{item.tipo}</span>
+                                                {item.detalle && <span className="text-[9px] text-gray-500">({item.detalle})</span>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-8">
@@ -409,6 +443,54 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                                 </div>
                                             ))}
                                         </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ── INDUMENTARIA ── */}
+                            <div className="pt-4 border-t border-surface-border space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                        <Shirt className="w-4 h-4" />
+                                        Indumentaria
+                                    </label>
+                                    {formData.uniforme_id && (
+                                        <button type="button" onClick={() => setFormData(p => ({...p, uniforme_id: null}))} className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:underline">
+                                            Quitar
+                                        </button>
+                                    )}
+                                </div>
+                                {uniformes.length === 0 ? (
+                                    <p className="text-xs text-gray-500 italic">No hay trajes configurados. Ve a Vestuario para crear uno.</p>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                                        {uniformes.map(uni => (
+                                            <button
+                                                key={uni.id}
+                                                type="button"
+                                                onClick={() => setFormData(p => ({...p, uniforme_id: uni.id}))}
+                                                className={clsx(
+                                                    "relative text-left p-3 rounded-xl border-2 transition-all",
+                                                    formData.uniforme_id === uni.id 
+                                                        ? "border-[#bc1b1b] bg-[#bc1b1b]/5 shadow-lg" 
+                                                        : "border-surface-border hover:border-[#bc1b1b]/30 bg-surface-input"
+                                                )}
+                                            >
+                                                {formData.uniforme_id === uni.id && (
+                                                    <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-[#bc1b1b] rounded-full flex items-center justify-center">
+                                                        <Check className="w-3 h-3 text-white" />
+                                                    </div>
+                                                )}
+                                                <p className="text-xs font-black uppercase tracking-tight text-gray-900 dark:text-white truncate pr-6">{uni.nombre}</p>
+                                                {uni.descripcion && <p className="text-[9px] text-gray-500 mt-0.5 truncate">{uni.descripcion}</p>}
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {uni.items?.slice(0, 5).map((item, i) => (
+                                                        <div key={i} className="w-4 h-4 rounded-md border border-white/10 shadow-sm" style={{ backgroundColor: item.color }} title={`${item.tipo}: ${item.detalle || item.color}`} />
+                                                    ))}
+                                                    {uni.items?.length > 5 && <span className="text-[8px] text-gray-500 self-center">+{uni.items.length - 5}</span>}
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
                                 )}
                             </div>

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Bell, CheckCircle2, Info, AlertTriangle, Clock, Trash2, Ghost } from 'lucide-react';
+import { Bell, CheckCircle2, Info, AlertTriangle, Clock, Trash2, Ghost, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { SkeletonList } from '../../components/ui/skeletons/Skeletons';
 
 export default function NotificationsList() {
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,12 +27,19 @@ export default function NotificationsList() {
         }
     };
 
-    const markAsRead = async (id) => {
-        try {
-            await api.patch(`/notificaciones/${id}/leer`);
-            setNotifications(prev => prev.map(n => n.id_notificacion === id ? { ...n, leido: true } : n));
-        } catch (error) {
-            console.error(error);
+    const handleClick = async (n) => {
+        // Marcar como leída si no lo está
+        if (!n.leido) {
+            try {
+                await api.patch(`/notificaciones/${n.id_notificacion}/leer`);
+                setNotifications(prev => prev.map(x => x.id_notificacion === n.id_notificacion ? { ...x, leido: true } : x));
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        // Navegar a la ruta si existe
+        if (n.ruta) {
+            navigate(n.ruta);
         }
     };
 
@@ -73,7 +82,7 @@ export default function NotificationsList() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             key={n.id_notificacion}
-                            onClick={() => !n.leido && markAsRead(n.id_notificacion)}
+                            onClick={() => handleClick(n)}
                             className={clsx(
                                 "bg-surface-card border p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] flex items-center gap-3 sm:gap-5 transition-all cursor-pointer group",
                                 !n.leido 
@@ -107,6 +116,12 @@ export default function NotificationsList() {
                                 )}>
                                     {n.mensaje}
                                 </p>
+                                {n.ruta && (
+                                    <div className="flex items-center gap-1 mt-1.5 text-[9px] font-black text-brand-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <ExternalLink className="w-3 h-3" />
+                                        Ver detalle
+                                    </div>
+                                )}
                             </div>
 
                             {!n.leido && (

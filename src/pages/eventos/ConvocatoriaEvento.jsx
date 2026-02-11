@@ -11,6 +11,8 @@ import api from '../../api';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
+import Mannequin from '../../components/uniformes/Mannequin';
+import { Shirt } from 'lucide-react';
 
 export default function ConvocatoriaEvento() {
     const { id } = useParams();
@@ -32,6 +34,10 @@ export default function ConvocatoriaEvento() {
     const [selectedMiembros, setSelectedMiembros] = useState([]);
     const [instrumentos, setInstrumentos] = useState([]);
     const [selectedInstrumento, setSelectedInstrumento] = useState('');
+    
+    // Vestuario States
+    const [uniformes, setUniformes] = useState([]);
+    const [showUniformModal, setShowUniformModal] = useState(false);
     
     // Estados para el modal de postulación
     const [postularSearch, setPostularSearch] = useState('');
@@ -88,6 +94,7 @@ export default function ConvocatoriaEvento() {
     useEffect(() => {
         loadData(true); // Pasar true para mostrar cargando la primera vez
         loadMiembrosDisponibles(); 
+        if (canManage) loadUniformes();
     }, [id]);
 
     const loadData = async (initial = false) => {
@@ -321,6 +328,48 @@ export default function ConvocatoriaEvento() {
         } catch (error) {
             notify('Error al remover', 'error');
         }
+    };
+
+    const loadUniformes = async () => {
+        try {
+            const res = await api.get('/uniformes');
+            setUniformes(res.data);
+        } catch (error) {
+            console.error('Error loading uniforms');
+        }
+    };
+
+    const handleSelectUniform = async (uniformeId) => {
+        try {
+            const res = await api.put(`/eventos/${id}`, {
+                ...evento,
+                uniforme_id: uniformeId
+            });
+            setEvento(res.data);
+            notify('Vestuario actualizado para el evento', 'success');
+            setShowUniformModal(false);
+        } catch (error) {
+            notify('Error al actualizar vestuario', 'error');
+        }
+    };
+
+    const getUniformOutfit = (uni) => {
+        const outfit = {
+            camisa: { on: false, color: '#ffffff' },
+            pantalon: { on: false, color: '#1a1a1a' },
+            saco: { on: false, color: '#1e3a8a' },
+            corbata: { on: false, color: '#bc1b1b' },
+            chaleco: { on: false, color: '#374151' },
+            zapatos: { on: false, color: '#000000' }
+        };
+        if (!uni?.items) return outfit;
+        uni.items.forEach(it => {
+            if (outfit[it.tipo]) {
+                outfit[it.tipo].on = true;
+                outfit[it.tipo].color = it.color;
+            }
+        });
+        return outfit;
     };
 
     const toggleMiembroSelection = (id_miembro) => {
@@ -570,6 +619,66 @@ export default function ConvocatoriaEvento() {
                             <p className="text-xs text-gray-500 font-medium">Tipo Evento</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Vestuario Section */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div className="md:col-span-12 lg:col-span-4 xl:col-span-3">
+                    <div className="bg-surface-card border border-white/5 rounded-[2.5rem] p-8 h-full shadow-xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-8">
+                            <Shirt className="w-24 h-24 text-white opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                        </div>
+                        
+                        <div className="relative z-10 flex flex-col h-full">
+                            <div className="flex items-center justify-between mb-8">
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">Vestuario</h3>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Atuendo Oficial</p>
+                                </div>
+                                {canManage && !eventStatus.isPast && (
+                                    <button 
+                                        onClick={() => setShowUniformModal(true)}
+                                        className="p-3 bg-[#bc1b1b]/10 text-[#bc1b1b] rounded-2xl hover:bg-[#bc1b1b] hover:text-white transition-all border border-[#bc1b1b]/10"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="flex-1 flex flex-col items-center justify-center py-6 bg-black/20 rounded-[2rem] border border-white/5 mb-6">
+                                {evento?.uniforme ? (
+                                    <>
+                                        <Mannequin outfit={getUniformOutfit(evento.uniforme)} scale={0.8} />
+                                        <div className="mt-6 text-center">
+                                            <p className="text-sm font-black text-white uppercase tracking-tight">{evento.uniforme.nombre}</p>
+                                            <p className="text-[9px] text-gray-500 font-bold mt-1 line-clamp-1 px-4">{evento.uniforme.descripcion}</p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center gap-4 opacity-20 py-10">
+                                        <Shirt className="w-16 h-16" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-center">Sin vestuario<br/>asignado</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {evento?.uniforme && (
+                                <div className="grid grid-cols-5 gap-2 px-2">
+                                    {evento.uniforme.items?.map((item, i) => (
+                                        <div key={i} className="flex flex-col items-center gap-1">
+                                            <div className="w-full aspect-square rounded-lg border border-white/10 shadow-inner" style={{ backgroundColor: item.color }} title={item.tipo} />
+                                            <span className="text-[7px] text-gray-500 font-black uppercase text-center truncate w-full">{item.tipo}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="md:col-span-12 lg:col-span-8 xl:col-span-9 space-y-8">
+                    {/* El resto del contenido original se mantiene aquí o debajo */}
                 </div>
             </div>
 
@@ -1119,6 +1228,66 @@ export default function ConvocatoriaEvento() {
                         </div>
                         <div className="p-8 bg-black/20 text-center border-t border-white/5">
                             <p className="text-[9px] font-bold text-gray-600 uppercase tracking-[0.2em]">Nota: Importar una formación añadirá a los músicos a la lista como pendientes.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Selección de Vestuario */}
+            {showUniformModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowUniformModal(false)} />
+                    <div className="relative w-full max-w-4xl bg-surface-card border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 flex flex-col max-h-[90vh]">
+                        <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-[#bc1b1b]/20 rounded-2xl flex items-center justify-center text-[#bc1b1b]">
+                                    <Shirt className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight">Elegir Vestuario</h3>
+                                    <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Selecciona el traje oficial para este evento</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowUniformModal(false)} className="p-2 hover:bg-white/5 rounded-xl text-gray-400"><X /></button>
+                        </div>
+                        
+                        <div className="p-8 overflow-y-auto custom-scrollbar flex-1">
+                            {uniformes.length === 0 ? (
+                                <div className="text-center py-20 opacity-30">
+                                    <Shirt className="w-16 h-16 mx-auto mb-4" />
+                                    <p className="font-bold uppercase tracking-widest text-xs">No tienes trajes creados</p>
+                                    <Button onClick={() => navigate('/dashboard/vestuario')} className="mt-6 font-black tracking-widest text-[10px]">Ir a Gestor de Vestuario</Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {uniformes.map(uni => (
+                                        <div 
+                                            key={uni.id}
+                                            onClick={() => handleSelectUniform(uni.id)}
+                                            className={`p-6 bg-white/[0.02] hover:bg-[#bc1b1b]/5 border rounded-3xl cursor-pointer transition-all group flex flex-col items-center ${
+                                                evento?.uniforme_id === uni.id ? 'border-[#bc1b1b] bg-[#bc1b1b]/5 shadow-lg' : 'border-white/5 hover:border-[#bc1b1b]/30'
+                                            }`}
+                                        >
+                                            <div className="relative mb-4 scale-75 h-40 flex items-center justify-center">
+                                                <Mannequin outfit={getUniformOutfit(uni)} />
+                                            </div>
+                                            <div className="text-center w-full">
+                                                <p className={`font-black uppercase tracking-tight text-sm ${evento?.uniforme_id === uni.id ? 'text-[#bc1b1b]' : 'text-white'}`}>{uni.nombre}</p>
+                                                <p className="text-[9px] text-gray-500 font-bold mt-1 line-clamp-1">{uni.descripcion || 'Sin descripción'}</p>
+                                            </div>
+                                            {evento?.uniforme_id === uni.id && (
+                                                <div className="mt-4 px-3 py-1 bg-[#bc1b1b] text-white text-[8px] font-black uppercase tracking-widest rounded-full">
+                                                    Seleccionado
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-8 bg-black/20 text-center border-t border-white/5">
+                            <p className="text-[9px] font-bold text-gray-600 uppercase tracking-[0.2em]">El vestuario seleccionado será visible para todos los convocados.</p>
                         </div>
                     </div>
                 </div>

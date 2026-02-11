@@ -23,7 +23,8 @@ import {
     Building2,
     HardDrive,
     Activity,
-    Flame
+    Flame,
+    Shirt
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
@@ -192,6 +193,7 @@ export default function MainLayout() {
             { icon: Users, label: 'Personal', to: '/dashboard/miembros', permission: 'GESTION_MIEMBROS' },
             { icon: Layers, label: 'Formaciones', to: '/dashboard/formaciones', permission: 'GESTION_ELENCOS' },
             { icon: Grid, label: 'Secciones', to: '/dashboard/secciones', permission: 'GESTION_SECCIONES' },
+            { icon: Shirt, label: 'Vestuario', to: '/dashboard/vestuario', permission: 'GESTION_MIEMBROS' },
         ]},
         { title: 'Academia / Biblioteca', hideForSuperAdmin: !isImpersonating, items: [
             { icon: ListMusic, label: 'Repertorio', to: '/dashboard/repertorio', permission: null },

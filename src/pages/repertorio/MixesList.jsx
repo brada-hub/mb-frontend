@@ -26,10 +26,7 @@ import MixModal from '../../components/modals/MixModal';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import MultimediaViewerModal from '../../components/modals/MultimediaViewerModal';
 
-const getCleanUrl = (url) => {
-    if (!url) return '';
-    return url.replace(/^https?:\/\/[^/]+/, '');
-};
+import { getCleanUrl } from '../../utils/url';
 
 export default function MixesList() {
     const navigate = useNavigate();

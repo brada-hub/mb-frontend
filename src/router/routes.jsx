@@ -35,6 +35,8 @@ const SAOrganizaciones = Loadable(lazy(() => import('../pages/superadmin/section
 const SAAlmacenamiento = Loadable(lazy(() => import('../pages/superadmin/sections/SAAlmacenamiento')));
 const SAPlanes = Loadable(lazy(() => import('../pages/superadmin/sections/SAPlanes')));
 const SAAuditoria = Loadable(lazy(() => import('../pages/superadmin/sections/SAAuditoria')));
+const UniformeManager = Loadable(lazy(() => import('../pages/recursos/UniformeManager')));
+
 
 
 const routes = [
@@ -60,6 +62,7 @@ const routes = [
             { path: 'biblioteca', element: <BibliotecaList /> },
             { path: 'biblioteca/:id/detalle', element: <ThemeDetailView /> },
             { path: 'repertorio', element: <MixesList /> },
+            { path: 'vestuario', element: <UniformeManager /> },
             { path: 'eventos', element: <EventosList /> },
             { path: 'eventos/:id/convocatoria', element: <ConvocatoriaEvento /> },
             { path: 'asistencia', element: <AsistenciasList /> },
@@ -67,6 +70,7 @@ const routes = [
             { path: 'reportes', element: <ReportesHome /> },
             { path: 'notificaciones', element: <NotificationsList /> },
             { path: 'perfil', element: <ProfilePage /> },
+
             { 
                 path: 'superadmin', 
                 element: <SuperAdminPanel />,

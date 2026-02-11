@@ -350,7 +350,6 @@ export default function RecursoModal({ isOpen, onClose, onSuccess, initialData }
                             <select 
                                 {...register('id_tema', { required: true })}
                                 disabled={!selectedGenero}
-                                disabled={!selectedGenero}
                                 className="w-full bg-surface-input border border-surface-border rounded-2xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#bc1b1b]/50 disabled:opacity-50 transition-all"
                             >
                                 <option value="" className="bg-surface-card">Seleccionar Tema...</option>
