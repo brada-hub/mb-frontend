@@ -287,13 +287,7 @@ export default function ProfilePage() {
                             </span>
                             {user?.miembro?.categoria && (
                                 <span className="px-4 py-1.5 bg-emerald-500/20 backdrop-blur-md rounded-full text-[10px] font-black text-emerald-300 border border-emerald-500/20 uppercase tracking-widest shadow-lg">
-                                    {
-                                        user?.miembro?.categoria?.nombre_categoria === 'A' ? 'EXPERTO' :
-                                        user?.miembro?.categoria?.nombre_categoria === 'B' ? 'MEDIO' :
-                                        user?.miembro?.categoria?.nombre_categoria === 'C' ? 'BAJO' :
-                                        user?.miembro?.categoria?.nombre_categoria === 'N' ? 'INICIAL' : 
-                                        'ESTÁNDAR'
-                                    }
+                                    {user?.miembro?.categoria?.nombre_categoria ? `CAT ${user.miembro.categoria.nombre_categoria}` : 'ESTÁNDAR'}
                                 </span>
                             )}
                         </div>
@@ -308,11 +302,7 @@ export default function ProfilePage() {
                     { icon: Music2, label: 'Instrumento', value: user?.miembro?.instrumento?.instrumento || 'No asignado', color: 'gold' },
                     { icon: Calendar, label: 'Nacimiento', value: user?.miembro?.fecha ? new Date(user.miembro.fecha).toLocaleDateString() : '---', color: 'gray' },
                     { icon: Layout, label: 'Categoría', value: 
-                        user?.miembro?.categoria?.nombre_categoria === 'A' ? 'EXPERTO' :
-                        user?.miembro?.categoria?.nombre_categoria === 'B' ? 'MEDIO' :
-                        user?.miembro?.categoria?.nombre_categoria === 'C' ? 'BAJO' :
-                        user?.miembro?.categoria?.nombre_categoria === 'N' ? 'INICIAL' : 
-                        'ESTÁNDAR', 
+                        user?.miembro?.categoria?.nombre_categoria ? `CAT ${user.miembro.categoria.nombre_categoria}` : 'ESTÁNDAR', 
                         color: 'emerald' 
                     }
                 ].map((item, i) => (

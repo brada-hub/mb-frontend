@@ -130,10 +130,8 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
         
         if (hasHyphen) {
             const parts = value.split('-');
-            // Limpiar la parte numérica (solo dígitos, máximo 10)
-            let numericPart = parts[0].replace(/[^0-9]/g, '').slice(0, 10);
-            // Limpiar la parte de la letra (solo UNA letra mayúscula)
-            let letterPart = (parts[1] || '').replace(/[^A-Z]/g, '').slice(0, 1);
+            // Limpiar la parte de la letra/complemento (hasta DOS caracteres alfanuméricos)
+            let letterPart = (parts[1] || '').replace(/[^A-Z0-9]/g, '').slice(0, 2);
             
             // Si hay parte numérica, reconstruir
             if (numericPart.length >= 5) {
@@ -280,8 +278,8 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                                     {...register('ci', { 
                                         required: "El CI es obligatorio",
                                         pattern: { 
-                                            value: /^[0-9]{5,10}(-[A-Z])?$/, 
-                                            message: "Formato: 5-10 dígitos, opcional -X (Ej: 1234567-L)" 
+                                            value: /^[0-9]{5,10}(-[A-Z0-9]{1,2})?$/, 
+                                            message: "Formato: 5-10 dígitos, opcional -ext (Ej: 1234567-LP, 1234567-1L)" 
                                         },
                                         validate: (val) => {
                                             if (!val) return true;

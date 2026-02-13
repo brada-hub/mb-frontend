@@ -11,12 +11,17 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
     const [selectionMode, setSelectionMode] = useState('days'); // 'days', 'months', 'years'
     const containerRef = useRef(null);
 
-    // Sync input value with external value (YYYY-MM-DD)
+    // Sync input value with external value (YYYY-MM-DD or YYYY/MM/DD)
     useEffect(() => {
-        if (value && isValid(new Date(value))) {
-            const date = new Date(value + 'T12:00:00'); // Evitar problemas de timezone
-            setInputValue(format(date, 'dd/MM/yyyy'));
-            setViewDate(date);
+        if (value) {
+            // Normalizar formato si viene con slashes (Y/m/d -> Y-m-d)
+            const normalizedValue = value.includes('/') ? value.replace(/\//g, '-') : value;
+            const date = new Date(normalizedValue + 'T12:00:00');
+            
+            if (isValid(date)) {
+                setInputValue(format(date, 'dd/MM/yyyy'));
+                setViewDate(date);
+            }
         } else if (!value) {
             setInputValue('');
         }
@@ -88,7 +93,13 @@ export default function SmartDateInput({ value, onChange, label, error, name, ma
                         const dayISO = format(day, 'yyyy-MM-dd');
                         const isFuture = max && dayISO > max;
                         const isPastLimit = min && dayISO < min;
-                        const isSelected = value && isSameDay(new Date(value + 'T12:00:00'), day);
+                        const isSelected = (() => {
+                            if (!value) return false;
+                            const normalizedValue = value.includes('/') ? value.replace(/\//g, '-') : value;
+                            const d = new Date(normalizedValue + 'T12:00:00');
+                            return isValid(d) && isSameDay(d, day);
+                        })();
+
                         return (
                             <button
                                 key={day.toString()}
