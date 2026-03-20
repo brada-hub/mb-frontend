@@ -150,7 +150,7 @@ export default function MiembrosList() {
     const handleExportPDF = async () => {
         try {
             const res = await api.get('/miembros/reporte/pdf', {
-                params: { id_seccion: filterSection },
+                params: { id_seccion: filterSection || undefined, id_instrumento: filterInstrument || undefined },
                 responseType: 'blob'
             });
             const url = window.URL.createObjectURL(new Blob([res.data]));
