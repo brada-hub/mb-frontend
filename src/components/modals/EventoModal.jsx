@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { X, Calendar, Clock, MapPin, Navigation, AlignLeft, Hash, Home, Plus, ChevronDown, Activity, Shield, DollarSign, LayoutList, Shirt, Check } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Navigation, AlignLeft, Hash, Home, Plus, ChevronDown, Activity, Shield, DollarSign, LayoutList, Shirt, Check, Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import MapPicker from '../ui/MapPicker';
@@ -11,7 +11,7 @@ import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { clsx } from 'clsx';
 
-export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit = null, defaultType = null, defaultDate = null }) {
+export default function EventoModal({ isOpen, onClose, onSuccess, onDelete, eventoToEdit = null, defaultType = null, defaultDate = null }) {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { notify } = useToast();
@@ -420,11 +420,76 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                                         <div className={clsx("w-4 h-4 bg-white rounded-full transition-transform", formData.remunerado ? "translate-x-6" : "translate-x-0")} />
                                     </button>
                                 </div>
-                                <div className="space-y-4 pt-4 border-t border-surface-border">
-                                    <div className="h-[200px] rounded-2xl overflow-hidden border border-surface-border shadow-sm">
-                                        <MapPicker value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} radius={formData.radio} onChange={(c) => setFormData(p => ({...p, latitud: c.lat, longitud: c.lng}))} />
+                                <div className="space-y-6 pt-6 border-t border-surface-border">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Activity className="w-4 h-4 text-indigo-500" />
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Configuración de Tiempos y Rango</label>
                                     </div>
-                                    <Input placeholder="Dirección / Referencia" value={formData.direccion} onChange={(e) => setFormData({...formData, direccion: e.target.value.toUpperCase()})} className="uppercase" />
+                                    
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                        <div className="relative">
+                                            <Input 
+                                                label="Tolerancia (Min)" 
+                                                type="number" 
+                                                min="0" 
+                                                value={formData.minutos_tolerancia} 
+                                                onChange={(e) => setFormData({...formData, minutos_tolerancia: parseInt(e.target.value) || 0})} 
+                                                icon={Clock}
+                                            />
+                                            <div className="absolute top-0 right-0 mt-1 mr-1">
+                                                <span className="text-[9px] font-black text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded-md uppercase">
+                                                    Hasta {calculateTimeWithOffset(formData.hora, formData.minutos_tolerancia)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="relative">
+                                            <Input 
+                                                label="Cierre (Min)" 
+                                                type="number" 
+                                                min="1" 
+                                                value={formData.minutos_cierre} 
+                                                onChange={(e) => setFormData({...formData, minutos_cierre: parseInt(e.target.value) || 0})} 
+                                                icon={Clock}
+                                            />
+                                            <div className="absolute top-0 right-0 mt-1 mr-1">
+                                                <span className="text-[9px] font-black text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded-md uppercase">
+                                                    Cierra {calculateTimeWithOffset(formData.hora, formData.minutos_cierre)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="col-span-2 lg:col-span-1">
+                                            <Input 
+                                                label="Radio GPS (Mtrs)" 
+                                                type="number" 
+                                                min="10" 
+                                                step="10"
+                                                value={formData.radio} 
+                                                onChange={(e) => setFormData({...formData, radio: parseInt(e.target.value) || 10})} 
+                                                icon={Navigation}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="w-4 h-4 text-emerald-500" />
+                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Punto de Encuentro</label>
+                                        </div>
+                                        <div className="h-[200px] rounded-2xl overflow-hidden border border-surface-border shadow-sm">
+                                            <MapPicker 
+                                                value={formData.latitud && formData.longitud ? { lat: parseFloat(formData.latitud), lng: parseFloat(formData.longitud) } : null} 
+                                                radius={formData.radio} 
+                                                onChange={(c) => setFormData(p => ({...p, latitud: c.lat, longitud: c.lng}))} 
+                                            />
+                                        </div>
+                                        <Input 
+                                            placeholder="Dirección / Referencia (EJ. PLAZA PRINCIPAL)" 
+                                            value={formData.direccion} 
+                                            onChange={(e) => setFormData({...formData, direccion: e.target.value.toUpperCase()})} 
+                                            className="uppercase" 
+                                            icon={MapPin}
+                                        />
+                                    </div>
                                 </div>
                                 {showRequerimientos && (
                                     <div className="pt-4 border-t border-surface-border space-y-4">
@@ -501,9 +566,16 @@ export default function EventoModal({ isOpen, onClose, onSuccess, eventoToEdit =
                 <div className="flex-none p-4 border-t border-surface-border bg-surface-card flex justify-between gap-3 rounded-b-3xl">
                     <div className="flex gap-2">
                         {isEditing && (
-                            <Button variant="secondary" type="button" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest" onClick={() => navigate(`/dashboard/eventos/${eventoToEdit.id_evento}/convocatoria`)}>
-                                <LayoutList className="w-4 h-4 mr-2" />Ver Convocatoria
-                            </Button>
+                            <>
+                                <Button variant="secondary" type="button" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest" onClick={() => navigate(`/dashboard/eventos/${eventoToEdit.id_evento}/convocatoria`)}>
+                                    <LayoutList className="w-4 h-4 mr-2" />Ver Lista
+                                </Button>
+                                {canEdit && onDelete && (
+                                    <Button variant="ghost" type="button" className="h-10 px-3 text-red-500 hover:bg-red-500/10" onClick={() => onDelete(eventoToEdit.id_evento)}>
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                )}
+                            </>
                         )}
                     </div>
                     <div className="flex gap-3">

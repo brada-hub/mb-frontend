@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import api from '../../api';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import MapPicker from '../ui/MapPicker';
 import SmartDateInput from '../ui/SmartDateInput';
 import { 
     X, User, MapPin, Calendar, Smartphone, 
@@ -130,6 +129,7 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
         
         if (hasHyphen) {
             const parts = value.split('-');
+            const numericPart = parts[0].replace(/[^0-9]/g, '').slice(0, 10);
             // Limpiar la parte de la letra/complemento (hasta DOS caracteres alfanuméricos)
             let letterPart = (parts[1] || '').replace(/[^A-Z0-9]/g, '').slice(0, 2);
             
@@ -165,8 +165,16 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
         try {
             let res;
             if (miembro) {
-                // ACTUALIZAR
-                res = await api.put(`/miembros/${miembro.id_miembro}`, data);
+                // ACTUALIZAR - Limpiar datos para evitar enviar objetos en lugar de IDs
+                const sanitizedData = { ...data };
+                delete sanitizedData.user;
+                delete sanitizedData.contactos;
+                delete sanitizedData.seccion;
+                delete sanitizedData.categoria;
+                delete sanitizedData.rol;
+                delete sanitizedData.permisos;
+
+                res = await api.put(`/miembros/${miembro.id_miembro}`, sanitizedData);
                 if (onSuccess) onSuccess(res.data);
                 notify("Miembro actualizado correctamente", "success");
                 onClose(); // En edición cerramos directo porque no hay credenciales que mostrar
@@ -336,12 +344,6 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                             </div>
 
                             <div className="space-y-6 pt-4">
-                                <MapPicker 
-                                    onChange={(coords) => {
-                                        setValue('latitud', coords.lat);
-                                        setValue('longitud', coords.lng);
-                                    }}
-                                />
                                 <Input 
                                     name="direccion"
                                     label="Dirección y Referencia" 

@@ -120,6 +120,7 @@ export default function EventosList() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSuccess={loadEventos}
+                onDelete={handleDeleteClick}
                 eventoToEdit={editingEvento}
                 defaultDate={selectedDate}
                 defaultType="ENSAYO"

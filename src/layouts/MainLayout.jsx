@@ -306,7 +306,13 @@ export default function MainLayout() {
                     </div>
 
                     <div className="w-full p-4 border-t border-gray-200 dark:border-white/5 shrink-0 bg-gray-50 dark:bg-surface-base">
-                        <button onClick={() => navigate('/dashboard/perfil')} className={clsx("w-full mb-4 group transition-all", isSidebarCollapsed && !isMobileMenuOpen ? "px-0" : "px-0")}>
+                        <button 
+                            onClick={() => {
+                                navigate('/dashboard/perfil');
+                                if (window.innerWidth < 1024) setIsMobileMenuOpen(false);
+                            }} 
+                            className={clsx("w-full mb-4 group transition-all", isSidebarCollapsed && !isMobileMenuOpen ? "px-0" : "px-0")}
+                        >
                             <div className="flex items-center p-3 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 group-hover:border-[#bc1b1b]/30 transition-all overflow-hidden relative shadow-sm">
                                 <div className="relative h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-[#bc1b1b] to-[#7f1d1d] flex items-center justify-center text-white font-black shadow-lg shadow-[#bc1b1b]/20">
                                     {(user?.miembro?.nombres || user?.nombre || user?.user || '?').charAt(0)}

@@ -6,7 +6,7 @@ import {
     Search, Plus, User, MapPin, Phone, Briefcase, 
     Shield, Power, LayoutGrid, List, MoreVertical, 
     MessageCircle, ExternalLink, Filter, ChevronDown,
-    Flame, CheckCircle2, XCircle, AlertCircle, Clock
+    Flame, CheckCircle2, XCircle, AlertCircle, Clock, Trash2
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useToast } from '../../context/ToastContext';
@@ -124,6 +124,26 @@ export default function MiembrosList() {
     const handleOpenPermissions = (miembro) => {
         setSelectedMiembro(miembro);
         setIsPermissionsOpen(true);
+    };
+
+    const handleDelete = (miembro) => {
+        setConfirmState({ isOpen: true, member: miembro, loading: false });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!confirmState.member) return;
+        setConfirmState(prev => ({ ...prev, loading: true }));
+        try {
+            await api.delete(`/miembros/${confirmState.member.id_miembro}`);
+            notify("Miembro eliminado correctamente", "success");
+            setMiembros(prev => prev.filter(m => m.id_miembro !== confirmState.member.id_miembro));
+            setConfirmState({ isOpen: false, member: null, loading: false });
+        } catch (error) {
+            console.error(error);
+            const msg = error.response?.data?.message || "Error al eliminar miembro";
+            notify(msg, "error");
+            setConfirmState(prev => ({ ...prev, loading: false }));
+        }
     };
 
     const getMemberStat = (id) => {
@@ -306,6 +326,9 @@ export default function MiembrosList() {
                                     <Shield className="w-4 h-4 text-[#bc1b1b]" /> Gestionar Permisos
                                 </button>
                             )}
+                            <button onClick={() => handleDelete(miembro)} className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-600 hover:bg-red-500/10 transition-colors text-left uppercase tracking-widest border-t border-surface-border mt-1">
+                                <Trash2 className="w-4 h-4" /> Eliminar Miembro
+                            </button>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -346,7 +369,15 @@ export default function MiembrosList() {
                 miembro={selectedMiembro}
             />
 
-            {/* Modal de Confirmación descontinuado por Switch directo, pero se mantiene referencia por si se requiere en otros flujos */}
+            <ConfirmModal 
+                isOpen={confirmState.isOpen}
+                onClose={() => setConfirmState({ isOpen: false, member: null, loading: false })}
+                onConfirm={handleDeleteConfirm}
+                title="Eliminar Miembro"
+                message={`¿Estás seguro de que deseas eliminar a ${confirmState.member?.nombres}? Esta acción es definitiva y borrará todo su historial (asistencias y récords). Se recomienda desactivar su acceso en su lugar si deseas conservar los datos.`}
+                confirmText={confirmState.loading ? 'Eliminando...' : 'Sí, Eliminar'}
+                variant="danger"
+            />
 
             {/* FAB para Móvil */}
             <div className="fixed bottom-6 right-6 z-[60] md:hidden">

@@ -4,7 +4,7 @@ import {
     Calendar, Clock, Users, CheckCircle2, XCircle, AlertCircle, 
     MapPin, ChevronRight, Check, X, Timer, UserCheck, UserX,
     RefreshCw, Save, ArrowRight, ArrowLeft, Filter, Zap, ChevronDown, ListCheck, ArrowLeftCircle, FileText,
-    Shield, Music2, Lock, Unlock, UserPlus
+    Shield, Music2, Lock, Unlock, UserPlus, Bell
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Button } from '../../components/ui/Button';
@@ -331,7 +331,11 @@ export default function AsistenciasList() {
             loadListaAsistencia(selectedEvento.id_evento);
         } catch (error) {
             console.error(error);
-            const msg = error.response?.data?.message || 'Error al marcar asistencia. Asegúrate de activar el GPS.';
+            const data = error.response?.data;
+            let msg = data?.message || 'Error al marcar asistencia. Asegúrate de activar el GPS.';
+            if (data?.distancia_actual) {
+                msg += ` (Estás a ${data.distancia_actual}, el rango es ${data.radio_configurado})`;
+            }
             notify(msg, 'error');
         } finally {
             setSaving(false);
@@ -437,6 +441,26 @@ export default function AsistenciasList() {
             setSnackbar(prev => prev.id === id_convocatoria ? { ...prev, show: false } : prev);
             delete pendingTimers.current[id_convocatoria];
         }, 2500);
+    };
+
+    const handleSincronizarMiembros = async () => {
+        if (!selectedEvento) return;
+        if (!hasFullAccess) {
+            notify('Solo el Administrador o Director pueden sincronizar integrantes', 'error');
+            return;
+        }
+
+        try {
+            setLoadingLista(true);
+            const res = await api.post('/asistencia/sincronizar-miembros', { id_evento: selectedEvento.id_evento });
+            notify(res.data.message || 'Sincronización exitosa', 'success');
+            loadListaAsistencia(selectedEvento.id_evento);
+        } catch (error) {
+            console.error(error);
+            notify(error.response?.data?.message || 'Error al sincronizar integrantes', 'error');
+        } finally {
+            setLoadingLista(false);
+        }
     };
 
     const handleOpenReemplazo = async (conv) => {
@@ -903,7 +927,7 @@ export default function AsistenciasList() {
                                             )}
                                         </div>
 
-                                        {puedeMarcar && (
+                                        {(puedeMarcar || hasFullAccess) && (
                                             <div className="relative">
                                                 <button 
                                                     onClick={() => setIsActionsOpen(!isActionsOpen)}
@@ -929,18 +953,25 @@ export default function AsistenciasList() {
                                                             </button>
                                                             <button 
                                                                 onClick={() => { handleMarcarTodos('FALTA'); setIsActionsOpen(false); }}
-                                                                className="w-full text-left p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/80 hover:bg-white/10 flex items-center gap-2 mt-1"
+                                                                className="w-full text-left p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 flex items-center gap-2 mt-1"
                                                             >
                                                                 <UserX className="w-3.5 h-3.5" /> TODOS FALTA
                                                             </button>
                                                             
                                                             {(isAdmin || isDirector) && (
-                                                                <div className="mt-2 pt-2 border-t border-white/10">
+                                                                <div className="mt-2 pt-2 border-t border-white/10 flex flex-col gap-1">
                                                                     <button 
                                                                         onClick={() => { handleEnviarRecordatorios(); setIsActionsOpen(false); }}
                                                                         className="w-full text-left p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-amber-300 hover:bg-white/10 flex items-center gap-2"
                                                                     >
                                                                         <Bell className="w-3.5 h-3.5" /> Mandar Recordatorios
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => { handleSincronizarMiembros(); setIsActionsOpen(false); }}
+                                                                        className="w-full text-left p-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-[#ffbe0b] hover:bg-white/10 flex items-center gap-2"
+                                                                    >
+                                                                        <RefreshCw className={clsx("w-3.5 h-3.5", loadingLista && "animate-spin")} />
+                                                                        Sync Nuevos Integrantes
                                                                     </button>
                                                                 </div>
                                                             )}

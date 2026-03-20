@@ -129,34 +129,34 @@ export default function MiembroDetalleModal({ isOpen, onClose, miembro }) {
             <div className="relative w-full max-w-2xl h-full md:h-auto max-h-[100vh] md:max-h-[95vh] bg-surface-card md:border md:border-surface-border md:rounded-4xl shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300 text-gray-900 dark:text-gray-100">
                 
                 {/* Header / Banner */}
-                <div className="relative h-32 bg-gradient-to-r from-[#bc1b1b] to-[#7f1d1d] group">
+                <div className="relative h-32 bg-gradient-to-r from-[#bc1b1b] to-[#7f1d1d] group shrink-0">
                     <button 
                         onClick={() => { setActiveTab('profile'); onClose(); }} 
-                        className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all"
+                        className="absolute top-4 right-4 z-[60] p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all"
                     >
                         <X className="w-5 h-5" />
                     </button>
                     
-                    {/* Tabs */}
-                    <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 flex gap-6 translate-y-1/2 md:justify-start justify-center pt-16 md:pt-0 pointer-events-none">
-                         {/* Spacer for avatar */}
+                    {/* Tabs - Fixed Z-index and Pointer Events */}
+                    <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 flex gap-6 translate-y-1/2 md:justify-start justify-center md:pt-0 z-50 pointer-events-none">
+                         {/* Spacer for avatar (Desktop only) */}
                         <div className="w-24 md:w-32 hidden md:block"></div>
                         
-                        <div className="flex gap-2 pointer-events-auto bg-surface-card/80 backdrop-blur-md p-1 rounded-2xl border border-surface-border shadow-lg">
+                        <div className="flex gap-2 pointer-events-auto bg-surface-card dark:bg-surface-card/90 backdrop-blur-md p-1 rounded-2xl border border-surface-border shadow-2xl">
                              <button
-                                onClick={() => setActiveTab('profile')}
+                                onClick={(e) => { e.stopPropagation(); setActiveTab('profile'); }}
                                 className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'profile' ? 'bg-[#bc1b1b] text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                              >
-                                <User className="w-4 h-4 inline-block mr-2 -mt-0.5" />
+                                <User className="w-3.5 h-3.5 inline-block mr-2 -mt-0.5" />
                                 Perfil
                              </button>
-                             {/* Solo SuperAdmin puede ver Seguridad */}
-                             {isSuperAdmin && (
+                             {/* Acceso a Seguridad para SuperAdmin y Director */}
+                             {(isSuperAdmin || isDirector) && (
                                  <button
-                                    onClick={() => setActiveTab('security')}
+                                    onClick={(e) => { e.stopPropagation(); setActiveTab('security'); }}
                                     className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'security' ? 'bg-[#bc1b1b] text-white shadow-lg' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                                  >
-                                    <Shield className="w-4 h-4 inline-block mr-2 -mt-0.5" />
+                                    <Shield className="w-3.5 h-3.5 inline-block mr-2 -mt-0.5" />
                                     Seguridad
                                  </button>
                              )}
