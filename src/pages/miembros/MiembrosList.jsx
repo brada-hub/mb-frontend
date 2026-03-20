@@ -25,6 +25,7 @@ export default function MiembrosList() {
     
     // Filtros avanzados
     const [filterInstrument, setFilterInstrument] = useState('');
+    const [filterSection, setFilterSection] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // all, active, inactive
     const [catalogs, setCatalogs] = useState({ secciones: [], categorias: [] });
@@ -146,6 +147,24 @@ export default function MiembrosList() {
         }
     };
 
+    const handleExportPDF = async () => {
+        try {
+            const res = await api.get('/miembros/reporte/pdf', {
+                params: { id_seccion: filterSection },
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Reporte_Personal_${new Date().toISOString().split('T')[0]}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            notify("PDF generado correctamente", "success");
+        } catch (error) {
+            notify("Error al generar PDF", "error");
+        }
+    };
+
     const getMemberStat = (id) => {
         return memberStats.find(s => s.id_miembro === id);
     };
@@ -164,6 +183,7 @@ export default function MiembrosList() {
 
             // Filtros de Selección
             const matchesInstrument = !filterInstrument || m.id_instrumento == filterInstrument;
+            const matchesSection = !filterSection || m.id_seccion == filterSection;
             const matchesCategory = !filterCategory || m.id_categoria == filterCategory;
             
             // Filtro de Estado (Acceso)
@@ -172,9 +192,9 @@ export default function MiembrosList() {
                                 (filterStatus === 'active' && hasAccess) || 
                                 (filterStatus === 'inactive' && !hasAccess);
 
-            return matchesSearch && matchesInstrument && matchesCategory && matchesStatus;
+            return matchesSearch && matchesInstrument && matchesSection && matchesCategory && matchesStatus;
         });
-    }, [miembros, search, filterInstrument, filterCategory, filterStatus]);
+    }, [miembros, search, filterInstrument, filterSection, filterCategory, filterStatus]);
 
     const AccessSwitch = ({ checked, onChange, loading }) => (
         <button 
@@ -434,6 +454,14 @@ export default function MiembrosList() {
 
                              <div className="hidden md:flex items-center gap-2">
                                 <Button 
+                                    onClick={handleExportPDF}
+                                    variant="outline"
+                                    className="h-10 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl border-surface-border hover:bg-black/5"
+                                >
+                                    <List className="w-4 h-4 mr-2 text-[#bc1b1b]" />
+                                    Exportar PDF
+                                </Button>
+                                <Button 
                                     onClick={handleAdd} 
                                     disabled={catalogs.suscripcion?.uso_miembros >= catalogs.suscripcion?.max_miembros}
                                     className={clsx(
@@ -468,12 +496,28 @@ export default function MiembrosList() {
                         {/* Filtros - 20% approx */}
                         <div className="flex lg:flex-[3] gap-2">
                              <select 
-                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[9px] sm:text-[10px] font-bold uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[10px] sm:text-[11px] font-black uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
+                                value={filterSection}
+                                onChange={(e) => {
+                                    setFilterSection(e.target.value);
+                                    setFilterInstrument('');
+                                }}
+                            >
+                                <option value="" className="bg-surface-card">SECCIONES</option>
+                                {catalogs.secciones?.map(s => (
+                                    <option key={s.id_seccion} value={s.id_seccion} className="bg-surface-card">{s.seccion}</option>
+                                ))}
+                            </select>
+
+                             <select 
+                                className="flex-1 bg-surface-input border-surface-border border rounded-xl h-9 sm:h-11 px-3 text-[10px] sm:text-[11px] font-black uppercase text-gray-600 dark:text-gray-400 focus:outline-none focus:border-[#bc1b1b]/50 transition-colors"
                                 value={filterInstrument}
                                 onChange={(e) => setFilterInstrument(e.target.value)}
                             >
                                 <option value="" className="bg-surface-card">INSTRUMENTOS</option>
-                                {catalogs.secciones?.flatMap(s => s.instrumentos || []).map(inst => (
+                                {catalogs.secciones?.flatMap(s => s.instrumentos || [])
+                                    .filter(inst => !filterSection || inst.id_seccion == filterSection)
+                                    .map(inst => (
                                     <option key={inst.id_instrumento} value={inst.id_instrumento} className="bg-surface-card">{inst.instrumento}</option>
                                 ))}
                             </select>

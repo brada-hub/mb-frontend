@@ -57,14 +57,24 @@ export default function MiembroModal({ isOpen, onClose, onSuccess, miembro = nul
                         });
                     } else {
                         reset({
-                            has_emergency_contact: false,
-                            latitud: null,
-                            longitud: null,
+                            nombres: '',
+                            apellidos: '',
+                            ci: '',
+                            celular: '',
+                            fecha: '',
+                            direccion: '',
+                            referencia_vivienda: '',
                             id_seccion: '',
                             id_instrumento: '',
                             id_categoria: '',
                             id_rol: '',
-                            id_voz: ''
+                            id_voz: '',
+                            has_emergency_contact: false,
+                            contacto_nombre: '',
+                            contacto_celular: '',
+                            contacto_parentesco: '',
+                            latitud: null,
+                            longitud: null
                         });
                     }
                 })
