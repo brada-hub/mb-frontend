@@ -377,7 +377,7 @@ export default function AsistenciasList() {
     };
 
     const handleMarcarEstado = (id_convocatoria, estado) => {
-        if (!puedeMarcar) {
+        if (!puedeMarcar && !hasFullAccess) {
             notify('El control de asistencia no está habilitado aún', 'warning');
             return;
         }
@@ -598,7 +598,7 @@ export default function AsistenciasList() {
     };
 
     const handleMarcarTodos = (estado) => {
-        if (!puedeMarcar) {
+        if (!puedeMarcar && !hasFullAccess) {
             notify('El control de asistencia no está habilitado aún', 'warning');
             return;
         }
@@ -1160,7 +1160,7 @@ export default function AsistenciasList() {
                                                             estadoActual={asistenciasTemp[conv.id_convocatoria]}
                                                             handleMarcarEstado={handleMarcarEstado}
                                                             puedeMarcar={
-                                                                puedeMarcar && 
+                                                                (puedeMarcar || hasFullAccess) && 
                                                                 (isAdmin || (
                                                                     !conv.asistencia?.latitud_marcado && 
                                                                     (isDirector || (isJefe && !jefeBloqueado && conv.miembro?.id_instrumento === miInstrumento))
