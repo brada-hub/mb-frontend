@@ -698,8 +698,8 @@ export default function AsistenciasList() {
                     {eventosHoy.length === 0 ? (
                         <div className="bg-surface-card border border-surface-border rounded-3xl p-8 text-center transition-colors">
                             <Calendar className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4 transition-colors" />
-                            <p className="text-gray-500 dark:text-gray-400 font-medium transition-colors">No hay eventos programados hoy</p>
-                            <p className="text-gray-400 dark:text-gray-600 text-sm mt-2 transition-colors">Los eventos aparecerán cuando llegue su fecha</p>
+                            <p className="text-gray-500 dark:text-gray-400 font-medium transition-colors">{isAdmin || isDirector ? 'No hay eventos' : 'No hay eventos programados hoy'}</p>
+                            <p className="text-gray-400 dark:text-gray-600 text-sm mt-2 transition-colors">{isAdmin || isDirector ? 'Los últimos eventos aparecerán aquí' : 'Los eventos aparecerán cuando llegue su fecha'}</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -761,6 +761,10 @@ export default function AsistenciasList() {
                                         
                                         <div className="flex items-center justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                                             <div className="flex items-center gap-3">
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {String(evento.fecha).substr(0, 10)}
+                                                </span>
                                                 <span className="flex items-center gap-1">
                                                     <Clock className="w-3 h-3" />
                                                     {evento.hora?.substr(0, 5)}
@@ -910,7 +914,7 @@ export default function AsistenciasList() {
                                                     {/* Botón Cerrar Asistencia */}
                                                     {puedeMarcar && (isAdmin || isDirector) && (
                                                         <button 
-                                                            onClick={handleCerrarAsistencia}
+                                                            onClick={() => handleCerrarAsistencia()}
                                                             className="h-10 px-3 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all flex items-center gap-2"
                                                             title="Cerrar Asistencia Manualmente"
                                                         >
