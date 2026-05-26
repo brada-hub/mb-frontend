@@ -107,8 +107,8 @@ export default function MainLayout() {
                 try {
                     let token = null;
                     if (isNative()) {
-                        await setupNativeNotifications((nativeToken) => { token = nativeToken; });
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        // El FCM Token nativo ya se gestiona y registra en AuthContext.jsx
+                        return;
                     } else {
                         token = await requestForToken();
                     }

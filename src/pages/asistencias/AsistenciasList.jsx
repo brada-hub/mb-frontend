@@ -813,13 +813,20 @@ export default function AsistenciasList() {
                     !selectedEvento && "hidden xl:block"
                 )}>
                     {!selectedEvento ? (
-                        <div className="bg-surface-card border border-surface-border rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px] transition-colors">
-                            <UserCheck className="w-20 h-20 text-gray-400 dark:text-gray-700 mb-6 transition-colors" />
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Selecciona un Evento</h3>
-                            <p className="text-gray-500 dark:text-gray-500 max-w-md transition-colors">
-                                Elige un evento de la lista para iniciar el control de asistencia
-                            </p>
-                        </div>
+                        !hasFullAccess && !isJefe ? (
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-2">Mi Historial de Asistencias</h3>
+                                <MemberHistory memberId={user?.miembro?.id_miembro} />
+                            </div>
+                        ) : (
+                            <div className="bg-surface-card border border-surface-border rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center min-h-[400px] transition-colors">
+                                <UserCheck className="w-20 h-20 text-gray-400 dark:text-gray-700 mb-6 transition-colors" />
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Selecciona un Evento</h3>
+                                <p className="text-gray-500 dark:text-gray-500 max-w-md transition-colors">
+                                    Elige un evento de la lista para iniciar el control de asistencia
+                                </p>
+                            </div>
+                        )
                     ) : (
                         <div className="bg-surface-card border border-surface-border rounded-3xl overflow-hidden animate-in slide-in-from-right duration-500 transition-colors">
                             {/* Header Pegajoso (Sticky) - Solid background to prevent overlap */}
@@ -1229,6 +1236,11 @@ export default function AsistenciasList() {
                                                 )}
                                             </div>
                                         </div>
+                                    </div>
+                                    
+                                    <div className="mt-8 max-w-xl mx-auto text-left space-y-4">
+                                        <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Mi Historial de Asistencias</h3>
+                                        <MemberHistory memberId={user?.miembro?.id_miembro} />
                                     </div>
                                 </div>
                             )}
